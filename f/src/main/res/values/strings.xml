@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">F</string>
+    <string name="leave_title">Отписаться от сообществ</string>
+    <string name="leave_subtitle">Коснитесь и удерживайте, чтобы увидеть информацию о сообществе</string>
 </resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/test"
+    android:elevation="4dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/subtitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleTextView"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/padding_standard_double"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingRight="@dimen/padding_standard_double"
+        android:paddingBottom="@dimen/padding_standard_double"
+        android:textColor="@color/subtitle_color"
+        android:textSize="16sp"
+        tools:text="Subtitle" />
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:background="@drawable/test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_horizontal"
+        android:paddingTop="@dimen/padding_standard_double"
+        android:textColor="@color/title_color"
+        android:textSize="20sp"
+        tools:text="Title" />
+</merge>

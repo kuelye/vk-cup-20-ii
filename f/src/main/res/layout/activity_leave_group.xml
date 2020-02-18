@@ -17,6 +17,9 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="@dimen/padding_standard"
+        android:paddingEnd="@dimen/padding_standard"
         android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"
         app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

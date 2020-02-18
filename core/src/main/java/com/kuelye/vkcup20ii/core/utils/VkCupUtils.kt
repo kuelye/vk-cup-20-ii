@@ -6,8 +6,12 @@ import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.DimenRes
 import androidx.annotation.Dimension
+import com.vk.api.sdk.utils.VKUtils
+import kotlin.math.ceil
 
-fun View.dimen(@DimenRes res: Int): Int = context.resources.getDimension(res).toInt()
+fun dimen(context: Context, @DimenRes res: Int): Int = context.resources.getDimension(res).toInt()
+
+fun View.dimen(@DimenRes res: Int): Int = dimen(context, res)
 
 @Dimension
 fun View.themeDimen(@AttrRes res: Int): Int {
@@ -15,3 +19,5 @@ fun View.themeDimen(@AttrRes res: Int): Int {
     context.theme.resolveAttribute(res, typedValue, true)
     return typedValue.getDimension(context.resources.displayMetrics).toInt()
 }
+
+fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()

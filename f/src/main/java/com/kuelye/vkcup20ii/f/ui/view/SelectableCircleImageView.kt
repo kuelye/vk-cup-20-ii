@@ -29,7 +29,7 @@ class SelectableCircleImageView @JvmOverloads constructor(
         private const val UNSELECTED_BORDER_COLOR = 0xFFF6F6F6.toInt()
         private const val SELECTED_BORDER_COLOR = 0xFF5499E5.toInt()
         private const val UNSELECTED_SCALE = 1f
-        private const val SELECTED_SCALE = 0.95f
+        private const val SELECTED_SCALE = 0.93f
     }
 
     private var animator: ValueAnimator? = null

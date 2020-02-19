@@ -15,7 +15,8 @@ import com.vk.api.sdk.utils.VKUtils
 import kotlin.math.ceil
 
 
-fun dimen(context: Context, @DimenRes dimen: Int): Int = context.resources.getDimension(dimen).toInt()
+fun dimen(context: Context, @DimenRes dimen: Int): Int =
+    context.resources.getDimension(dimen).toInt()
 
 fun View.dimen(@DimenRes dimen: Int): Int = dimen(context, dimen)
 
@@ -93,3 +94,10 @@ fun interpolateColor(state: Float, @ColorInt from: Int, @ColorInt to: Int): Int 
     }
 }
 
+@ColorInt
+fun Int.modifyAlpha(factor: Float): Int = Color.argb(
+    (Color.alpha(this) * factor).toInt(),
+    Color.red(this),
+    Color.green(this),
+    Color.blue(this)
+)

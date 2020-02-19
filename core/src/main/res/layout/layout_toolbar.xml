@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/test"
+    android:background="@drawable/bg_bottom_sheet"
     android:elevation="4dp"
     android:orientation="vertical">
 
@@ -24,7 +24,7 @@
 
     <TextView
         android:id="@+id/titleTextView"
-        android:background="@drawable/test"
+        android:background="@drawable/bg_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"

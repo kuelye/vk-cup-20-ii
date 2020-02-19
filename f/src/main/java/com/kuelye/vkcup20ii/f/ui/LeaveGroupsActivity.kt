@@ -23,6 +23,7 @@ import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
+import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_leave_group.*
 import kotlinx.android.synthetic.main.layout_group_item.*
@@ -182,9 +183,12 @@ class LeaveGroupsActivity : BaseActivity() {
         override fun getItemOffsets(
             outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
         ) {
+            val position = parent.getChildLayoutPosition(view)
             val column = parent.getChildLayoutPosition(view) % spanCount
+            val row = position / spanCount
             outRect.left = column * spacePerSpan
             outRect.right = space - (column + 1) * spacePerSpan
+            if (row != 0) outRect.top = dp(12)
         }
 
     }

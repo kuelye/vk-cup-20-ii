@@ -26,6 +26,7 @@
     <com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
         android:id="@+id/bottomSheetLayout"
         android:layout_width="match_parent"
+        android:elevation="4dp"
         android:layout_height="match_parent">
 
         <FrameLayout
@@ -57,6 +58,7 @@
             android:clickable="true"
             android:focusable="true"
             android:orientation="vertical"
+            android:elevation="8dp"
             android:paddingStart="@dimen/padding_standard"
             android:paddingEnd="@dimen/padding_standard">
 

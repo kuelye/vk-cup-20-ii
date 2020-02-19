@@ -4,6 +4,7 @@
     android:layout_width="@dimen/group_item_width"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
+    android:background="@drawable/bg_leave_group_selectable_item"
     android:orientation="vertical">
 
     <com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
@@ -23,6 +24,6 @@
         android:gravity="center_horizontal"
         android:ellipsize="end"
         android:layout_marginTop="@dimen/padding_standard_half"
-        android:layout_marginBottom="@dimen/padding_standard"
-        tools:text="Happy Santa" />
+        android:layout_marginBottom="@dimen/padding_standard_half"
+        tools:text="Happy Santaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 </LinearLayout>

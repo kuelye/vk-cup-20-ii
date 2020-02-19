@@ -38,8 +38,7 @@ class BottomSheetLayout @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            val childState = getState(child)
-            if (child.visibility != GONE && childState > 0) {
+            if (child.visibility != GONE) {
                 val lp = child.layoutParams as LayoutParams
                 child.measure(
                     getChildMeasureSpec(widthMeasureSpec, 0, lp.width),
@@ -52,8 +51,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            val childState = getState(child)
-            if (child.visibility != GONE && childState > 0) {
+            if (child.visibility != GONE) {
                 val childTop = (height - child.measuredHeight * getState(child)).toInt()
                 child.layout(0, childTop, child.measuredWidth, height)
             }

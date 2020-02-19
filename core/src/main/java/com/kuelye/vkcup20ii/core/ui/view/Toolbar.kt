@@ -2,17 +2,20 @@ package com.kuelye.vkcup20ii.core.ui.view
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Outline
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
 import android.view.View.MeasureSpec.makeMeasureSpec
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewOutlineProvider
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils.clamp
-import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
 import androidx.core.view.ViewCompat.TYPE_TOUCH
 import com.kuelye.vkcup20ii.core.R
@@ -25,11 +28,9 @@ class Toolbar @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
 
     companion object {
+        const val COLLAPSED_STATE = 0f
+        const val EXPANDED_STATE = 1f
         private val TAG = Toolbar::class.java.simpleName
-    }
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.layout_toolbar, this, true)
     }
 
     var title: String? = null
@@ -47,6 +48,8 @@ class Toolbar @JvmOverloads constructor(
     val scrollingOffset: Int
         get() = if (actualHeight == null) height else actualHeight!!
 
+    var onExpandedStateChangedListener: ((Float) -> Unit)? = null
+
     private val collapsedHeight: Int = themeDimen(android.R.attr.actionBarSize)
     private var expandedHeight: Int = collapsedHeight
 
@@ -56,12 +59,13 @@ class Toolbar @JvmOverloads constructor(
         set(value) {
             field = value
             update()
-            requestLayout()
         }
 
+    init {
+        LayoutInflater.from(context).inflate(R.layout.layout_toolbar, this, true)
+    }
+
     private var animator: ValueAnimator? = null
-//    private val expandedHeightState: Float
-//        get() = if (expandedHeight == collapsedHeight) 0f else (actualHeight - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(
@@ -75,9 +79,9 @@ class Toolbar @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (oldh != h && actualHeight == null) {
-            expandedHeight = h
-        }
+        outlineProvider = OutlineProvider(w, h)
+        if (oldh != h && actualHeight == null) expandedHeight = h
+        update()
     }
 
     private fun scroll(dy: Int): Int {
@@ -110,17 +114,25 @@ class Toolbar @JvmOverloads constructor(
 
     private fun update() {
         val state = when {
-            expandedHeight == collapsedHeight -> 0f
-            actualHeight == null -> 1f
+            expandedHeight == collapsedHeight -> COLLAPSED_STATE
+            actualHeight == null -> EXPANDED_STATE
             else -> (actualHeight!! - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
         }
+
+        val translationX = ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * state + paddingStandard
         titleTextView.setPadding(0, (state * paddingStandard + paddingStandard).toInt(), 0, 0)
+        titleTextView.translationX = translationX
+
         subtitleTextView.alpha = state
         subtitleTextView.setPadding(
             paddingStandard * 2, (state * paddingStandard / 2).toInt(),
             paddingStandard * 2, 0
         )
-        titleTextView.elevation = (1 - state) * paddingStandard / 4
+
+        this.elevation = (1 - state) * paddingStandard / 4
+
+        onExpandedStateChangedListener?.invoke(state)
+        requestLayout()
     }
 
     private fun getTargetHeightByVelocityY(velocityY: Float) =
@@ -217,6 +229,14 @@ class Toolbar @JvmOverloads constructor(
                 child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
                 flingVelocityY = null
             }
+        }
+
+    }
+
+    private class OutlineProvider(val width: Int, val height: Int) : ViewOutlineProvider() {
+
+        override fun getOutline(view: View, outline: Outline) {
+            outline.setRect(0, 0, width, height)
         }
 
     }

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:elevation="4dp"
+    android:background="?android:background"
     android:orientation="vertical">
 
     <TextView
@@ -20,17 +19,16 @@
         android:paddingBottom="@dimen/padding_standard_double"
         android:textColor="@color/subtitle_color"
         android:textSize="16sp"
-        tools:text="Subtitle" />
+        tools:text="Subtitleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" />
 
     <TextView
         android:id="@+id/titleTextView"
-        android:background="@drawable/bg_bottom_sheet"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:gravity="center_horizontal"
         android:paddingTop="@dimen/padding_standard_double"
         android:textColor="@color/title_color"
         android:textSize="20sp"
-        tools:text="Title" />
+        tools:text="Titleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" />
 </merge>

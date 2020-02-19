@@ -162,7 +162,7 @@ class BottomSheetLayout @JvmOverloads constructor(
 
         constructor(c: Context, attrs: AttributeSet) : super(c, attrs) {
             val a = c.obtainStyledAttributes(attrs, R.styleable.BottomSheetLayout_Layout)
-            for (i in 0..a.indexCount) {
+            for (i in 0 until a.indexCount) {
                 when (val attr = a.getIndex(i)) {
                     R.styleable.BottomSheetLayout_Layout_layout_scrimEnabled -> {
                         scrimEnabled = a.getBoolean(attr, SCRIM_ENABLED_DEFAULT)

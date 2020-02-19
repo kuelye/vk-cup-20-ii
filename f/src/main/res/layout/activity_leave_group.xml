@@ -5,13 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
+    android:clipToPadding="false"
     android:orientation="vertical"
     tools:context=".ui.LeaveGroupsActivity">
 
     <com.kuelye.vkcup20ii.core.ui.view.Toolbar
         android:id="@+id/toolbar"
+        android:background="?android:windowBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -26,7 +29,6 @@
     <com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
         android:id="@+id/bottomSheetLayout"
         android:layout_width="match_parent"
-        android:elevation="4dp"
         android:layout_height="match_parent">
 
         <FrameLayout
@@ -34,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:windowBackground"
+            android:elevation="4dp"
             app:layout_scrimEnabled="false">
 
             <Button
@@ -56,9 +59,9 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_bottom_sheet"
             android:clickable="true"
+            android:elevation="8dp"
             android:focusable="true"
             android:orientation="vertical"
-            android:elevation="8dp"
             android:paddingStart="@dimen/padding_standard"
             android:paddingEnd="@dimen/padding_standard">
 

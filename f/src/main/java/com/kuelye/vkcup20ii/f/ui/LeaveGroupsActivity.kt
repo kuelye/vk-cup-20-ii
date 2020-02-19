@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.ui.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
+import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
 import com.kuelye.vkcup20ii.f.api.VKGroupsRequest
@@ -51,8 +53,9 @@ class LeaveGroupsActivity : BaseActivity() {
             if (ids != null) selectedGroupsIds.addAll(ids.toTypedArray())
         }
 
-        toolbar.title = getString(R.string.leave_title)
+        updateToolbarTitle(EXPANDED_STATE)
         toolbar.subtitle = getString(R.string.leave_subtitle)
+        toolbar.onExpandedStateChangedListener = { state -> updateToolbarTitle(state) }
 
         val paddingStandard = dimen(this, R.dimen.padding_standard)
         val totalWidth = VKUtils.width(this) - paddingStandard * 2
@@ -105,8 +108,11 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun updateLeaveLayout() {
-        Log.v(TAG, "updateLeaveLayout: ${selectedGroupsIds.isNotEmpty()}")
         bottomSheetLayout.animateVisible(R.id.leaveLayout, selectedGroupsIds.isNotEmpty())
+    }
+
+    private fun updateToolbarTitle(expandedState: Float) {
+        toolbar.title = getString(if (expandedState == COLLAPSED_STATE) R.string.leave_title_collapsed else R.string.leave_title_expanded)
     }
 
     inner class Adapter(context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>() {

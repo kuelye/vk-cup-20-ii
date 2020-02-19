@@ -1,8 +1,6 @@
 package com.kuelye.vkcup20ii.f.api
 
-import android.util.Log
 import com.kuelye.vkcup20ii.f.model.VKGroup
-import com.kuelye.vkcup20ii.f.ui.LeaveGroupsActivity
 import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 

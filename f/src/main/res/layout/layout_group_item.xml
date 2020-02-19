@@ -6,7 +6,7 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <ImageView
+    <com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
         android:id="@+id/photoImageView"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"

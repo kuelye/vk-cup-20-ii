@@ -35,6 +35,7 @@ class LeaveGroupsActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = LeaveGroupsActivity::class.java.simpleName
+        private const val EXTRA_SELECTED_GROUPS_IDS = "SELECTED_GROUPS_IDS"
     }
 
     lateinit var adapter: Adapter
@@ -45,22 +46,24 @@ class LeaveGroupsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leave_group)
 
+        if (savedInstanceState != null) {
+            val ids = savedInstanceState.getLongArray(EXTRA_SELECTED_GROUPS_IDS)
+            if (ids != null) selectedGroupsIds.addAll(ids.toTypedArray())
+        }
+
         toolbar.title = getString(R.string.leave_title)
         toolbar.subtitle = getString(R.string.leave_subtitle)
 
         val paddingStandard = dimen(this, R.dimen.padding_standard)
         val totalWidth = VKUtils.width(this) - paddingStandard * 2
         val itemWidth = dimen(this, R.dimen.group_item_width)
-        val spanCount =
-            floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
+        val spanCount = floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
         val space = (totalWidth - spanCount * itemWidth) / (spanCount - 1)
 
         adapter = Adapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(this, spanCount)
         recyclerView.addItemDecoration(HorizontalSpaceItemDecoration(space, spanCount))
-
-        adapter
     }
 
     override fun onResume() {
@@ -81,6 +84,11 @@ class LeaveGroupsActivity : AppCompatActivity() {
         if (data == null || !VK.onActivityResult(requestCode, resultCode, data, callback)) {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLongArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toLongArray())
     }
 
     private fun checkLogin() {
@@ -134,6 +142,7 @@ class LeaveGroupsActivity : AppCompatActivity() {
         }
 
         private fun updateBySelected(holder: ViewHolder, group: VKGroup, animate: Boolean) {
+            Log.v(TAG, "updateBySelected: $group, ${selectedGroupsIds.contains(group.id)}, $animate")
             holder.setSelected(selectedGroupsIds.contains(group.id), animate)
         }
 

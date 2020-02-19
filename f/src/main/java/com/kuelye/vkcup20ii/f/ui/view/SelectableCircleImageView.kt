@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.animation.DecelerateInterpolator
 import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.interpolateColor
@@ -20,6 +21,8 @@ class SelectableCircleImageView @JvmOverloads constructor(
 ) : CircleImageView(context, attrs, defStyleAttr) {
 
     companion object {
+        private val TAG = SelectableCircleImageView::class.java.simpleName
+
         private val SQUARE_OF_TWO = sqrt(2f)
 
         private val UNSELECTED_BORDER_WIDTH = dp(1).toFloat()
@@ -33,8 +36,7 @@ class SelectableCircleImageView @JvmOverloads constructor(
     private var animator: ValueAnimator? = null
 
     private val iconSize = dp(28)
-    private val checkIcon: Bitmap =
-        toBitmap(context, R.drawable.ic_check_circle_28, iconSize, iconSize)
+    private val checkIcon: Bitmap = toBitmap(context, R.drawable.ic_check_circle_28, iconSize, iconSize)
     private val iconMatrix = Matrix()
     private val iconPaint = Paint()
 
@@ -54,7 +56,7 @@ class SelectableCircleImageView @JvmOverloads constructor(
 
     override fun setSelected(selected: Boolean) {
         super.setSelected(selected)
-        updateBySelected(getState(selected))
+        updateBySelected()
     }
 
     fun animateSelected(selected: Boolean) {
@@ -70,7 +72,7 @@ class SelectableCircleImageView @JvmOverloads constructor(
         if (animator == null) {
             animator = ValueAnimator().apply {
                 interpolator = DecelerateInterpolator()
-                addUpdateListener { updateBySelected() }
+                addUpdateListener { updateBySelected(animator!!.animatedValue as Float) }
             }
         } else {
             animator!!.cancel()
@@ -80,7 +82,7 @@ class SelectableCircleImageView @JvmOverloads constructor(
         animator!!.start()
     }
 
-    private fun updateBySelected(state: Float = (animator?.animatedValue ?: 0f) as Float) {
+    private fun updateBySelected(state: Float = getState(isSelected)) {
         borderWidth = interpolate(state, UNSELECTED_BORDER_WIDTH, SELECTED_BORDER_WIDTH)
         borderColor = interpolateColor(state, UNSELECTED_BORDER_COLOR, SELECTED_BORDER_COLOR)
         scale = interpolate(state, UNSELECTED_SCALE, SELECTED_SCALE)

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="padding_standard">16dp</dimen>
     <dimen name="padding_standard_double">32dp</dimen>
+    <dimen name="padding_standard">16dp</dimen>
+    <dimen name="padding_standard_three_quarters">12dp</dimen>
     <dimen name="padding_standard_half">8dp</dimen>
 
     <dimen name="avatar_size">100dp</dimen>
+    <dimen name="icon_size">20dp</dimen>
 </resources>

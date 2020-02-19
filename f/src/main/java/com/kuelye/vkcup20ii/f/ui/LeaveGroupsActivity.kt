@@ -9,9 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kuelye.vkcup20ii.core.ui.BaseActivity
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
 import com.kuelye.vkcup20ii.f.api.VKGroupsRequest
@@ -21,7 +21,6 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
-import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
 import kotlinx.android.extensions.LayoutContainer
@@ -31,7 +30,7 @@ import kotlin.math.floor
 
 const val PLACEHOLDER_COLOR = 0xFFECEDF1.toInt()
 
-class LeaveGroupsActivity : AppCompatActivity() {
+class LeaveGroupsActivity : BaseActivity() {
 
     companion object {
         private val TAG = LeaveGroupsActivity::class.java.simpleName
@@ -64,11 +63,12 @@ class LeaveGroupsActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(this, spanCount)
         recyclerView.addItemDecoration(HorizontalSpaceItemDecoration(space, spanCount))
+
+        updateLeaveLayout()
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkLogin()
+    override fun onLoggedIn() {
+        checkGroups()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -91,25 +91,21 @@ class LeaveGroupsActivity : AppCompatActivity() {
         outState.putLongArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toLongArray())
     }
 
-    private fun checkLogin() {
-        if (VK.isLoggedIn()) {
-            checkGroups()
-        } else {
-            VK.login(this, arrayListOf(GROUPS))
-        }
-    }
-
     private fun checkGroups() {
-        Log.w(TAG, "checkGroups")
         VK.execute(VKGroupsRequest(), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
-                adapter.groups = result
+                adapter.groups = result.filter { it.member }
             }
 
             override fun fail(error: VKApiExecutionException) {
                 Log.w(TAG, "fail: error=$error")
             }
         })
+    }
+
+    private fun updateLeaveLayout() {
+        Log.v(TAG, "updateLeaveLayout: ${selectedGroupsIds.isNotEmpty()}")
+        bottomSheetLayout.animateVisible(R.id.leaveLayout, selectedGroupsIds.isNotEmpty())
     }
 
     inner class Adapter(context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>() {
@@ -131,18 +127,24 @@ class LeaveGroupsActivity : AppCompatActivity() {
             val group = groups!![position]
             holder.fill(group)
             updateBySelected(holder, group, false)
+
             holder.containerView.setOnClickListener {
                 if (selectedGroupsIds.contains(group.id)) {
                     selectedGroupsIds.remove(group.id)
                 } else {
                     selectedGroupsIds.add(group.id)
                 }
+                updateLeaveLayout()
                 updateBySelected(holder, group, true)
+            }
+
+            holder.containerView.setOnLongClickListener {
+                bottomSheetLayout.switch(R.id.groupInfoLayout)
+                true
             }
         }
 
         private fun updateBySelected(holder: ViewHolder, group: VKGroup, animate: Boolean) {
-            Log.v(TAG, "updateBySelected: $group, ${selectedGroupsIds.contains(group.id)}, $animate")
             holder.setSelected(selectedGroupsIds.contains(group.id), animate)
         }
 

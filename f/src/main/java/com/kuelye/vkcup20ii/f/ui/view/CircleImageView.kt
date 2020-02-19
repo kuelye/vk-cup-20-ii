@@ -2,18 +2,14 @@ package com.kuelye.vkcup20ii.f.ui.view
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.Color.TRANSPARENT
 import android.graphics.Paint.Style.STROKE
-import android.graphics.PorterDuff.Mode.CLEAR
 import android.graphics.Shader.TileMode.CLAMP
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import com.kuelye.vkcup20ii.core.utils.toBitmap
 import com.vk.api.sdk.utils.VKUtils.dp
-import kotlin.math.min
 
 open class CircleImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

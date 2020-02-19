@@ -15,9 +15,9 @@ import com.vk.api.sdk.utils.VKUtils
 import kotlin.math.ceil
 
 
-fun dimen(context: Context, @DimenRes res: Int): Int = context.resources.getDimension(res).toInt()
+fun dimen(context: Context, @DimenRes dimen: Int): Int = context.resources.getDimension(dimen).toInt()
 
-fun View.dimen(@DimenRes res: Int): Int = dimen(context, res)
+fun View.dimen(@DimenRes dimen: Int): Int = dimen(context, dimen)
 
 @Dimension
 fun View.themeDimen(@AttrRes res: Int): Int {
@@ -31,15 +31,13 @@ fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()
 fun toBitmap(
     drawable: Drawable?
 ): Bitmap? {
-    return when {
-        drawable == null -> null
-        drawable is BitmapDrawable -> drawable.bitmap
+    return when (drawable) {
+        null -> null
+        is BitmapDrawable -> drawable.bitmap
         else -> return try {
-            val bitmap: Bitmap = if (drawable is ColorDrawable) {
-                Bitmap.createBitmap(2, 2, ARGB_8888)
-            } else {
-                Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, ARGB_8888)
-            }
+            val width = if (drawable is ColorDrawable) 1 else drawable.intrinsicWidth
+            val height = if (drawable is ColorDrawable) 1 else drawable.intrinsicHeight
+            val bitmap: Bitmap = Bitmap.createBitmap(width, height, ARGB_8888)
             val canvas = Canvas(bitmap)
             drawable.setBounds(0, 0, canvas.width, canvas.height)
             drawable.draw(canvas)

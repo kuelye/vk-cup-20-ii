@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/background_color"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/padding_standard"
+    android:paddingEnd="@dimen/padding_standard"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_standard"
+        android:layout_marginBottom="@dimen/padding_standard"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/title_color"
+        android:textSize="17sp"
+        tools:text="Happy Santa" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingBottom="@dimen/padding_standard_half">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/ic_followers_outline_20"
+            android:tint="@color/icon_color" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/title_color"
+            android:textSize="15sp"
+            tools:text="188,2K подписчиков · 119 друзей" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingBottom="@dimen/padding_standard_half">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/ic_article_outline_20"
+            android:tint="#99A2AD" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/title_color"
+            android:textSize="15sp"
+            tools:text="Разрабатываем приложения для вас и ваших друзей с 2011 года." />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingBottom="@dimen/padding_standard_half"
+        android:layout_marginBottom="@dimen/padding_standard_three_quarters">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/ic_newsfeed_outline_20"
+            android:tint="#99A2AD" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/title_color"
+            android:textSize="15sp"
+            tools:text="Последняя запись 8 февраля" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/info_open"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/title_light_color"
+        android:layout_marginTop="@dimen/padding_standard_three_quarters"
+        android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+        android:backgroundTint="@color/button_color"/>
+</LinearLayout>

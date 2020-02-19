@@ -22,7 +22,6 @@ class SelectableCircleImageView @JvmOverloads constructor(
 
     companion object {
         private val TAG = SelectableCircleImageView::class.java.simpleName
-
         private val SQUARE_OF_TWO = sqrt(2f)
 
         private val UNSELECTED_BORDER_WIDTH = dp(1).toFloat()

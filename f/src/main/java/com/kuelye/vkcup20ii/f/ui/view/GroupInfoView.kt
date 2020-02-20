@@ -50,15 +50,12 @@ class GroupInfoView @JvmOverloads constructor(
     }
 
     private fun formatMembers(group: VKGroup): String {
-        Log.v(TAG, "formatMembers: ${group.membersCount}")
-        val membersCount = if (group.membersCount < 1000) {
-            "${group.membersCount}"
-        } else if (group.membersCount < 1000000) {
-            "${formatShort(group.membersCount.toFloat() / 1000)}K"
-        } else {
-            "${group.membersCount / 1000000}M"
+        val membersCount = when {
+            group.membersCount < 1000 -> "${group.membersCount}"
+            group.membersCount < 1000000 -> "${formatShort(group.membersCount.toFloat() / 1000)}K"
+            else -> "${group.membersCount / 1000000}M"
         }
-        return String.format(context.getString(R.string.info_members_template), membersCount, "0")
+        return String.format(context.getString(R.string.info_members_template), membersCount, group.friendsCount)
     }
 
     private fun formatShort(value: Float): String =

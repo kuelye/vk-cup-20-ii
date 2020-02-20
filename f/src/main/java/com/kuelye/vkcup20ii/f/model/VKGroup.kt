@@ -3,12 +3,13 @@ package com.kuelye.vkcup20ii.f.model
 import org.json.JSONObject
 
 data class VKGroup(
-    val id: Long,
+    val id: Int,
     val name: String,
     val description: String,
     val isMember: Boolean,
     val photo200: String,
-    val membersCount: Int
+    val membersCount: Int,
+    var friendsCount: Int? = null
 ) {
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -22,7 +23,7 @@ data class VKGroup(
 
         fun parse(r: JSONObject): VKGroup {
             return VKGroup(
-                id = r.getLong(ID_FIELD_KEY),
+                id = r.getInt(ID_FIELD_KEY),
                 name = r.getString(NAME_FIELD_KEY),
                 description = r.getString(DESCRIPTION_FIELD_KEY),
                 isMember = r.getInt(IS_MEMBER_FIELD_KEY) == 1,

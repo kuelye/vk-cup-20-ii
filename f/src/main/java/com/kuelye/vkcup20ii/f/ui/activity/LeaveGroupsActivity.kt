@@ -3,6 +3,7 @@ package com.kuelye.vkcup20ii.f.ui.activity
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,14 +37,14 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private lateinit var adapter: Adapter
-    private val selectedGroupsIds = mutableSetOf<Long>()
+    private val selectedGroupsIds = mutableSetOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leave_group)
 
         if (savedInstanceState != null) {
-            val ids = savedInstanceState.getLongArray(EXTRA_SELECTED_GROUPS_IDS)
+            val ids = savedInstanceState.getIntArray(EXTRA_SELECTED_GROUPS_IDS)
             if (ids != null) selectedGroupsIds.addAll(ids.toTypedArray())
         }
 
@@ -57,7 +58,7 @@ class LeaveGroupsActivity : BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putLongArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toLongArray())
+        outState.putIntArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toIntArray())
     }
 
     private fun requestGroups() {
@@ -72,9 +73,9 @@ class LeaveGroupsActivity : BaseActivity() {
         })
     }
 
-    private fun requestGroup(groupId: Long) {
-        GroupRepository.getGroup(groupId, object : VKApiCallback<VKGroup> {
-            override fun success(result: VKGroup) {
+    private fun requestGroup(groupId: Int) {
+        GroupRepository.getGroup(groupId, object : VKApiCallback<VKGroup?> {
+            override fun success(result: VKGroup?) {
                 updateGroupInfoLayout(result)
             }
 
@@ -109,7 +110,8 @@ class LeaveGroupsActivity : BaseActivity() {
         toolbar.title = getString(if (expandedState == COLLAPSED_STATE) R.string.leave_title_collapsed else R.string.leave_title_expanded)
     }
 
-    private fun updateGroupInfoLayout(group: VKGroup) {
+    private fun updateGroupInfoLayout(group: VKGroup?) {
+        Log.v(TAG, "GUB updateGroupInfoLayout: group=$group")
         groupInfoLayout.group = group
     }
 

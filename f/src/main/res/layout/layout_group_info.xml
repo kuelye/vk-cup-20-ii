@@ -96,13 +96,15 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/leaveButton"
+        android:id="@+id/openButton"
+        android:background="@drawable/bg_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_standard_three_quarters"
         android:layout_marginBottom="@dimen/padding_standard_three_quarters"
         android:backgroundTint="@color/button_color"
         android:fontFamily="sans-serif-medium"
+        android:textAllCaps="false"
         android:text="@string/info_open"
         android:textColor="@color/title_light_color"
         android:textSize="16sp" />

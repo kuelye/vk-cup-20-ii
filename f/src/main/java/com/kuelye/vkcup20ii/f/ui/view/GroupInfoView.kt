@@ -1,10 +1,10 @@
 package com.kuelye.vkcup20ii.f.ui.view
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.view.View.*
 import android.widget.LinearLayout
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.formatTime
@@ -13,6 +13,7 @@ import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.NO_POSTS_DATE
 import kotlinx.android.synthetic.main.layout_group_info.view.*
 import kotlin.math.floor
+
 
 class GroupInfoView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -47,6 +48,11 @@ class GroupInfoView @JvmOverloads constructor(
             membersTextView.text = formatMembers(group!!)
             updateDescription(group!!)
             updateLastPost(group!!)
+            openButton.setOnClickListener {
+                val uri: Uri = Uri.parse("http://vk.com/${group!!.screenName}")
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -67,9 +73,12 @@ class GroupInfoView @JvmOverloads constructor(
             if (group.lastPostDate == NO_POSTS_DATE) {
                 lastPostTextView.text = context.getString(R.string.info_no_posts)
             } else {
-                lastPostTextView.text = String.format(context.getString(
-                    R.string.info_last_post_template,
-                    formatTime(context, group.lastPostDate!!)))
+                lastPostTextView.text = String.format(
+                    context.getString(
+                        R.string.info_last_post_template,
+                        formatTime(context, group.lastPostDate!!)
+                    )
+                )
             }
         }
     }
@@ -80,7 +89,11 @@ class GroupInfoView @JvmOverloads constructor(
             group.membersCount < 1000000 -> "${formatShort(group.membersCount.toFloat() / 1000)}K"
             else -> "${group.membersCount / 1000000}M"
         }
-        return String.format(context.getString(R.string.info_members_template), membersCount, group.friendsCount)
+        return String.format(
+            context.getString(R.string.info_members_template),
+            membersCount,
+            group.friendsCount
+        )
     }
 
     private fun formatShort(value: Float): String =

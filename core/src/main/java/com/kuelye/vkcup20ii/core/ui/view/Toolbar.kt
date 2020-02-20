@@ -95,6 +95,7 @@ class Toolbar @JvmOverloads constructor(
     }
 
     private fun animate(targetHeight: Int) {
+        //Log.v(TAG, "animate: targetHeight=$targetHeight")
         if (actualHeight != null) {
             if (animator == null) {
                 animator = ValueAnimator().apply {
@@ -223,13 +224,7 @@ class Toolbar @JvmOverloads constructor(
             consumed: Boolean
         ): Boolean {
             if (consumed) flingVelocityY = velocityY
-            return if (!target.canScrollVertically(-1)) {
-                child.animate(child.getTargetHeightByVelocityY(velocityY))
-                ignoreScroll = true
-                true
-            } else {
-                false
-            }
+            return true
         }
 
         override fun onStopNestedScroll(

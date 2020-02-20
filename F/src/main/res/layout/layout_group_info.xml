@@ -28,8 +28,8 @@
         android:paddingBottom="@dimen/padding_standard_half">
 
         <ImageView
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
+            android:layout_width="@dimen/small_icon_size"
+            android:layout_height="@dimen/small_icon_size"
             android:layout_marginEnd="@dimen/padding_standard_three_quarters"
             android:src="@drawable/ic_followers_outline_20"
             android:tint="@color/icon_color" />
@@ -52,8 +52,8 @@
         android:paddingBottom="@dimen/padding_standard_half">
 
         <ImageView
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
+            android:layout_width="@dimen/small_icon_size"
+            android:layout_height="@dimen/small_icon_size"
             android:layout_marginEnd="@dimen/padding_standard_three_quarters"
             android:src="@drawable/ic_article_outline_20"
             android:tint="#99A2AD" />
@@ -80,8 +80,8 @@
         tools:visibility="visible">
 
         <ImageView
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
+            android:layout_width="@dimen/small_icon_size"
+            android:layout_height="@dimen/small_icon_size"
             android:layout_marginEnd="@dimen/padding_standard_three_quarters"
             android:src="@drawable/ic_newsfeed_outline_20"
             android:tint="#99A2AD" />

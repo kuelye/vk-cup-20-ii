@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_standard_double">32dp</dimen>
+    <dimen name="padding_standard_one_and_half">24dp</dimen>
     <dimen name="padding_standard">16dp</dimen>
     <dimen name="padding_standard_three_quarters">12dp</dimen>
     <dimen name="padding_standard_half">8dp</dimen>
 
     <dimen name="avatar_size">100dp</dimen>
-    <dimen name="icon_size">20dp</dimen>
+    <dimen name="small_icon_size">20dp</dimen>
+    <dimen name="large_icon_size">56dp</dimen>
     <dimen name="button_corner_radius">8dp</dimen>
     <dimen name="bottom_sheet_corner_radius">12dp</dimen>
 </resources>

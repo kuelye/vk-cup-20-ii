@@ -1,34 +1,29 @@
-package com.kuelye.vkcup20ii.f.ui
+package com.kuelye.vkcup20ii.f.ui.activity
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.ui.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
-import com.kuelye.vkcup20ii.f.api.VKGroupsRequest
+import com.kuelye.vkcup20ii.f.data.GroupRepository
 import com.kuelye.vkcup20ii.f.model.VKGroup
+import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
 import com.squareup.picasso.Picasso
-import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
-import com.vk.api.sdk.auth.VKAccessToken
-import com.vk.api.sdk.auth.VKAuthCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
 import com.vk.api.sdk.utils.VKUtils.dp
-import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_leave_group.*
-import kotlinx.android.synthetic.main.layout_group_item.*
 import kotlin.math.floor
 
 const val PLACEHOLDER_COLOR = 0xFFECEDF1.toInt()
@@ -40,8 +35,7 @@ class LeaveGroupsActivity : BaseActivity() {
         private const val EXTRA_SELECTED_GROUPS_IDS = "SELECTED_GROUPS_IDS"
     }
 
-    lateinit var adapter: Adapter
-
+    private lateinit var adapter: Adapter
     private val selectedGroupsIds = mutableSetOf<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +47,44 @@ class LeaveGroupsActivity : BaseActivity() {
             if (ids != null) selectedGroupsIds.addAll(ids.toTypedArray())
         }
 
+        initializeLayout()
+        updateLeaveLayout()
+    }
+
+    override fun onLoggedIn() {
+        requestGroups()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLongArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toLongArray())
+    }
+
+    private fun requestGroups() {
+        GroupRepository.getGroups(object : VKApiCallback<List<VKGroup>> {
+            override fun success(result: List<VKGroup>) {
+                adapter.groups = result
+            }
+
+            override fun fail(error: VKApiExecutionException) {
+                // TODO
+            }
+        })
+    }
+
+    private fun requestGroup(groupId: Long) {
+        GroupRepository.getGroup(groupId, object : VKApiCallback<VKGroup> {
+            override fun success(result: VKGroup) {
+                updateGroupInfoLayout(result)
+            }
+
+            override fun fail(error: VKApiExecutionException) {
+                // TODO
+            }
+        })
+    }
+
+    private fun initializeLayout() {
         updateToolbarTitle(EXPANDED_STATE)
         toolbar.subtitle = getString(R.string.leave_subtitle)
         toolbar.onExpandedStateChangedListener = { state -> updateToolbarTitle(state) }
@@ -61,50 +93,12 @@ class LeaveGroupsActivity : BaseActivity() {
         val totalWidth = VKUtils.width(this) - paddingStandard * 2
         val itemWidth = dimen(this, R.dimen.group_item_width)
         val spanCount = floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
-        val space = (totalWidth - spanCount * itemWidth) / (spanCount - 1)
+        val horizontalSpace = (totalWidth - spanCount * itemWidth) / (spanCount - 1)
 
         adapter = Adapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(this, spanCount)
-        recyclerView.addItemDecoration(HorizontalSpaceItemDecoration(space, spanCount))
-
-        updateLeaveLayout()
-    }
-
-    override fun onLoggedIn() {
-        checkGroups()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val callback = object : VKAuthCallback {
-            override fun onLogin(token: VKAccessToken) {
-                checkGroups()
-            }
-
-            override fun onLoginFailed(errorCode: Int) {
-                Log.w(TAG, "onLoginFailed: errorCode=$errorCode")
-            }
-        }
-        if (data == null || !VK.onActivityResult(requestCode, resultCode, data, callback)) {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLongArray(EXTRA_SELECTED_GROUPS_IDS, selectedGroupsIds.toLongArray())
-    }
-
-    private fun checkGroups() {
-        VK.execute(VKGroupsRequest(), object : VKApiCallback<List<VKGroup>> {
-            override fun success(result: List<VKGroup>) {
-                adapter.groups = result.filter { it.member }
-            }
-
-            override fun fail(error: VKApiExecutionException) {
-                Log.w(TAG, "fail: error=$error")
-            }
-        })
+        recyclerView.addItemDecoration(SpaceItemDecoration(horizontalSpace, dp(12), spanCount))
     }
 
     private fun updateLeaveLayout() {
@@ -115,7 +109,11 @@ class LeaveGroupsActivity : BaseActivity() {
         toolbar.title = getString(if (expandedState == COLLAPSED_STATE) R.string.leave_title_collapsed else R.string.leave_title_expanded)
     }
 
-    inner class Adapter(context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+    private fun updateGroupInfoLayout(group: VKGroup) {
+        groupInfoLayout.group = group
+    }
+
+    private inner class Adapter(context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -135,7 +133,7 @@ class LeaveGroupsActivity : BaseActivity() {
             holder.fill(group)
             updateBySelected(holder, group, false)
 
-            holder.containerView.setOnClickListener {
+            holder.itemView.setOnClickListener {
                 if (selectedGroupsIds.contains(group.id)) {
                     selectedGroupsIds.remove(group.id)
                 } else {
@@ -145,8 +143,9 @@ class LeaveGroupsActivity : BaseActivity() {
                 updateBySelected(holder, group, true)
             }
 
-            holder.containerView.setOnLongClickListener {
+            holder.itemView.setOnLongClickListener {
                 bottomSheetLayout.switch(R.id.groupInfoLayout)
+                requestGroup(group.id)
                 true
             }
         }
@@ -155,9 +154,12 @@ class LeaveGroupsActivity : BaseActivity() {
             holder.setSelected(selectedGroupsIds.contains(group.id), animate)
         }
 
-        inner class ViewHolder(
-            override val containerView: View
-        ) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            private val nameTextView =
+                itemView.findViewById<TextView>(R.id.nameTextView)
+            private val photoImageView =
+                itemView.findViewById<SelectableCircleImageView>(R.id.photoImageView)
 
             fun setSelected(selected: Boolean, animate: Boolean) {
                 if (animate) {
@@ -175,26 +177,6 @@ class LeaveGroupsActivity : BaseActivity() {
                 nameTextView.text = group.name
             }
 
-        }
-
-    }
-
-    class HorizontalSpaceItemDecoration(
-        private val space: Int,
-        private val spanCount: Int
-    ) : RecyclerView.ItemDecoration() {
-
-        private val spacePerSpan = space / spanCount
-
-        override fun getItemOffsets(
-            outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
-        ) {
-            val position = parent.getChildLayoutPosition(view)
-            val column = parent.getChildLayoutPosition(view) % spanCount
-            val row = position / spanCount
-            outRect.left = column * spacePerSpan
-            outRect.right = space - (column + 1) * spacePerSpan
-            if (row != 0) outRect.top = dp(12)
         }
 
     }

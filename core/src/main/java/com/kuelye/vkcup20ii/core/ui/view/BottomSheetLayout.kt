@@ -152,7 +152,7 @@ class BottomSheetLayout @JvmOverloads constructor(
         }
     }
 
-    private class LayoutParams : MarginLayoutParams {
+    private class LayoutParams(c: Context, attrs: AttributeSet) : MarginLayoutParams(c, attrs) {
 
         companion object {
             private const val SCRIM_ENABLED_DEFAULT = true
@@ -160,7 +160,7 @@ class BottomSheetLayout @JvmOverloads constructor(
 
         var scrimEnabled: Boolean = SCRIM_ENABLED_DEFAULT
 
-        constructor(c: Context, attrs: AttributeSet) : super(c, attrs) {
+        init {
             val a = c.obtainStyledAttributes(attrs, R.styleable.BottomSheetLayout_Layout)
             for (i in 0 until a.indexCount) {
                 when (val attr = a.getIndex(i)) {

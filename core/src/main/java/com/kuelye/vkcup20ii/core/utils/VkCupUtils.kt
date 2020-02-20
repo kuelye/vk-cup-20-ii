@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION.SDK_INT
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.*
@@ -19,6 +20,23 @@ fun dimen(context: Context, @DimenRes dimen: Int): Int =
     context.resources.getDimension(dimen).toInt()
 
 fun View.dimen(@DimenRes dimen: Int): Int = dimen(context, dimen)
+
+@ColorInt
+fun color(context: Context, @ColorRes color: Int): Int =
+    if (SDK_INT >= 23) context.getColor(color) else context.resources.getColor(color)
+
+@ColorInt
+fun View.color(@ColorRes color: Int): Int = color(context, color)
+
+@ColorInt
+fun themeColor(context: Context, @AttrRes attr: Int): Int {
+    val typedValue = TypedValue()
+    context.theme.resolveAttribute(attr, typedValue, true)
+    return color(context, typedValue.resourceId)
+}
+
+@ColorInt
+fun View.themeColor(@AttrRes attr: Int): Int = themeColor(context, attr)
 
 @Dimension
 fun View.themeDimen(@AttrRes res: Int): Int {

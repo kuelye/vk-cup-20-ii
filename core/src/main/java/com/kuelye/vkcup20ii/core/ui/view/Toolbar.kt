@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
 import android.view.View.MeasureSpec.makeMeasureSpec
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewOutlineProvider
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
@@ -119,7 +117,8 @@ class Toolbar @JvmOverloads constructor(
             else -> (actualHeight!! - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
         }
 
-        val translationX = ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * state + paddingStandard
+        val translationX =
+            ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * state + paddingStandard
         titleTextView.setPadding(0, (state * paddingStandard + paddingStandard).toInt(), 0, 0)
         titleTextView.translationX = translationX
 
@@ -181,13 +180,17 @@ class Toolbar @JvmOverloads constructor(
     private class Behavior : CoordinatorLayout.Behavior<Toolbar>() {
 
         private var flingVelocityY: Float? = null
+        private var ignoreScroll: Boolean = false
 
         override fun onStartNestedScroll(
             coordinatorLayout: CoordinatorLayout, child: Toolbar, directTargetChild: View,
             target: View, axes: Int, type: Int
         ): Boolean {
             val started = axes and SCROLL_AXIS_VERTICAL != 0
-            if (started && type == TYPE_TOUCH) child.animator?.cancel()
+            if (started && type == TYPE_TOUCH) {
+                child.animator?.cancel()
+                ignoreScroll = false
+            }
             return started
         }
 
@@ -195,7 +198,9 @@ class Toolbar @JvmOverloads constructor(
             coordinatorLayout: CoordinatorLayout, child: Toolbar, target: View,
             dx: Int, dy: Int, consumed: IntArray, type: Int
         ) {
-            if (dy > 0) consumed[1] = child.scroll(dy)
+            if (!ignoreScroll && dy > 0) {
+                consumed[1] = child.scroll(dy)
+            }
         }
 
         override fun onNestedScroll(
@@ -203,7 +208,9 @@ class Toolbar @JvmOverloads constructor(
             dxConsumed: Int, dyConsumed: Int,
             dxUnconsumed: Int, dyUnconsumed: Int, type: Int
         ) {
-            if (dyUnconsumed < 0) child.scroll(dyUnconsumed)
+            if (!ignoreScroll && dyUnconsumed < 0) {
+                child.scroll(dyUnconsumed)
+            }
         }
 
         override fun onNestedFling(
@@ -215,7 +222,13 @@ class Toolbar @JvmOverloads constructor(
             consumed: Boolean
         ): Boolean {
             if (consumed) flingVelocityY = velocityY
-            return false
+            return if (!target.canScrollVertically(-1)) {
+                child.animate(child.getTargetHeightByVelocityY(velocityY))
+                ignoreScroll = true
+                true
+            } else {
+                false
+            }
         }
 
         override fun onStopNestedScroll(
@@ -224,10 +237,15 @@ class Toolbar @JvmOverloads constructor(
             target: View,
             type: Int
         ) {
-            if (flingVelocityY == null && type == TYPE_TOUCH) child.animate(child.getNearestTargetHeight())
-            if (flingVelocityY != null && type == TYPE_NON_TOUCH) {
-                child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
-                flingVelocityY = null
+            if (!ignoreScroll) {
+                if (flingVelocityY == null && type == TYPE_TOUCH) {
+                    child.animate(child.getNearestTargetHeight())
+                } else if (flingVelocityY != null && type == TYPE_NON_TOUCH) {
+                    if (!target.canScrollVertically(-1)) {
+                        child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
+                    }
+                    flingVelocityY = null
+                }
             }
         }
 

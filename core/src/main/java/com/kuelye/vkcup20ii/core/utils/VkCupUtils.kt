@@ -12,9 +12,14 @@ import android.os.Build.VERSION.SDK_INT
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.*
+import com.kuelye.vkcup20ii.core.R
 import com.vk.api.sdk.utils.VKUtils
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.GregorianCalendar.YEAR
 import kotlin.math.ceil
 
+// # RESOURCES
 
 fun dimen(context: Context, @DimenRes dimen: Int): Int =
     context.resources.getDimension(dimen).toInt()
@@ -45,7 +50,7 @@ fun View.themeDimen(@AttrRes res: Int): Int {
     return typedValue.getDimension(context.resources.displayMetrics).toInt()
 }
 
-fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()
+// # DRAWABLE
 
 fun toBitmap(
     drawable: Drawable?
@@ -82,6 +87,8 @@ fun toBitmap(
     return bitmap
 }
 
+// # INTERPOLATE
+
 fun interpolate(state: Float, from: Float, to: Float): Float {
     return when (state) {
         0.0f -> from
@@ -112,6 +119,8 @@ fun interpolateColor(state: Float, @ColorInt from: Int, @ColorInt to: Int): Int 
     }
 }
 
+// # COLOR
+
 @ColorInt
 fun Int.modifyAlpha(factor: Float): Int = Color.argb(
     (Color.alpha(this) * factor).toInt(),
@@ -119,3 +128,43 @@ fun Int.modifyAlpha(factor: Float): Int = Color.argb(
     Color.green(this),
     Color.blue(this)
 )
+
+// # DATE
+
+private val LOCALE =
+    Locale.getAvailableLocales().firstOrNull { it.language == "ru" } ?: Locale.ENGLISH
+
+private val ONLY_DATE_FORMAT = SimpleDateFormat("d MMMM", LOCALE)
+private val DATE_WITH_YEAR_FORMAT = SimpleDateFormat("d MMMM yyyy", LOCALE)
+
+fun formatTime(context: Context, timestamp: Long): String {
+    return when {
+        isToday(timestamp) -> context.getString(R.string.a_today)
+        isSameYear(timestamp) -> ONLY_DATE_FORMAT.format(Date(timestamp))
+        else -> DATE_WITH_YEAR_FORMAT.format(Date(timestamp))
+    }
+}
+
+private fun isToday(timestamp: Long): Boolean {
+    val calendar = GregorianCalendar()
+    calendar.timeInMillis = timestamp
+    val thenYear = calendar.get(YEAR)
+    val thenMonth = calendar.get(Calendar.MONTH)
+    val thenDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+    calendar.timeInMillis = System.currentTimeMillis()
+    return (thenYear == calendar.get(YEAR)
+            && thenMonth == calendar.get(Calendar.MONTH)
+            && thenDayOfMonth == calendar.get(Calendar.DAY_OF_MONTH))
+}
+
+private fun isSameYear(timestamp: Long): Boolean {
+    val calendar = GregorianCalendar()
+    calendar.timeInMillis = timestamp
+    val thenYear = calendar.get(YEAR)
+    calendar.timeInMillis = System.currentTimeMillis()
+    return thenYear == calendar.get(YEAR)
+}
+
+// # MISC
+
+fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()

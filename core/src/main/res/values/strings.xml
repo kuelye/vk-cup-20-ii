@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Core</string>
+    <string name="a_today">сегодня</string>
+    <string name="a_yesterday">вчера</string>
 </resources>

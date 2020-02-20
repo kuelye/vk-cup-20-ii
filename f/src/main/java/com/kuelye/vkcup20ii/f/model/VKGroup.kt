@@ -9,7 +9,8 @@ data class VKGroup(
     val isMember: Boolean,
     val photo200: String,
     val membersCount: Int,
-    var friendsCount: Int? = null
+    var friendsCount: Int? = null,
+    var lastPostDate: Long? = null
 ) {
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -20,6 +21,8 @@ data class VKGroup(
         const val IS_MEMBER_FIELD_KEY = "is_member"
         const val PHOTO_200_FIELD_KEY = "photo_200"
         const val MEMBERS_COUNT_FIELD_KEY = "members_count"
+
+        const val NO_POSTS_DATE = -1L
 
         fun parse(r: JSONObject): VKGroup {
             return VKGroup(

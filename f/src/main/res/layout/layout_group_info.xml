@@ -44,6 +44,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/descriptionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -69,12 +70,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/lastPostLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/padding_standard_three_quarters"
         android:orientation="horizontal"
         android:paddingTop="@dimen/padding_standard_half"
-        android:paddingBottom="@dimen/padding_standard_half">
+        android:paddingBottom="@dimen/padding_standard_half"
+        tools:visibility="visible">
 
         <ImageView
             android:layout_width="@dimen/icon_size"

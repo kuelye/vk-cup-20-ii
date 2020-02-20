@@ -2,16 +2,16 @@ package com.kuelye.vkcup20ii.f.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.View.*
 import android.widget.LinearLayout
 import com.kuelye.vkcup20ii.core.utils.dimen
-import com.kuelye.vkcup20ii.core.utils.themeColor
+import com.kuelye.vkcup20ii.core.utils.formatTime
 import com.kuelye.vkcup20ii.f.R
 import com.kuelye.vkcup20ii.f.model.VKGroup
-import com.vk.api.sdk.VK
+import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.NO_POSTS_DATE
 import kotlinx.android.synthetic.main.layout_group_info.view.*
-import java.lang.Math.round
 import kotlin.math.floor
 
 class GroupInfoView @JvmOverloads constructor(
@@ -45,7 +45,32 @@ class GroupInfoView @JvmOverloads constructor(
         } else {
             nameTextView.text = group!!.name
             membersTextView.text = formatMembers(group!!)
-            descriptionTextView.text = group!!.description
+            updateDescription(group!!)
+            updateLastPost(group!!)
+        }
+    }
+
+    private fun updateDescription(group: VKGroup) {
+        if (group.description.isNullOrBlank()) {
+            descriptionLayout.visibility = GONE
+        } else {
+            descriptionLayout.visibility = VISIBLE
+            descriptionTextView.text = group.description
+        }
+    }
+
+    private fun updateLastPost(group: VKGroup) {
+        if (group.lastPostDate == null) {
+            lastPostTextView.visibility = GONE
+        } else {
+            lastPostTextView.visibility = VISIBLE
+            if (group.lastPostDate == NO_POSTS_DATE) {
+                lastPostTextView.text = context.getString(R.string.info_no_posts)
+            } else {
+                lastPostTextView.text = String.format(context.getString(
+                    R.string.info_last_post_template,
+                    formatTime(context, group.lastPostDate!!)))
+            }
         }
     }
 

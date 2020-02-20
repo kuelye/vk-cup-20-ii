@@ -4,6 +4,7 @@ import android.util.Log
 import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
+import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.NO_POSTS_DATE
 import com.vk.api.sdk.VKApiManager
 import com.vk.api.sdk.VKApiResponseParser
 import com.vk.api.sdk.VKMethodCall
@@ -19,7 +20,7 @@ class VKGroupRequest(private val groupId: Int) : ApiCommand<VKGroup?>() {
     }
 
     override fun onExecute(manager: VKApiManager): VKGroup? {
-        Log.v(TAG, "onExecute: groupId=$groupId")
+        //Log.v(TAG, "onExecute: groupId=$groupId")
         var call = VKMethodCall.Builder()
             .method("groups.getById")
             .args("group_id", groupId)
@@ -44,6 +45,26 @@ class VKGroupRequest(private val groupId: Int) : ApiCommand<VKGroup?>() {
         group.friendsCount = manager.execute(call, VKApiResponseParser { r ->
             try {
                 JSONObject(r).getJSONObject("response").getInt("count")
+            } catch (e: JSONException) {
+                throw VKApiIllegalResponseException(e)
+            }
+        })
+
+        call = VKMethodCall.Builder()
+            .method("wall.get")
+            .args("owner_id", -groupId)
+            .args("count", 2)
+            .version(manager.config.version)
+            .build()
+        group.lastPostDate = manager.execute(call, VKApiResponseParser { r ->
+            try {
+                val posts = JSONObject(r).getJSONObject("response").getJSONArray("items")
+                var lastPostDate = NO_POSTS_DATE
+                for (i in 0 until posts.length()) {
+                    val date = posts.getJSONObject(i).getLong("date")
+                    if (date > lastPostDate) lastPostDate = date
+                }
+                if (lastPostDate < 0) lastPostDate else lastPostDate * 1000
             } catch (e: JSONException) {
                 throw VKApiIllegalResponseException(e)
             }

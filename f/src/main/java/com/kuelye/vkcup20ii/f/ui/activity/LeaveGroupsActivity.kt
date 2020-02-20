@@ -67,8 +67,8 @@ class LeaveGroupsActivity : BaseActivity() {
                 adapter.groups = result
             }
 
-            override fun fail(error: VKApiExecutionException) {
-                // TODO
+            override fun fail(e: VKApiExecutionException) {
+                Log.e(TAG, "requestGroups>fail", e) // TODO
             }
         })
     }
@@ -79,8 +79,8 @@ class LeaveGroupsActivity : BaseActivity() {
                 updateGroupInfoLayout(result)
             }
 
-            override fun fail(error: VKApiExecutionException) {
-                // TODO
+            override fun fail(e: VKApiExecutionException) {
+                Log.e(TAG, "requestGroup>fail", e) // TODO
             }
         })
     }

@@ -6,4 +6,6 @@
     <string name="info_open">Открыть</string>
     <string name="info_leave">Отписаться</string>
     <string name="info_members_template">%s подписчиков · %s друзей</string>
+    <string name="info_last_post_template">Последняя запись %s</string>
+    <string name="info_no_posts">Нет записей</string>
 </resources>

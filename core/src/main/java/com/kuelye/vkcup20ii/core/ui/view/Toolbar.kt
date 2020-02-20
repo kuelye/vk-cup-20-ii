@@ -190,6 +190,7 @@ class Toolbar @JvmOverloads constructor(
             if (started && type == TYPE_TOUCH) {
                 child.animator?.cancel()
                 ignoreScroll = false
+                flingVelocityY = null
             }
             return started
         }
@@ -244,7 +245,6 @@ class Toolbar @JvmOverloads constructor(
                     if (!target.canScrollVertically(-1)) {
                         child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
                     }
-                    flingVelocityY = null
                 }
             }
         }

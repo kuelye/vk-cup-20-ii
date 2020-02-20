@@ -20,6 +20,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/padding_standard_half"
         android:paddingStart="@dimen/padding_standard"
         android:paddingEnd="@dimen/padding_standard"
         android:scrollbarStyle="outsideOverlay"
@@ -29,14 +31,14 @@
     <com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
         android:id="@+id/bottomSheetLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:elevation="4dp">
 
         <FrameLayout
             android:id="@+id/leaveLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:windowBackground"
-            android:elevation="4dp"
             app:layout_scrimEnabled="false">
 
             <Button
@@ -59,7 +61,6 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_bottom_sheet"
             android:clickable="true"
-            android:elevation="8dp"
             android:focusable="true"
             android:orientation="vertical"
             android:paddingStart="@dimen/padding_standard"

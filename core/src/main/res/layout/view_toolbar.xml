@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:parentTag="android.widget.RelativeLayout">
 
     <TextView
         android:id="@+id/subtitleTextView"

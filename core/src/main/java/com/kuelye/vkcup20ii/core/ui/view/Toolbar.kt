@@ -4,7 +4,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Outline
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
@@ -19,7 +18,7 @@ import androidx.core.view.ViewCompat.TYPE_TOUCH
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeDimen
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
+import kotlinx.android.synthetic.main.view_toolbar.view.*
 
 class Toolbar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -60,7 +59,7 @@ class Toolbar @JvmOverloads constructor(
         }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_toolbar, this, true)
+        LayoutInflater.from(context).inflate(R.layout.view_toolbar, this, true)
     }
 
     private var animator: ValueAnimator? = null

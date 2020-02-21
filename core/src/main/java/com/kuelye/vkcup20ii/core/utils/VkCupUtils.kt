@@ -1,5 +1,7 @@
 package com.kuelye.vkcup20ii.core.utils
 
+import android.app.Activity
+import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
@@ -11,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
 import com.kuelye.vkcup20ii.core.R
 import com.vk.api.sdk.utils.VKUtils
@@ -18,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.GregorianCalendar.YEAR
 import kotlin.math.ceil
+
 
 // # RESOURCES
 
@@ -165,3 +169,9 @@ private fun isSameYear(timestamp: Long): Boolean {
 // # MISC
 
 fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()
+
+fun hideKeyboard(context: Context, view: View) {
+    val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+    view.clearFocus()
+}

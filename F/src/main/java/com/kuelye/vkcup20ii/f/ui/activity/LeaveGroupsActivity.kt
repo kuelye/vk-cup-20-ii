@@ -111,7 +111,7 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun updateGroupInfoLayout(group: VKGroup?) {
-        Log.v(TAG, "GUB updateGroupInfoLayout: group=$group")
+        //Log.v(TAG, "GUB updateGroupInfoLayout: group=$group")
         groupInfoLayout.group = group
     }
 

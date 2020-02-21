@@ -20,7 +20,7 @@ class VKGroupRequest(private val groupId: Int) : ApiCommand<VKGroup?>() {
     }
 
     override fun onExecute(manager: VKApiManager): VKGroup? {
-        Log.v(TAG, "onExecute: groupId=$groupId")
+        //Log.v(TAG, "onExecute: groupId=$groupId")
         var call = VKMethodCall.Builder()
             .method("groups.getById")
             .args("group_id", groupId)

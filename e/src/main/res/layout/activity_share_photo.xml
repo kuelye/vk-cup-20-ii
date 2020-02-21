@@ -95,10 +95,11 @@
                     android:textColorHint="@color/hint_color"
                     android:textSize="16sp" />
 
-                <ImageView
+                <com.kuelye.vkcup20ii.e.ui.view.RatioImageView
                     android:id="@+id/photoImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="218dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
                     android:layout_marginBottom="@dimen/padding_standard_one_and_half"
                     android:background="#999" />
 

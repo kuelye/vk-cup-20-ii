@@ -112,7 +112,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
-        Log.v(TAG, "onNestedPreScroll: $dy, $state, $target")
+        //Log.v(TAG, "onNestedPreScroll: $dy, $state, $target")
         if (bottomSheet == null || ignoreNestedScroll) return
         if (dy > 0 && state != EXPANDED_STATE) {
             setScrollY(clampScrollY(bottomSheet!!.translationY - dy))
@@ -124,7 +124,6 @@ class BottomSheetLayout @JvmOverloads constructor(
         target: View, dxConsumed: Int, dyConsumed: Int,
         dxUnconsumed: Int, dyUnconsumed: Int, type: Int
     ) {
-        Log.v(TAG, "onNestedScroll")
         if (bottomSheet == null || ignoreNestedScroll) return
         setScrollY(clampScrollY(bottomSheet!!.translationY - dyUnconsumed))
     }
@@ -185,7 +184,7 @@ class BottomSheetLayout @JvmOverloads constructor(
                 override fun onScroll(
                     e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float
                 ): Boolean {
-                    Log.v(TAG, "onScroll: $distanceY, $nestedScrollStarted")
+                    //Log.v(TAG, "onScroll: $distanceY, $nestedScrollStarted")
                     if (!nestedScrollStarted) setScrollY(clampScrollY(bottomSheet!!.translationY - distanceY))
                     return true
                 }
@@ -210,7 +209,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     private fun setScrollY(scrollY: Float) {
-        Log.v(TAG, "setScrollY: $scrollY")
+        //Log.v(TAG, "setScrollY: $scrollY")
         if (bottomSheet == null) return
         animator?.cancel()
         animatorToState = null

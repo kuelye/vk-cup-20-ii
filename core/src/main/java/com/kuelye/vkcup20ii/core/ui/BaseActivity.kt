@@ -1,7 +1,14 @@
 package com.kuelye.vkcup20ii.core.ui
 
 import android.content.Intent
+import android.graphics.Color.TRANSPARENT
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
@@ -15,6 +22,20 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     abstract fun onLoggedIn()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window.apply {
+            clearFlags(FLAG_TRANSLUCENT_STATUS)
+            addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            var systemUiFlags = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            if (SDK_INT >= 23) {
+                systemUiFlags = systemUiFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+            decorView.systemUiVisibility = systemUiFlags
+            statusBarColor = TRANSPARENT
+        }
+    }
 
     override fun onResume() {
         super.onResume()

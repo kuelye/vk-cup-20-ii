@@ -1,50 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_standard_double"
-    android:paddingRight="@dimen/padding_standard_double"
     tools:context=".ui.activity.SharePhotoActivity">
 
-    <ImageView
-        android:layout_width="@dimen/large_icon_size"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/padding_standard_three_quarters"
-        android:src="@drawable/ic_share_outline_56"
-        android:tint="@color/icon_color" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_standard_double"
+        android:paddingRight="@dimen/padding_standard_double">
 
-    <TextView
-        android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="@dimen/large_icon_size"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/ic_share_outline_56"
+            android:tint="@color/icon_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_standard_half"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_horizontal"
+            android:text="@string/share_photo_title"
+            android:textColor="@color/title_color"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_standard_one_and_half"
+            android:gravity="center_horizontal"
+            android:text="@string/share_photo_subtitle"
+            android:textColor="@color/subtitle_color"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/chooseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/small_button_height"
+            android:background="@drawable/bg_button"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/padding_standard"
+            android:paddingEnd="@dimen/padding_standard"
+            android:text="@string/share_photo_choose_photo"
+            android:textAllCaps="false"
+            android:textColor="@color/title_light_color"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
+        android:background="@drawable/bg_bottom_sheet"
         android:gravity="center_horizontal"
-        android:text="@string/share_photo_title"
-        android:textColor="@color/title_color"
-        android:layout_marginBottom="@dimen/padding_standard_half"
-        android:textSize="20sp" />
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_standard"
+        android:paddingTop="@dimen/padding_standard"
+        android:paddingRight="@dimen/padding_standard"
+        android:paddingBottom="@dimen/padding_standard_three_quarters"
+        tools:layout_expanded="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/share_photo_subtitle"
-        android:textColor="@color/subtitle_color"
-        android:layout_marginBottom="@dimen/padding_standard_one_and_half"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/shareSheetTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/padding_standard"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/share_sheet_title"
+            android:textColor="@color/title_color"
+            android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/chooseButton"
-        android:background="@drawable/bg_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/share_photo_choose_photo"
-        android:paddingStart="@dimen/padding_standard"
-        android:paddingEnd="@dimen/padding_standard"
-        android:textAllCaps="false"
-        android:textSize="15sp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/title_light_color" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/dismissImageView"
+            android:background="@drawable/bg_circle_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_dismiss_24"
+            android:tint="@color/icon_color" />
+
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shareSheetTitleTextView"
+            android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+            android:hint="@string/share_sheet_add_comment" />
+
+        <ImageView
+            android:id="@+id/photoImageView"
+            android:layout_width="match_parent"
+            android:layout_height="218dp"
+            android:layout_below="@id/commentEditText"
+            android:layout_marginBottom="@dimen/padding_standard_one_and_half"
+            android:background="#999" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_below="@id/photoImageView"
+            android:background="@drawable/bg_button"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/padding_standard"
+            android:paddingEnd="@dimen/padding_standard"
+            android:text="@string/a_send"
+            android:textAllCaps="false"
+            android:textColor="@color/title_light_color"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout>

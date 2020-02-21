@@ -3,6 +3,7 @@
     <color name="background_color">#FFFFFF</color>
     <color name="title_light_color">#FFFFFF</color>
     <color name="title_color">#000000</color>
+    <color name="hint_color">#818C99</color>
     <color name="subtitle_color">#818C99</color>
     <color name="icon_color">#FF99A2AD</color>
     <color name="button_color">#4986CC</color>

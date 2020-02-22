@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color.BLACK
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity.BOTTOM
 import android.view.MotionEvent
@@ -44,6 +45,8 @@ class BottomSheetLayout @JvmOverloads constructor(
         get() = state == EXPANDED_STATE
 
     private var bottomSheet: View? = null
+    private var lastNestedChild: View? = null
+
     private var gestureDetector: GestureDetectorCompat? = null
     private val scrollingParentHelper = NestedScrollingParentHelper(this)
     private var outsideTouch: Boolean = false
@@ -113,6 +116,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     override fun onNestedScrollAccepted(child: View, target: View, axes: Int, type: Int) {
+        lastNestedChild = child
         scrollingParentHelper.onNestedScrollAccepted(child, target, axes, type)
     }
 
@@ -202,7 +206,7 @@ class BottomSheetLayout @JvmOverloads constructor(
                     e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float
                 ): Boolean {
                     ignoreNestedScroll = true
-                    animateExpanded(velocityY < 0)
+                    if (lastNestedChild?.canScrollVertically(-1) != true) animateExpanded(velocityY < 0)
                     return true
                 }
             })

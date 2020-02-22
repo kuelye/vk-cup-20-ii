@@ -21,6 +21,8 @@ class BottomSheet @JvmOverloads constructor(
     private val scrollingParentHelper = NestedScrollingParentHelper(this)
     private val scrollingChildHelper = NestedScrollingChildHelper(this)
 
+    private var lastNestedChild: View? = null
+
     private var toolbar: BottomSheetToolbar? = null
     private var animator: ValueAnimator? = null
     private var animatorToElevation: Float? = null
@@ -39,6 +41,7 @@ class BottomSheet @JvmOverloads constructor(
     }
 
     override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
+        lastNestedChild = child
         return axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0
     }
 
@@ -96,6 +99,10 @@ class BottomSheet @JvmOverloads constructor(
             dxConsumed, dyConsumed,
             dxUnconsumed, dyUnconsumed, offsetInWindow, type
         )
+    }
+
+    override fun canScrollVertically(direction: Int): Boolean {
+        return lastNestedChild?.canScrollVertically(direction) ?: super.canScrollVertically(direction)
     }
 
     private fun animateToolbarElevation(elevation: Float) {

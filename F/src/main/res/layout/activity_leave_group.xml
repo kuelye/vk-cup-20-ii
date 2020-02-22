@@ -48,7 +48,7 @@
                 android:layout_marginTop="@dimen/padding_standard_three_quarters"
                 android:layout_marginRight="@dimen/padding_standard"
                 android:layout_marginBottom="@dimen/padding_standard_three_quarters"
-                android:backgroundTint="@color/button_color"
+                android:backgroundTint="@color/button_color_default"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/info_open"
                 android:textColor="@color/title_light_color"

@@ -34,6 +34,7 @@ class SharePhotoActivity : BaseActivity() {
     }
 
     private var photoUri: Uri? = null
+    private var yetCollapsed: Boolean = false
 
     override fun onBackPressed() {
         if (bottomSheetLayout.expanded) {
@@ -72,7 +73,12 @@ class SharePhotoActivity : BaseActivity() {
         chooseButton.setOnClickListener { pickPhoto() }
         shareSheetToolbar.title = getString(R.string.share_sheet_title)
         shareSheetToolbar.dismissImageView.setOnClickListener { bottomSheetLayout.dismiss() }
-        bottomSheetLayout.onCollapsedListener = { hideKeyboard(this, commentEditText) }
+        bottomSheetLayout.onCollapsedListener = {
+            hideKeyboard(this, commentEditText)
+            setShareEnabled(true)
+            commentEditText.text = null
+            yetCollapsed = true
+        }
     }
 
     private fun pickPhoto() {
@@ -88,15 +94,22 @@ class SharePhotoActivity : BaseActivity() {
 
     private fun wallPost(photoUri: Uri) {
         val comment = commentEditText.text.toString()
+        setShareEnabled(false)
+        yetCollapsed = false
         VK.execute(VKWallPostCommand(this, comment, photoUri), object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                Log.v(TAG, "wallPost>success: result=$result") // TODO
+                if (!yetCollapsed) bottomSheetLayout.animateExpanded(false)
             }
 
             override fun fail(e: VKApiExecutionException) {
                 Log.v(TAG, "wallPost>fail", e) // TODO
             }
         })
+    }
+
+    private fun setShareEnabled(enabled: Boolean) {
+        commentEditText.isEnabled = enabled
+        sendButton.isEnabled = enabled
     }
 
 }

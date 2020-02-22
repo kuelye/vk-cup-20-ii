@@ -148,8 +148,6 @@ class BottomSheetLayout @JvmOverloads constructor(
         val toState = getStateByExpanded(expanded)
         //Log.v(TAG, "animateExpanded: $expanded, $state, $toState, $animatorToState")
         if (state != toState && animatorToState != toState) {
-            if (toState == COLLAPSED_STATE) onCollapsedListener?.invoke()
-
             val fromState = state
             if (animator == null) {
                 animator = ValueAnimator().apply {

@@ -45,7 +45,7 @@
             android:id="@+id/chooseButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/small_button_height"
-            android:background="@drawable/bg_button"
+            android:background="@drawable/bg_button_default"
             android:fontFamily="sans-serif-medium"
             android:paddingStart="@dimen/padding_standard"
             android:paddingEnd="@dimen/padding_standard"
@@ -91,7 +91,7 @@
                     android:paddingTop="@dimen/padding_standard_quarter"
                     android:paddingEnd="@dimen/padding_standard_three_quarters"
                     android:paddingBottom="@dimen/padding_standard_three_quarters"
-                    android:textColor="@color/title_color"
+                    android:textColor="@color/edit_text_text_color"
                     android:textColorHint="@color/hint_color"
                     android:textSize="16sp" />
 

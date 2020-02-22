@@ -4,11 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color.BLACK
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
-import android.view.AbsSavedState.EMPTY_STATE
 import android.view.GestureDetector
 import android.view.Gravity.BOTTOM
 import android.view.MotionEvent
@@ -19,12 +15,12 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.core.math.MathUtils.clamp
-import androidx.core.view.*
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.NestedScrollingParent2
+import androidx.core.view.NestedScrollingParentHelper
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.modifyAlpha
-import kotlinx.android.parcel.Parcelize
 import kotlin.math.absoluteValue
-import kotlin.math.exp
 
 class BottomSheetLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -50,6 +46,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     private var bottomSheet: View? = null
     private var gestureDetector: GestureDetectorCompat? = null
     private val scrollingParentHelper = NestedScrollingParentHelper(this)
+    private var outsideTouch: Boolean = false
     private var ignoreNestedScroll: Boolean = false
     private var nestedScrollStarted: Boolean = false
     private var animator: ValueAnimator? = null
@@ -93,14 +90,19 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         return if (state != COLLAPSED_STATE && ev.y < scrimBottom && ev.action == ACTION_DOWN) {
-            animateExpanded(false)
+            outsideTouch = true
             true
         } else {
             if (ev.action == ACTION_UP) {
-                ignoreNestedScroll = true
-                if (animator?.isRunning == false) animateExpanded(getNearestExpanded(state))
+                if (outsideTouch) {
+                    animateExpanded(false)
+                    outsideTouch = false
+                } else {
+                    ignoreNestedScroll = true
+                    if (animator?.isRunning == false) animateExpanded(getNearestExpanded(state))
+                }
             }
-            gestureDetector?.onTouchEvent(ev)
+            if (!outsideTouch) gestureDetector?.onTouchEvent(ev)
             super.dispatchTouchEvent(ev)
         }
     }
@@ -180,7 +182,8 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     private fun initializeGestures() {
-        gestureDetector = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+        gestureDetector =
+            GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onDown(e: MotionEvent?): Boolean {
                     if (bottomSheet == null) return false
                     ignoreNestedScroll = false
@@ -219,7 +222,8 @@ class BottomSheetLayout @JvmOverloads constructor(
         if (bottomSheet == null) return
         animator?.cancel()
         animatorToState = null
-        state = (bottomSheet!!.measuredHeight - scrollY.absoluteValue) / bottomSheet!!.measuredHeight
+        state =
+            (bottomSheet!!.measuredHeight - scrollY.absoluteValue) / bottomSheet!!.measuredHeight
         updateBottomSheet()
         updateScrim()
     }

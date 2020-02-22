@@ -29,19 +29,39 @@ class SharePhotoActivity : BaseActivity() {
 
     companion object {
         private val TAG = SharePhotoActivity::class.java.simpleName
+        private const val EXTRA_PHOTO_URI = "PHOTO_URI"
         private const val PICK_PHOTO_REQUEST_CODE = 1
+    }
+
+    private var photoUri: Uri? = null
+
+    override fun onBackPressed() {
+        if (bottomSheetLayout.expanded) {
+            bottomSheetLayout.animateExpanded(false)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        photoUri = savedInstanceState?.getParcelable(EXTRA_PHOTO_URI)
         setContentView(R.layout.activity_share_photo)
         initializeLayout()
+        Log.v(TAG, "onCreate: $photoUri")
+        if (photoUri != null) showShareSheet(photoUri!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(EXTRA_PHOTO_URI, photoUri)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == PICK_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK && intent != null && intent.data != null) {
-                showShareSheet(intent.data!!)
+                photoUri = intent.data!!
+                showShareSheet(photoUri!!)
             } else {
                 // TODO
             }
@@ -62,7 +82,7 @@ class SharePhotoActivity : BaseActivity() {
 
     private fun showShareSheet(photoUri: Uri) {
         photoImageView.setImageURI(photoUri)
-        bottomSheetLayout.switch()
+        bottomSheetLayout.animateExpanded(true)
         sendButton.setOnClickListener {wallPost(photoUri) }
     }
 

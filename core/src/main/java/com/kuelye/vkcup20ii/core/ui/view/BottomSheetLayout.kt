@@ -4,8 +4,11 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color.BLACK
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
+import android.view.AbsSavedState.EMPTY_STATE
 import android.view.GestureDetector
 import android.view.Gravity.BOTTOM
 import android.view.MotionEvent
@@ -19,7 +22,9 @@ import androidx.core.math.MathUtils.clamp
 import androidx.core.view.*
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.modifyAlpha
+import kotlinx.android.parcel.Parcelize
 import kotlin.math.absoluteValue
+import kotlin.math.exp
 
 class BottomSheetLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -38,6 +43,9 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     var onCollapsedListener: (() -> Unit)? = null
+
+    val expanded: Boolean
+        get() = state == EXPANDED_STATE
 
     private var bottomSheet: View? = null
     private var gestureDetector: GestureDetectorCompat? = null

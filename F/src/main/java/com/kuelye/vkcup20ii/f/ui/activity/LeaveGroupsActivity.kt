@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.ui.BaseActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
@@ -21,6 +22,7 @@ import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
+import com.vk.api.sdk.auth.VKScope
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
 import com.vk.api.sdk.utils.VKUtils.dp
@@ -38,6 +40,10 @@ class LeaveGroupsActivity : BaseActivity() {
 
     private lateinit var adapter: Adapter
     private val selectedGroupsIds = mutableSetOf<Int>()
+
+    init {
+        Config.scopes = listOf(VKScope.GROUPS)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

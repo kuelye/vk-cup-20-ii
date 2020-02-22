@@ -1,16 +1,16 @@
-package com.kuelye.vkcup20ii.f.api
+package com.kuelye.vkcup20ii.core.api
 
-import com.kuelye.vkcup20ii.f.model.VKGroup
-import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
-import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 
-class VKGroupsRequest : VKRequest<List<VKGroup>>("groups.get") {
+class VKGroupsRequest(
+    extendedFields: Array<String>? = null
+) : VKRequest<List<VKGroup>>("groups.get") {
 
     init {
         addParam("extended", 1)
-        addParam("fields", "$DESCRIPTION_FIELD_KEY,$MEMBERS_COUNT_FIELD_KEY")
+        extendedFields?.let { addParam("fields", extendedFields.joinToString(",")) }
     }
 
     override fun parse(r: JSONObject): List<VKGroup> {

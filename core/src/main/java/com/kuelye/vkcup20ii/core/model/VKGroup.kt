@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.f.model
+package com.kuelye.vkcup20ii.core.model
 
 import org.json.JSONObject
 
@@ -6,10 +6,10 @@ data class VKGroup(
     val id: Int,
     val name: String,
     val screenName: String,
-    val description: String,
     val isMember: Boolean,
     val photo200: String,
-    val membersCount: Int,
+    val description: String? = null,
+    val membersCount: Int? = null,
     var friendsCount: Int? = null,
     var lastPostDate: Long? = null
 ) {
@@ -19,9 +19,9 @@ data class VKGroup(
         const val ID_FIELD_KEY = "id"
         const val NAME_FIELD_KEY = "name"
         const val SCREEN_NAME_FIELD_KEY = "screen_name"
-        const val DESCRIPTION_FIELD_KEY = "description"
         const val IS_MEMBER_FIELD_KEY = "is_member"
         const val PHOTO_200_FIELD_KEY = "photo_200"
+        const val DESCRIPTION_FIELD_KEY = "description"
         const val MEMBERS_COUNT_FIELD_KEY = "members_count"
 
         const val NO_POSTS_DATE = -1L
@@ -31,9 +31,9 @@ data class VKGroup(
                 id = jo.getInt(ID_FIELD_KEY),
                 name = jo.getString(NAME_FIELD_KEY),
                 screenName = jo.getString(SCREEN_NAME_FIELD_KEY),
-                description = jo.getString(DESCRIPTION_FIELD_KEY),
                 isMember = jo.getInt(IS_MEMBER_FIELD_KEY) == 1,
                 photo200 = jo.getString(PHOTO_200_FIELD_KEY),
+                description = jo.getString(DESCRIPTION_FIELD_KEY),
                 membersCount = jo.getInt(MEMBERS_COUNT_FIELD_KEY)
             )
         }

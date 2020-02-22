@@ -30,7 +30,7 @@ class SharePhotoActivity : BaseActivity() {
     companion object {
         private val TAG = SharePhotoActivity::class.java.simpleName
         private const val EXTRA_PHOTO_URI = "PHOTO_URI"
-        private const val PICK_PHOTO_REQUEST_CODE = 1
+        private const val PICK_PHOTO_REQUEST_CODE = 99
     }
 
     private var photoUri: Uri? = null

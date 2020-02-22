@@ -1,9 +1,11 @@
-package com.kuelye.vkcup20ii.f.data
+package com.kuelye.vkcup20ii.core.data
 
 import android.util.SparseArray
-import com.kuelye.vkcup20ii.f.api.VKGroupCommand
-import com.kuelye.vkcup20ii.f.api.VKGroupsRequest
-import com.kuelye.vkcup20ii.f.model.VKGroup
+import com.kuelye.vkcup20ii.core.api.VKGroupCommand
+import com.kuelye.vkcup20ii.core.api.VKGroupsRequest
+import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
@@ -18,7 +20,8 @@ object GroupRepository {
         if (groupsCache != null) {
             callback.success(groupsCache!!.toList())
         }
-        VK.execute(VKGroupsRequest(), object : VKApiCallback<List<VKGroup>> {
+        val additionalFields = arrayOf(DESCRIPTION_FIELD_KEY, MEMBERS_COUNT_FIELD_KEY)
+        VK.execute(VKGroupsRequest(additionalFields), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 ensureCache()
                 groupsCache!!.clear()

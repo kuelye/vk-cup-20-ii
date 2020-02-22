@@ -17,7 +17,7 @@ import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
-import com.kuelye.vkcup20ii.f.data.GroupRepository
+import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
 import com.squareup.picasso.Picasso

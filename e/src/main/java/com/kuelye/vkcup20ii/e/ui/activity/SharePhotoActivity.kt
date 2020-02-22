@@ -5,20 +5,31 @@ import android.content.Intent.ACTION_PICK
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.ui.BaseActivity
+import com.kuelye.vkcup20ii.core.utils.getImagePath
 import com.kuelye.vkcup20ii.core.utils.hideKeyboard
 import com.kuelye.vkcup20ii.e.R
+import com.kuelye.vkcup20ii.e.api.VKWallPostCommand
+import com.vk.api.sdk.VK
+import com.vk.api.sdk.VKApiCallback
+import com.vk.api.sdk.auth.VKScope
+import com.vk.api.sdk.auth.VKScope.PHOTOS
+import com.vk.api.sdk.auth.VKScope.WALL
+import com.vk.api.sdk.exceptions.VKApiExecutionException
 import kotlinx.android.synthetic.main.activity_share_photo.*
 
 
 class SharePhotoActivity : BaseActivity() {
 
-    companion object {
-        private const val PICK_PHOTO_REQUEST_CODE = 1
+    init {
+        Config.scopes = listOf(WALL, PHOTOS)
     }
 
-    override fun onLoggedIn() {
-
+    companion object {
+        private val TAG = SharePhotoActivity::class.java.simpleName
+        private const val PICK_PHOTO_REQUEST_CODE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +63,20 @@ class SharePhotoActivity : BaseActivity() {
     private fun showShareSheet(photoUri: Uri) {
         photoImageView.setImageURI(photoUri)
         bottomSheetLayout.switch()
+        sendButton.setOnClickListener {wallPost(photoUri) }
+    }
+
+    private fun wallPost(photoUri: Uri) {
+        val comment = commentEditText.text.toString()
+        VK.execute(VKWallPostCommand(this, comment, photoUri), object : VKApiCallback<Int> {
+            override fun success(result: Int) {
+                Log.v(TAG, "wallPost>success: result=$result") // TODO
+            }
+
+            override fun fail(e: VKApiExecutionException) {
+                Log.v(TAG, "wallPost>fail", e) // TODO
+            }
+        })
     }
 
 }

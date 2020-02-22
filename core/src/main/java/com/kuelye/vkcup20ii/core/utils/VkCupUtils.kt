@@ -1,8 +1,8 @@
 package com.kuelye.vkcup20ii.core.utils
 
-import android.app.Activity
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -10,13 +10,19 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
 import com.kuelye.vkcup20ii.core.R
 import com.vk.api.sdk.utils.VKUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.GregorianCalendar.YEAR
@@ -128,7 +134,8 @@ fun interpolateColor(state: Float, @ColorInt from: Int, @ColorInt to: Int): Int 
 @ColorInt
 fun Int.modifyAlpha(factor: Float): Int = Color.argb(
     (Color.alpha(this) * factor).toInt(), Color.red(this),
-    Color.green(this), Color.blue(this))
+    Color.green(this), Color.blue(this)
+)
 
 // # DATE
 
@@ -174,4 +181,27 @@ fun hideKeyboard(context: Context, view: View) {
     val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(view.windowToken, 0)
     view.clearFocus()
+}
+
+fun getImagePath(context: Context, imageUri: Uri): Uri? {
+    var input: FileInputStream? = null
+    var output: FileOutputStream? = null
+    try {
+        val pfd = context.contentResolver.openFileDescriptor(imageUri, "r") ?: return null
+        input = FileInputStream(pfd.fileDescriptor)
+
+        val outputFile = File.createTempFile("image", null, context.cacheDir)
+        output = FileOutputStream(outputFile.absolutePath)
+
+        input.copyTo(output)
+
+        return Uri.parse("file://" + outputFile.absolutePath)
+    } finally {
+        try {
+            input?.close()
+            output?.close()
+        } catch (e: Exception) {
+            // ignore
+        }
+    }
 }

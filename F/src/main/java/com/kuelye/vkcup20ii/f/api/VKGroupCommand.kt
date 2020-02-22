@@ -1,6 +1,5 @@
 package com.kuelye.vkcup20ii.f.api
 
-import android.util.Log
 import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
@@ -13,10 +12,12 @@ import com.vk.api.sdk.internal.ApiCommand
 import org.json.JSONException
 import org.json.JSONObject
 
-class VKGroupRequest(private val groupId: Int) : ApiCommand<VKGroup?>() {
+class VKGroupCommand(
+    private val groupId: Int
+) : ApiCommand<VKGroup?>() {
 
     companion object {
-        private val TAG = VKGroupRequest::class.java.simpleName
+        private val TAG = VKGroupCommand::class.java.simpleName
     }
 
     override fun onExecute(manager: VKApiManager): VKGroup? {

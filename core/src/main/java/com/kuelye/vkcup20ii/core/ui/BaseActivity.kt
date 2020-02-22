@@ -10,18 +10,20 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
+import com.kuelye.vkcup20ii.core.Config
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
-import com.vk.api.sdk.auth.VKScope
 
-abstract class BaseActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = BaseActivity::class.java.simpleName
     }
 
-    abstract fun onLoggedIn()
+    open fun onLoggedIn() {
+        // stub
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +63,7 @@ abstract class BaseActivity : AppCompatActivity() {
         if (VK.isLoggedIn()) {
             onLoggedIn()
         } else {
-            VK.login(this, arrayListOf(VKScope.GROUPS))
+            VK.login(this, Config.scopes)
         }
     }
 

@@ -26,15 +26,15 @@ data class VKGroup(
 
         const val NO_POSTS_DATE = -1L
 
-        fun parse(r: JSONObject): VKGroup {
+        fun parse(jo: JSONObject): VKGroup {
             return VKGroup(
-                id = r.getInt(ID_FIELD_KEY),
-                name = r.getString(NAME_FIELD_KEY),
-                screenName = r.getString(SCREEN_NAME_FIELD_KEY),
-                description = r.getString(DESCRIPTION_FIELD_KEY),
-                isMember = r.getInt(IS_MEMBER_FIELD_KEY) == 1,
-                photo200 = r.getString(PHOTO_200_FIELD_KEY),
-                membersCount = r.getInt(MEMBERS_COUNT_FIELD_KEY)
+                id = jo.getInt(ID_FIELD_KEY),
+                name = jo.getString(NAME_FIELD_KEY),
+                screenName = jo.getString(SCREEN_NAME_FIELD_KEY),
+                description = jo.getString(DESCRIPTION_FIELD_KEY),
+                isMember = jo.getInt(IS_MEMBER_FIELD_KEY) == 1,
+                photo200 = jo.getString(PHOTO_200_FIELD_KEY),
+                membersCount = jo.getInt(MEMBERS_COUNT_FIELD_KEY)
             )
         }
     }

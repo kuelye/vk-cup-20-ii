@@ -1,7 +1,7 @@
 package com.kuelye.vkcup20ii.f.data
 
 import android.util.SparseArray
-import com.kuelye.vkcup20ii.f.api.VKGroupRequest
+import com.kuelye.vkcup20ii.f.api.VKGroupCommand
 import com.kuelye.vkcup20ii.f.api.VKGroupsRequest
 import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.vk.api.sdk.VK
@@ -39,7 +39,7 @@ object GroupRepository {
         if (group != null) {
             callback.success(group)
         }
-        VK.execute(VKGroupRequest(groupId), object : VKApiCallback<VKGroup?> {
+        VK.execute(VKGroupCommand(groupId), object : VKApiCallback<VKGroup?> {
             override fun success(result: VKGroup?) {
                 ensureCache()
                 if (result == null) {

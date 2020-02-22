@@ -77,7 +77,9 @@ class SharePhotoActivity : BaseActivity() {
             hideKeyboard(this, commentEditText)
             setShareEnabled(true)
             commentEditText.text = null
+            bottomSheetLayout.scrollTo(0, 0)
             yetCollapsed = true
+            photoUri = null
         }
     }
 

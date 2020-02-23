@@ -22,7 +22,7 @@ class VKGroupsCommand(
 
     companion object {
         private val TAG = VKGroupsCommand::class.java.simpleName
-        private val ADDRESSES_COUNT_PER_REQUEST = 10
+        private const val ADDRESSES_COUNT_PER_REQUEST = 10
     }
 
     override fun onExecute(manager: VKApiManager): List<VKGroup> {
@@ -39,7 +39,6 @@ class VKGroupsCommand(
             for (group in groups) {
                 if (group.addressesEnabled == true) {
                     group.addresses = getAddresses(manager, group.id)
-                    Log.v(TAG, "onExecute: ${group.id}, ${group.addresses?.size}")
                 }
             }
         }

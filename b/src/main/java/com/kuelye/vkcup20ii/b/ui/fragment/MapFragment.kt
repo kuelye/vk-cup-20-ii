@@ -1,6 +1,7 @@
 package com.kuelye.vkcup20ii.b.ui.fragment
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.util.Log
@@ -14,11 +15,14 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.kuelye.vkcup20ii.b.R
+import com.kuelye.vkcup20ii.b.ui.misc.MarkerHolder
 import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.kuelye.vkcup20ii.core.model.VKGroup.Field.ADDRESSES
 import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
+import com.kuelye.vkcup20ii.core.utils.dimen
+import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -32,7 +36,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private var map: GoogleMap? = null
-    private val markers: SparseArray<Marker> by lazy { SparseArray<Marker>() }
+    private val markers: SparseArray<MarkerHolder> by lazy { SparseArray<MarkerHolder>() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,7 +130,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         GroupRepository.getGroups(GROUP_EXTENDED_FIELDS, "groups",
                 object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
-                showData(result)
+                updateMarkers(result)
             }
 
             override fun fail(e: VKApiExecutionException) {
@@ -135,17 +139,18 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         })
     }
 
-    private fun showData(groups: List<VKGroup>) {
+    private fun updateMarkers(groups: List<VKGroup>) {
         if (map == null) return
         for (group in groups) {
             if (group.addresses.isNullOrEmpty()) continue
             for (address in group.addresses!!) {
                 var marker = markers.get(group.id)
                 if (marker == null) {
-                    marker = map!!.addMarker(MarkerOptions().position(address.position))
+                    val options = MarkerOptions().position(address.position)
+                    marker = MarkerHolder(map!!.addMarker(options), group)
                     markers.put(address.id, marker)
                 } else {
-                    marker.position = address.position
+                    marker.marker.position = address.position
                 }
             }
         }

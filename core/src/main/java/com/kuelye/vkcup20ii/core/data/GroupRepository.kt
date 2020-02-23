@@ -4,8 +4,6 @@ import android.util.SparseArray
 import com.kuelye.vkcup20ii.core.api.VKGroupCommand
 import com.kuelye.vkcup20ii.core.api.VKGroupsRequest
 import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
@@ -16,12 +14,16 @@ object GroupRepository {
 
     private var groupsCache: SparseArray<VKGroup>? = null
 
-    fun getGroups(callback: VKApiCallback<List<VKGroup>>) {
+    fun getGroups(
+        extendedFields: Array<String>,
+        filter: String?,
+        callback: VKApiCallback<List<VKGroup>>
+    ) {
         if (groupsCache != null) {
             callback.success(groupsCache!!.toList())
         }
-        val additionalFields = arrayOf(DESCRIPTION_FIELD_KEY, MEMBERS_COUNT_FIELD_KEY)
-        VK.execute(VKGroupsRequest(additionalFields), object : VKApiCallback<List<VKGroup>> {
+        if (!VK.isLoggedIn()) return
+        VK.execute(VKGroupsRequest(extendedFields, filter), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 ensureCache()
                 groupsCache!!.clear()
@@ -42,6 +44,7 @@ object GroupRepository {
         if (group != null) {
             callback.success(group)
         }
+        if (!VK.isLoggedIn()) return
         VK.execute(VKGroupCommand(groupId), object : VKApiCallback<VKGroup?> {
             override fun success(result: VKGroup?) {
                 ensureCache()

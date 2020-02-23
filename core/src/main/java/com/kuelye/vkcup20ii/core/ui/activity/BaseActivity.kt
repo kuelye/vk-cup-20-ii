@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.ui
+package com.kuelye.vkcup20ii.core.ui.activity
 
 import android.content.Intent
 import android.graphics.Color.TRANSPARENT
@@ -15,15 +15,13 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
 
-open class BaseActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity(), OnLoginListener {
 
     companion object {
         private val TAG = BaseActivity::class.java.simpleName
     }
 
-    open fun onLoggedIn() {
-        // stub
-    }
+    val onLoginListeners: MutableList<OnLoginListener> by lazy { mutableListOf<OnLoginListener>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +45,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val callback = object : VKAuthCallback {
             override fun onLogin(token: VKAccessToken) {
-                onLoggedIn()
+                onLogin()
             }
 
             override fun onLoginFailed(errorCode: Int) {
@@ -59,12 +57,20 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    override fun onLogin() {
+        onLoginListeners.map { it.onLogin() }
+    }
+
     private fun checkLogin() {
         if (VK.isLoggedIn()) {
-            onLoggedIn()
+            onLogin()
         } else {
             VK.login(this, Config.scopes)
         }
     }
 
+}
+
+interface OnLoginListener {
+    fun onLogin()
 }

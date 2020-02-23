@@ -7,14 +7,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.ui.BaseActivity
-import com.kuelye.vkcup20ii.core.utils.getImagePath
+import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.utils.hideKeyboard
 import com.kuelye.vkcup20ii.e.R
 import com.kuelye.vkcup20ii.e.api.VKWallPostCommand
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
-import com.vk.api.sdk.auth.VKScope
 import com.vk.api.sdk.auth.VKScope.PHOTOS
 import com.vk.api.sdk.auth.VKScope.WALL
 import com.vk.api.sdk.exceptions.VKApiExecutionException

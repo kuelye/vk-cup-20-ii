@@ -11,18 +11,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.ui.BaseActivity
+import com.kuelye.vkcup20ii.core.data.GroupRepository
+import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
+import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
-import com.kuelye.vkcup20ii.core.data.GroupRepository
-import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
-import com.vk.api.sdk.auth.VKScope
+import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
 import com.vk.api.sdk.utils.VKUtils.dp
@@ -36,13 +38,14 @@ class LeaveGroupsActivity : BaseActivity() {
     companion object {
         private val TAG = LeaveGroupsActivity::class.java.simpleName
         private const val EXTRA_SELECTED_GROUPS_IDS = "SELECTED_GROUPS_IDS"
+        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION_FIELD_KEY, MEMBERS_COUNT_FIELD_KEY)
     }
 
     private lateinit var adapter: Adapter
     private val selectedGroupsIds = mutableSetOf<Int>()
 
     init {
-        Config.scopes = listOf(VKScope.GROUPS)
+        Config.scopes = listOf(GROUPS)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +61,8 @@ class LeaveGroupsActivity : BaseActivity() {
         updateLeaveLayout()
     }
 
-    override fun onLoggedIn() {
+    override fun onLogin() {
+        super.onLogin()
         requestGroups()
     }
 
@@ -68,7 +72,7 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun requestGroups() {
-        GroupRepository.getGroups(object : VKApiCallback<List<VKGroup>> {
+        GroupRepository.getGroups(GROUP_EXTENDED_FIELDS, object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 adapter.groups = result
             }

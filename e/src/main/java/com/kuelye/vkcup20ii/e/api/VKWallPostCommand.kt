@@ -2,16 +2,16 @@ package com.kuelye.vkcup20ii.e.api
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.kuelye.vkcup20ii.core.utils.getImagePath
 import com.kuelye.vkcup20ii.e.model.FileUploadInfo
-import com.vk.api.sdk.*
+import com.vk.api.sdk.VKApiManager
+import com.vk.api.sdk.VKApiResponseParser
+import com.vk.api.sdk.VKHttpPostCall
+import com.vk.api.sdk.VKMethodCall
 import com.vk.api.sdk.exceptions.VKApiIllegalResponseException
 import com.vk.api.sdk.internal.ApiCommand
-import com.vk.api.sdk.utils.VKUtils
 import org.json.JSONException
 import org.json.JSONObject
-import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit.MINUTES
 
@@ -112,8 +112,8 @@ class VKWallPostCommand(
                     jo.getInt("owner_id"),
                     jo.getInt("id")
                 )
-            } catch (ex: JSONException) {
-                throw VKApiIllegalResponseException(ex)
+            } catch (e: JSONException) {
+                throw VKApiIllegalResponseException(e)
             }
         }
     }

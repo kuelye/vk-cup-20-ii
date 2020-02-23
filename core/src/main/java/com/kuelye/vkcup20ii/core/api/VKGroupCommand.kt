@@ -1,9 +1,9 @@
 package com.kuelye.vkcup20ii.core.api
 
 import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
 import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.NO_POSTS_DATE
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.MEMBERS_COUNT
 import com.vk.api.sdk.VKApiManager
 import com.vk.api.sdk.VKApiResponseParser
 import com.vk.api.sdk.VKMethodCall
@@ -25,7 +25,7 @@ class VKGroupCommand(
         var call = VKMethodCall.Builder()
             .method("groups.getById")
             .args("group_id", groupId)
-            .args("fields", "$DESCRIPTION_FIELD_KEY,$MEMBERS_COUNT_FIELD_KEY")
+            .args("fields", "${DESCRIPTION.key},${MEMBERS_COUNT.key}")
             .version(manager.config.version)
             .build()
         val group = manager.execute(call, VKApiResponseParser { r ->

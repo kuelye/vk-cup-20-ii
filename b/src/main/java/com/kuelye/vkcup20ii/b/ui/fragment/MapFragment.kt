@@ -4,17 +4,20 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.util.Log
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.PLACE_KEY
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.ADDRESSES
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.exceptions.VKApiExecutionException
@@ -25,10 +28,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     companion object {
         private val TAG = MapFragment::class.java.simpleName
         private const val PERMISSIONS_REQUEST_CODE = 99
-        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION_FIELD_KEY, PLACE_KEY)
+        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION, ADDRESSES)
     }
 
     private var map: GoogleMap? = null
+    private val markers: SparseArray<Marker> by lazy { SparseArray<Marker>() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -122,13 +126,29 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         GroupRepository.getGroups(GROUP_EXTENDED_FIELDS, "groups",
                 object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
-                Log.v(TAG, "requestData>success: $result")
+                showData(result)
             }
 
             override fun fail(e: VKApiExecutionException) {
                 Log.e(TAG, "requestData>fail", e) // TODO
             }
         })
+    }
+
+    private fun showData(groups: List<VKGroup>) {
+        if (map == null) return
+        for (group in groups) {
+            if (group.addresses.isNullOrEmpty()) continue
+            for (address in group.addresses!!) {
+                var marker = markers.get(group.id)
+                if (marker == null) {
+                    marker = map!!.addMarker(MarkerOptions().position(address.position))
+                    markers.put(address.id, marker)
+                } else {
+                    marker.position = address.position
+                }
+            }
+        }
     }
 
 }

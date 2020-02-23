@@ -2,7 +2,6 @@ package com.kuelye.vkcup20ii.core.utils
 
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -12,21 +11,23 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.os.ParcelFileDescriptor
-import android.provider.MediaStore
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
 import com.kuelye.vkcup20ii.core.R
 import com.vk.api.sdk.utils.VKUtils
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.GregorianCalendar.YEAR
+import kotlin.math.absoluteValue
 import kotlin.math.ceil
+import kotlin.math.sign
 
 
 // # RESOURCES
@@ -97,7 +98,7 @@ fun toBitmap(
     return bitmap
 }
 
-// # INTERPOLATE
+// # MATH
 
 fun interpolate(state: Float, from: Float, to: Float): Float {
     return when (state) {
@@ -115,6 +116,18 @@ fun interpolate(state: Float, from: Int, to: Int): Int {
     }
 }
 
+fun ceil(dividend: Int, divisor: Int) =
+    dividend.sign * divisor.sign * (dividend.absoluteValue + divisor.absoluteValue - 1) /
+            divisor.absoluteValue
+
+// # COLOR
+
+@ColorInt
+fun Int.modifyAlpha(factor: Float): Int = Color.argb(
+    (Color.alpha(this) * factor).toInt(), Color.red(this),
+    Color.green(this), Color.blue(this)
+)
+
 @ColorInt
 fun interpolateColor(state: Float, @ColorInt from: Int, @ColorInt to: Int): Int {
     return when (state) {
@@ -128,14 +141,6 @@ fun interpolateColor(state: Float, @ColorInt from: Int, @ColorInt to: Int): Int 
         )
     }
 }
-
-// # COLOR
-
-@ColorInt
-fun Int.modifyAlpha(factor: Float): Int = Color.argb(
-    (Color.alpha(this) * factor).toInt(), Color.red(this),
-    Color.green(this), Color.blue(this)
-)
 
 // # DATE
 
@@ -171,6 +176,16 @@ private fun isSameYear(timestamp: Long): Boolean {
     val thenYear = calendar.get(YEAR)
     calendar.timeInMillis = System.currentTimeMillis()
     return thenYear == calendar.get(YEAR)
+}
+
+// # JSON
+
+inline fun <R> JSONArray.map(transform: (JSONObject) -> R): List<R> {
+    val destination = mutableListOf<R>()
+    for (i in 0 until length()) {
+        destination.add(transform.invoke(getJSONObject(i)))
+    }
+    return destination
 }
 
 // # MISC

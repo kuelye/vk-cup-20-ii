@@ -1,7 +1,9 @@
 package com.kuelye.vkcup20ii.core.utils
 
+import android.animation.Animator
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -15,7 +17,9 @@ import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
+import androidx.core.animation.addListener
 import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.vk.api.sdk.utils.VKUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -219,4 +223,12 @@ fun getImagePath(context: Context, imageUri: Uri): Uri? {
             // ignore
         }
     }
+}
+
+// # VK
+
+fun open(context: Context, group: VKGroup) {
+    val uri: Uri = Uri.parse("http://vk.com/${group.screenName}")
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    context.startActivity(intent)
 }

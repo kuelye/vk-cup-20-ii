@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">B</string>
+    <string name="map_events">События</string>
+    <string name="map_photos">Фото</string>
+    <string name="map_photo">Фотография</string>
+    <string name="map_groups">Группы</string>
+    <string name="map_group_address_info_open">Открыть</string>
 </resources>

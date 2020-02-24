@@ -1,5 +1,7 @@
 package com.kuelye.vkcup20ii.core.ui.view
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
@@ -15,6 +17,8 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.core.animation.addListener
+import androidx.core.animation.doOnEnd
 import androidx.core.math.MathUtils.clamp
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.NestedScrollingParent2
@@ -44,6 +48,8 @@ class BottomSheetLayout @JvmOverloads constructor(
     val expanded: Boolean
         get() = state == EXPANDED_STATE
 
+    var outsideScrollEnabled: Boolean = false
+
     private var bottomSheet: View? = null
     private var lastNestedChild: View? = null
 
@@ -54,6 +60,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     private var nestedScrollStarted: Boolean = false
     private var animator: ValueAnimator? = null
     private var animatorToState: Float? = null
+    private var animatorEndListener: AnimatorListener? = null
     private var scrimAlpha: Float = 0f
     private var state: Float = getStateByExpanded(EXPANDED_DEFAULT)
         set(value) {
@@ -92,7 +99,8 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        return if (state != COLLAPSED_STATE && ev.y < scrimBottom && ev.action == ACTION_DOWN) {
+        return if (!outsideScrollEnabled && state != COLLAPSED_STATE
+                && ev.y < scrimBottom && ev.action == ACTION_DOWN) {
             outsideTouch = true
             true
         } else {
@@ -105,7 +113,7 @@ class BottomSheetLayout @JvmOverloads constructor(
                     if (animator?.isRunning == false) animateExpanded(getNearestExpanded(state))
                 }
             }
-            if (!outsideTouch) gestureDetector?.onTouchEvent(ev)
+            if (!outsideTouch && ev.y > scrimBottom) gestureDetector?.onTouchEvent(ev)
             super.dispatchTouchEvent(ev)
         }
     }
@@ -126,7 +134,7 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
-        //Log.v(TAG, "onNestedPreScroll: $dy, $state, $target")
+        Log.v(TAG, "onNestedPreScroll: $dy, $state, $target")
         if (bottomSheet == null || ignoreNestedScroll) return
         if (dy > 0 && state != EXPANDED_STATE) {
             setScrollY(clampScrollY(bottomSheet!!.translationY - dy))
@@ -142,36 +150,46 @@ class BottomSheetLayout @JvmOverloads constructor(
         setScrollY(clampScrollY(bottomSheet!!.translationY - dyUnconsumed))
     }
 
-    fun switch() {
-        animateExpanded(state == COLLAPSED_STATE)
-    }
-
     fun dismiss() {
         animateExpanded(false)
     }
 
-    fun animateExpanded(expanded: Boolean) {
+    fun animateExpanded(expanded: Boolean, endAction: (() -> Unit)? = null) {
         val toState = getStateByExpanded(expanded)
         //Log.v(TAG, "animateExpanded: $expanded, $state, $toState, $animatorToState")
-        if (state != toState && animatorToState != toState) {
-            val fromState = state
-            if (animator == null) {
-                animator = ValueAnimator().apply {
-                    addUpdateListener {
-                        state = animator!!.animatedValue as Float
-                        updateBottomSheet()
-                        updateScrim()
-                        requestLayout()
-                    }
+        if (state == toState) {
+            endAction?.invoke()
+            return
+        }
+
+        if (animatorToState == toState) animator?.apply {
+            animatorEndListener?.let { removeListener(animatorEndListener) }
+            animatorEndListener = endAction?.let { doOnEnd { endAction.invoke() } }
+            return
+        }
+
+        val fromState = state
+        if (animator == null) {
+            animator = ValueAnimator().apply {
+                addUpdateListener {
+                    duration = 2000
+                    state = animator!!.animatedValue as Float
+                    updateBottomSheet()
+                    updateScrim()
+                    requestLayout()
                 }
-            } else {
-                animator!!.cancel()
             }
-            animator!!.interpolator =
-                if (expanded) DecelerateInterpolator() else AccelerateInterpolator()
-            animator!!.setFloatValues(fromState, toState)
-            animatorToState = toState
-            animator!!.start()
+        } else {
+            animator!!.cancel()
+        }
+
+        animatorToState = toState
+        animator!!.apply {
+            interpolator = if (expanded) DecelerateInterpolator() else AccelerateInterpolator()
+            animatorEndListener?.let { removeListener(animatorEndListener) }
+            animatorEndListener = endAction?.let { animator?.doOnEnd { endAction.invoke() } }
+            setFloatValues(fromState, toState)
+            start()
         }
     }
 

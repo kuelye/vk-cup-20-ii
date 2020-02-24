@@ -10,7 +10,7 @@ import androidx.core.view.*
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.dimen
 
-class BottomSheet @JvmOverloads constructor(
+open class BottomSheet @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), NestedScrollingChild2, NestedScrollingParent2 {
 

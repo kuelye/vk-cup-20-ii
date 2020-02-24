@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@drawable/bg_bottom_sheet"
+    tools:layout_height="wrap_content"
+    tools:layout_width="match_parent"
+    tools:orientation="vertical"
+    tools:parentTag="com.kuelye.vkcup20ii.core.ui.view.BottomSheet">
+
+    <com.kuelye.vkcup20ii.core.ui.view.BottomSheetToolbar
+        android:id="@+id/bottomSheetToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard"
+        android:layout_marginEnd="@dimen/padding_standard"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingBottom="@dimen/padding_standard_half">
+
+        <ImageView
+            android:layout_width="@dimen/very_small_icon_size"
+            android:layout_height="@dimen/very_small_icon_size"
+            android:layout_marginEnd="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/place_outline_20"
+            android:tint="@color/icon_color" />
+
+        <TextView
+            android:id="@+id/addressTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/title_color"
+            android:textSize="15sp"
+            tools:text="Измайловский проспект 18, Санкт-Петербурггггггггггг" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/descriptionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard"
+        android:layout_marginEnd="@dimen/padding_standard"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_standard_half"
+        android:paddingBottom="@dimen/padding_standard_half">
+
+        <ImageView
+            android:layout_width="@dimen/very_small_icon_size"
+            android:layout_height="@dimen/very_small_icon_size"
+            android:layout_marginEnd="@dimen/padding_standard_three_quarters"
+            android:src="@drawable/article_outline_20"
+            android:tint="#99A2AD" />
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="4"
+            android:textColor="@color/title_color"
+            android:textSize="15sp"
+            tools:text="Разрабатываем приложения для вас и ваших друзей с 2011 года." />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/openButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard"
+        android:layout_marginTop="@dimen/padding_standard_three_quarters"
+        android:layout_marginEnd="@dimen/padding_standard"
+        android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+        android:background="@drawable/bg_button_default"
+        android:backgroundTint="@color/button_color_default"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/map_group_address_info_open"
+        android:textAllCaps="false"
+        android:textColor="@color/title_light_color"
+        android:textSize="16sp" />
+</merge>

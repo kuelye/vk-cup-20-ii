@@ -56,7 +56,7 @@ open class CircleImageView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        updateByBitmap()
+        updateByDrawable()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -71,10 +71,10 @@ open class CircleImageView @JvmOverloads constructor(
 
     override fun setImageDrawable(drawable: Drawable?) {
         super.setImageDrawable(drawable)
-        updateByBitmap()
+        updateByDrawable()
     }
 
-    private fun updateByBitmap() {
+    private fun updateByDrawable() {
         bitmap = toBitmap(drawable)
         if (bitmap == null) {
             paint.shader = null

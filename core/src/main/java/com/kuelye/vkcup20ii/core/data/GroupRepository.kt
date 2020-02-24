@@ -6,7 +6,6 @@ import com.kuelye.vkcup20ii.core.api.VKGroupsCommand
 import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
-import com.vk.api.sdk.exceptions.VKApiExecutionException
 
 object GroupRepository {
 
@@ -33,7 +32,7 @@ object GroupRepository {
                 callback.success(result)
             }
 
-            override fun fail(error: VKApiExecutionException) {
+            override fun fail(error: Exception) {
                 callback.fail(error)
             }
         })
@@ -56,7 +55,7 @@ object GroupRepository {
                 callback.success(result)
             }
 
-            override fun fail(error: VKApiExecutionException) {
+            override fun fail(error: Exception) {
                 callback.fail(error)
             }
         })

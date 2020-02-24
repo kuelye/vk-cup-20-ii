@@ -6,21 +6,22 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.formatTime
 import com.kuelye.vkcup20ii.f.R
 import com.kuelye.vkcup20ii.f.model.VKGroup
 import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.NO_POSTS_DATE
-import kotlinx.android.synthetic.main.layout_group_info.view.*
+import kotlinx.android.synthetic.main.layout_leave_group_info.view.*
 import kotlin.math.floor
 
 
-class GroupInfoView @JvmOverloads constructor(
+class LeaveGroupInfoView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        private val TAG = GroupInfoView::class.java.simpleName
+        private val TAG = LeaveGroupInfoView::class.java.simpleName
     }
 
     var group: VKGroup? = null
@@ -32,7 +33,7 @@ class GroupInfoView @JvmOverloads constructor(
     private val paddingStandard = dimen(R.dimen.padding_standard)
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_group_info, this, true)
+        LayoutInflater.from(context).inflate(R.layout.layout_leave_group_info, this, true)
         background = context.resources.getDrawable(R.drawable.bg_bottom_sheet, context.theme)
         setPadding(paddingStandard, 0, paddingStandard, 0)
         orientation = VERTICAL

@@ -89,6 +89,7 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        Log.v(TAG, "#HM $oldh $h")
         updateBottomSheet()
         updateScrim()
     }
@@ -134,7 +135,6 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
-        Log.v(TAG, "onNestedPreScroll: $dy, $state, $target")
         if (bottomSheet == null || ignoreNestedScroll) return
         if (dy > 0 && state != EXPANDED_STATE) {
             setScrollY(clampScrollY(bottomSheet!!.translationY - dy))
@@ -195,8 +195,14 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     private fun initializeBottomSheet() {
         bottomSheet = getChildAt(1)
-        if (bottomSheet != null) {
-            bottomSheet!!.layoutParams = (bottomSheet!!.layoutParams as LayoutParams).apply {
+        bottomSheet?.apply {
+            addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
+                if (bottom - top != oldBottom - oldTop) {
+                    updateBottomSheet()
+                    updateScrim()
+                }
+            }
+            layoutParams = (layoutParams as LayoutParams).apply {
                 gravity = BOTTOM
                 setExpanded(expanded)
             }

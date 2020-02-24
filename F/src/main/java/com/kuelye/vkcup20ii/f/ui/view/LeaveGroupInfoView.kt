@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.NO_POSTS_DATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.formatTime
 import com.kuelye.vkcup20ii.f.R

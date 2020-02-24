@@ -89,7 +89,6 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.v(TAG, "#HM $oldh $h")
         updateBottomSheet()
         updateScrim()
     }

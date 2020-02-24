@@ -172,14 +172,16 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun select(marker: MarkerHolder? = null) {
-        selectedMarker?.selected = false
-        selectedMarker = marker
-        selectedMarker?.apply {
-            selected = true
-            (view as BottomSheetLayout).apply {
-                animateExpanded(false) {
-                    infoView.setGroupAddress(selectedMarker!!.group, selectedMarker!!.address)
-                    animateExpanded(true)
+        if (marker != selectedMarker) {
+            selectedMarker?.selected = false
+            selectedMarker = marker
+            selectedMarker?.apply {
+                selected = true
+                (view as BottomSheetLayout).apply {
+                    animateExpanded(false) {
+                        infoView.setGroupAddress(selectedMarker!!.group, selectedMarker!!.address)
+                        animateExpanded(true)
+                    }
                 }
             }
         }

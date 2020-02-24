@@ -9,10 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.checkSelfPermission
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.clustering.ClusterManager
 import com.kuelye.vkcup20ii.b.R
+import com.kuelye.vkcup20ii.b.ui.misc.GroupMarkerRenderer
 import com.kuelye.vkcup20ii.b.ui.misc.MarkerHolder
 import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.model.VKGroup
@@ -21,7 +24,6 @@ import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
 import com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
 import com.vk.api.sdk.VKApiCallback
-import com.vk.api.sdk.exceptions.VKApiExecutionException
 import kotlinx.android.synthetic.main.fragment_map.*
 import java.lang.Exception
 
@@ -36,6 +38,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     private var map: GoogleMap? = null
     private val markers: SparseArray<MarkerHolder> by lazy { SparseArray<MarkerHolder>() }
     private var selectedMarker: MarkerHolder? = null
+    private var clusterManager: ClusterManager<MarkerHolder>? = null
+    private var clusterRenderer: GroupMarkerRenderer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -119,8 +123,23 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun initializeMap() {
         checkLocationPermission()
-        map!!.setOnMarkerClickListener { marker ->
-            select(marker.tag as MarkerHolder)
+
+        clusterManager = ClusterManager(context, map!!)
+        map!!.setOnCameraIdleListener(clusterManager)
+        map!!.setOnMarkerClickListener(clusterManager)
+
+        clusterRenderer = GroupMarkerRenderer(context!!, map!!, clusterManager!!)
+        clusterManager!!.renderer = clusterRenderer
+        clusterManager!!.setOnClusterClickListener { cluster ->
+            val boundsBuilder = LatLngBounds.builder()
+            for (marker in cluster.items) {
+                boundsBuilder.include(marker.position)
+            }
+            map!!.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 100))
+            true
+        }
+        clusterManager!!.setOnClusterItemClickListener { marker ->
+            select(marker)
             true
         }
     }
@@ -152,22 +171,26 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun updateMarkers(groups: List<VKGroup>) {
-        if (map == null) return
+        if (map == null || clusterManager == null || clusterRenderer == null) return
         for (group in groups) {
             if (group.addresses.isNullOrEmpty()) continue
             for (address in group.addresses!!) {
-                var markerHolder = markers.get(address.id)
-                if (markerHolder == null) {
-                    val marker = map!!.addMarker(MarkerOptions()
-                        .position(address.position).anchor(0.5f, 0.5f))
-                    markerHolder = MarkerHolder(marker, group, address)
-                    marker.tag = markerHolder
-                    markers.put(address.id, markerHolder)
+                var marker = markers.get(address.id)
+                if (marker == null) {
+                    marker = MarkerHolder(group, address, clusterRenderer!!)
+                    markers.put(address.id, marker)
+                    clusterManager!!.addItem(marker)
+//                    val marker = map!!.addMarker(MarkerOptions()
+//                        .position(address.position).anchor(0.5f, 0.5f))
+//                    markerHolder = MarkerHolder(marker, group, address)
+//                    marker.tag = markerHolder
                 } else {
-                    markerHolder.marker.position = address.position
-                    markerHolder.setGroupAddress(group, address)
+//                    markerHolder.marker.position = address.position
+                    // TODO update cluster manager
+                    marker.setGroupAddress(group, address)
                 }
             }
+            clusterManager!!.cluster()
         }
     }
 

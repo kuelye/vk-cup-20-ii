@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.f.ui.view
+package com.kuelye.vkcup20ii.core.ui.view
 
 import android.content.Context
 import android.graphics.*
@@ -21,7 +21,8 @@ open class CircleImageView @JvmOverloads constructor(
     }
 
     @ColorInt
-    var borderColor: Int = BORDER_COLOR_DEFAULT
+    var borderColor: Int =
+        BORDER_COLOR_DEFAULT
         set(value) {
             field = value
             borderPaint.color = borderColor

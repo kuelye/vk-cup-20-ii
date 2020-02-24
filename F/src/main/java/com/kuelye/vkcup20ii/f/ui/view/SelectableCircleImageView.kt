@@ -7,8 +7,8 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.animation.DecelerateInterpolator
+import com.kuelye.vkcup20ii.core.ui.view.CircleImageView
 import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.interpolateColor
 import com.kuelye.vkcup20ii.core.utils.toBitmap

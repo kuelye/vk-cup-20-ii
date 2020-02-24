@@ -2,18 +2,18 @@ package com.kuelye.vkcup20ii.b.ui.misc
 
 import android.graphics.*
 import android.graphics.BlurMaskFilter.Blur.OUTER
-import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Paint.Style.FILL
 import android.graphics.Paint.Style.STROKE
 import android.graphics.Shader.TileMode.CLAMP
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.core.graphics.scaleMatrix
 import androidx.core.graphics.translationMatrix
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.maps.android.clustering.ClusterItem
 import com.kuelye.vkcup20ii.core.model.VKAddress
 import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.squareup.picasso.Picasso
@@ -23,20 +23,20 @@ import com.vk.api.sdk.utils.VKUtils.dp
 
 
 class MarkerHolder(
-    val marker: Marker,
     var group: VKGroup,
-    var address: VKAddress
-) : Target {
+    var address: VKAddress,
+    private val clusterRenderer: GroupMarkerRenderer
+) : ClusterItem, Target {
 
     companion object {
-        private val TAG = MarkerHolder::class.java.simpleName
+        private val TAG = Marker::class.java.simpleName
         private val ICON_SIZE_DEFAULT = dp(22)
         private val ICON_SIZE_SELECTED = dp(32)
         private val ICON_BORDER_WIDTH = dp(3)
-        private val ICON_BORDER_COLOR = WHITE
+        private const val ICON_BORDER_COLOR = WHITE
         private val ICON_SHADOW_SIZE_DEFAULT = dp(4)
         private val ICON_SHADOW_SIZE_SELECTED = dp(8)
-        private val ICON_SHADOW_COLOR = 0x40000000
+        private const val ICON_SHADOW_COLOR = 0x40000000
     }
 
     var selected: Boolean = false
@@ -51,31 +51,21 @@ class MarkerHolder(
         updateIcon()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    override fun getTitle(): String? = null
 
-        other as MarkerHolder
+    override fun getPosition(): LatLng = address.position
 
-        if (marker != other.marker) return false
+    override fun getSnippet(): String? = null
 
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return marker.hashCode()
-    }
-
-    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-        // stub
-    }
+    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
 
     override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
         // TODO
     }
 
     override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-        marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+        clusterRenderer.getMarker(this)
+            ?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
     }
 
     fun setGroupAddress(group: VKGroup, address: VKAddress) {
@@ -84,7 +74,7 @@ class MarkerHolder(
         updateIcon()
     }
 
-    private fun updateIcon() {
+    fun updateIcon() {
         val size = if (selected) ICON_SIZE_SELECTED else ICON_SIZE_DEFAULT
         Picasso.get().load(group.photo200)
             .resize(size, size)

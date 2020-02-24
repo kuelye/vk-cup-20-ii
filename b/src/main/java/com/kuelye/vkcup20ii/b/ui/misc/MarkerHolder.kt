@@ -10,6 +10,8 @@ import android.graphics.Paint.Style.STROKE
 import android.graphics.Shader.TileMode.CLAMP
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.core.graphics.scaleMatrix
+import androidx.core.graphics.translationMatrix
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.kuelye.vkcup20ii.core.model.VKAddress
@@ -123,6 +125,9 @@ class MarkerHolder(
             val bitmapPaint = Paint().apply {
                 isAntiAlias = true
                 shader = BitmapShader(source, CLAMP, CLAMP)
+                scaleMatrix()
+                val d = (shadowSize + ICON_BORDER_WIDTH).toFloat()
+                shader.setLocalMatrix(translationMatrix(d, d))
             }
             canvas.drawCircle(center, center, bitmapRadius, bitmapPaint)
             source.recycle()

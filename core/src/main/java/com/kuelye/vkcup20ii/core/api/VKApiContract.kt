@@ -19,3 +19,7 @@ const val ADDRESSES_FIELD_KEY = "addresses"
 const val LATITUDE_FIELD_KEY = "latitude"
 const val LONGITUDE_FIELD_KEY = "longitude"
 const val ADDRESS_FIELD_KEY = "address"
+const val CITY_ID_FIELD_KEY = "city_id"
+
+// VKCity
+const val TITLE_FIELD_KEY = "title"

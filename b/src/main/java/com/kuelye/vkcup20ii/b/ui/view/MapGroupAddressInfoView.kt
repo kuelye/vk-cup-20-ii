@@ -2,6 +2,7 @@ package com.kuelye.vkcup20ii.b.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.core.model.VKAddress
@@ -39,9 +40,18 @@ class MapGroupAddressInfoView @JvmOverloads constructor(
             // TODO
         } else {
             bottomSheetToolbar.title = group!!.name
-            addressTextView.text = address!!.address
-            descriptionTextView.text = group!!.description
+            addressTextView.text = address!!.formattedAddress
+            updateDescription(group!!)
             openButton.setOnClickListener { open(context, group!!) }
+        }
+    }
+
+    private fun updateDescription(group: VKGroup) {
+        if (group.description.isNullOrBlank()) {
+            descriptionLayout.visibility = GONE
+        } else {
+            descriptionLayout.visibility = VISIBLE
+            descriptionTextView.text = group.description
         }
     }
 

@@ -12,6 +12,7 @@ import com.vk.api.sdk.internal.ApiCommand
 import org.json.JSONException
 import org.json.JSONObject
 
+// TODO refactore
 class VKGroupCommand(
     private val groupId: Int
 ) : ApiCommand<VKGroup?>() {

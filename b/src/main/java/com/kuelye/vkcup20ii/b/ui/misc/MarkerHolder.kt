@@ -83,7 +83,6 @@ class MarkerHolder(
     }
 
     private fun updateIcon() {
-        Log.v(TAG, "updateIcon: ${group.photo200}")
         val size = if (selected) ICON_SIZE_SELECTED else ICON_SIZE_DEFAULT
         Picasso.get().load(group.photo200)
             .resize(size, size)

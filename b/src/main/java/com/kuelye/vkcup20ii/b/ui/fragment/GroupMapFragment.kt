@@ -20,6 +20,13 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     companion object {
         private val TAG = GroupMapFragment::class.java.simpleName
         private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION, ADDRESSES)
+        private const val EXTRA_GROUP_TYPE = "FILTER"
+
+        fun newInstance(groupType: VKGroup.Type): GroupMapFragment {
+            val fragment = GroupMapFragment()
+            fragment.arguments = Bundle().apply { putSerializable(EXTRA_GROUP_TYPE, groupType) }
+            return fragment
+        }
     }
 
     private var selectedMarker: GroupMarkerHolder? = null
@@ -38,7 +45,8 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     }
 
     override fun requestData() {
-        GroupRepository.getGroups(GROUP_EXTENDED_FIELDS, "groups",
+        GroupRepository.getGroups(GROUP_EXTENDED_FIELDS,
+            arguments?.getSerializable(EXTRA_GROUP_TYPE) as VKGroup.Type,
             object : VKApiCallback<List<VKGroup>> {
                 override fun success(result: List<VKGroup>) {
                     updateMarkers(result)

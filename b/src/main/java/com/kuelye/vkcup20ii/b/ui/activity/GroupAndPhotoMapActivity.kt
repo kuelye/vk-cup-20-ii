@@ -11,10 +11,12 @@ import androidx.viewpager.widget.ViewPager
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.fragment.GroupMapFragment
 import com.kuelye.vkcup20ii.core.Config
+import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.auth.VKScope.PHOTOS
 import kotlinx.android.synthetic.main.activity_map.*
+import java.lang.IllegalArgumentException
 
 class GroupAndPhotoMapActivity : BaseActivity() {
 
@@ -59,15 +61,18 @@ class GroupAndPhotoMapActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment =
             when (position) {
-                0 -> GroupMapFragment()
-                else -> GroupMapFragment()
+                0 -> GroupMapFragment.newInstance(VKGroup.Type.EVENT)
+                1 -> GroupMapFragment.newInstance(VKGroup.Type.PAGE)
+                2 -> GroupMapFragment.newInstance(VKGroup.Type.GROUP)
+                else -> throw IllegalArgumentException()
             }
 
         override fun getPageTitle(position: Int): CharSequence? =
             context.getString(when (position) {
                 0 -> R.string.map_events
                 1 -> R.string.map_photos
-                else -> R.string.map_groups
+                2 -> R.string.map_groups
+                else -> throw IllegalArgumentException()
             })
 
     }

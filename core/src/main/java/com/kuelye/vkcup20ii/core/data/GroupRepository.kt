@@ -15,14 +15,14 @@ object GroupRepository {
 
     fun getGroups(
         extendedFields: Array<VKGroup.Field>,
-        filter: String?,
+        type: VKGroup.Type,
         callback: VKApiCallback<List<VKGroup>>
     ) {
         if (groupsCache != null) {
-            callback.success(groupsCache!!.toList())
+            callback.success(groupsCache!!.toList().filter { it.type == type.value })
         }
         if (!VK.isLoggedIn()) return
-        VK.execute(VKGroupsCommand(extendedFields, filter), object : VKApiCallback<List<VKGroup>> {
+        VK.execute(VKGroupsCommand(extendedFields, type.filter), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 ensureCache()
                 groupsCache!!.clear()

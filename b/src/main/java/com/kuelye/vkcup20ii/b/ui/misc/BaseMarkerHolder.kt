@@ -11,27 +11,21 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.scaleMatrix
 import androidx.core.graphics.translationMatrix
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.ClusterItem
-import com.kuelye.vkcup20ii.core.model.VKAddress
-import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import com.squareup.picasso.Transformation
 import com.vk.api.sdk.utils.VKUtils.dp
 
 
-class MarkerHolder(
-    var group: VKGroup,
-    var address: VKAddress,
-    private val clusterRenderer: GroupMarkerRenderer
+abstract class BaseMarkerHolder(
+    private val clusterRenderer: MarkerRenderer<in BaseMarkerHolder>
 ) : ClusterItem, Target {
 
     companion object {
         private val TAG = Marker::class.java.simpleName
-        private val ICON_SIZE_DEFAULT = dp(22)
-        private val ICON_SIZE_SELECTED = dp(32)
         private val ICON_BORDER_WIDTH = dp(3)
         private const val ICON_BORDER_COLOR = WHITE
         private val ICON_SHADOW_SIZE_DEFAULT = dp(4)
@@ -39,21 +33,9 @@ class MarkerHolder(
         private const val ICON_SHADOW_COLOR = 0x40000000
     }
 
-    var selected: Boolean = false
-        set(value) {
-            if (field != value) {
-                field = value
-                updateIcon()
-            }
-        }
-
-    init {
-        updateIcon()
-    }
+    abstract fun updateIcon()
 
     override fun getTitle(): String? = null
-
-    override fun getPosition(): LatLng = address.position
 
     override fun getSnippet(): String? = null
 
@@ -64,24 +46,8 @@ class MarkerHolder(
     }
 
     override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-        clusterRenderer.getMarker(this)
-            ?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-    }
-
-    fun setGroupAddress(group: VKGroup, address: VKAddress) {
-        this.group = group
-        this.address = address
-        updateIcon()
-    }
-
-    fun updateIcon() {
-        val size = if (selected) ICON_SIZE_SELECTED else ICON_SIZE_DEFAULT
-        Picasso.get().load(group.photo200)
-            .resize(size, size)
-            //            .placeholder(ColorDrawable(PLACEHOLDER_COLOR)) // TODO
-            //            .error(ColorDrawable(PLACEHOLDER_COLOR))
-            .transform(BorderTransformation(selected))
-            .into(this)
+        val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
+        clusterRenderer.getMarker(this)?.setIcon(icon)
     }
 
     class BorderTransformation(

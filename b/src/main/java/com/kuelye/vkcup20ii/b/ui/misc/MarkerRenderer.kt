@@ -7,25 +7,25 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 
-class GroupMarkerRenderer(
+class MarkerRenderer<T : BaseMarkerHolder>(
     context: Context,
     map: GoogleMap,
-    clusterManager: ClusterManager<MarkerHolder>
-) : DefaultClusterRenderer<MarkerHolder>(context, map, clusterManager) {
+    clusterManager: ClusterManager<T>
+) : DefaultClusterRenderer<T>(context, map, clusterManager) {
 
     companion object {
-        private val TAG = GroupMarkerRenderer::class.java.simpleName
+        private val TAG = MarkerRenderer::class.java.simpleName
     }
 
     init {
         minClusterSize = 1
     }
 
-    override fun onBeforeClusterItemRendered(marker: MarkerHolder, markerOptions: MarkerOptions) {
+    override fun onBeforeClusterItemRendered(marker: T, markerOptions: MarkerOptions) {
         markerOptions.anchor(0.5f, 0.5f)
     }
 
-    override fun onClusterItemRendered(clusterItem: MarkerHolder, marker: Marker) {
+    override fun onClusterItemRendered(clusterItem: T, marker: Marker) {
         clusterItem.updateIcon()
     }
 

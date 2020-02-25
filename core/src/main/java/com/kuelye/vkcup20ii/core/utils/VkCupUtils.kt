@@ -1,9 +1,9 @@
 package com.kuelye.vkcup20ii.core.utils
 
-import android.animation.Animator
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
 import android.content.Intent
+import android.content.res.TypedArray
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -14,13 +14,14 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.util.TypedValue
+import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
-import androidx.core.animation.addListener
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.vk.api.sdk.utils.VKUtils
+import com.vk.api.sdk.utils.VKUtils.density
+import com.vk.api.sdk.utils.VKUtils.getDisplayMetrics
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -63,6 +64,12 @@ fun View.themeDimen(@AttrRes res: Int): Int {
     val typedValue = TypedValue()
     context.theme.resolveAttribute(res, typedValue, true)
     return typedValue.getDimension(context.resources.displayMetrics).toInt()
+}
+
+fun View.themeDrawable(@AttrRes attr : Int): Drawable {
+    val typedValue = TypedValue()
+    context.theme.resolveAttribute(attr, typedValue, true)
+    return context.resources.getDrawable(typedValue.resourceId, context.theme)
 }
 
 // # DRAWABLE
@@ -194,7 +201,19 @@ inline fun <R> JSONArray.map(transform: (JSONObject) -> R): List<R> {
 
 // # MISC
 
-fun px(px: Int) = ceil((px.toDouble() / VKUtils.density())).toInt()
+fun px(px: Int) = ceil((px.toDouble() / density())).toInt()
+
+fun sp(sp: Int) = TypedValue.applyDimension(COMPLEX_UNIT_SP, sp.toFloat(), getDisplayMetrics())
+
+fun getStatusBarHeight(context: Context): Int {
+    val resourceId = context.resources.getIdentifier(
+        "status_bar_height", "dimen", "android")
+    return if (resourceId > 0) {
+        context.resources.getDimensionPixelSize(resourceId)
+    } else {
+        0
+    }
+}
 
 fun hideKeyboard(context: Context, view: View) {
     val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

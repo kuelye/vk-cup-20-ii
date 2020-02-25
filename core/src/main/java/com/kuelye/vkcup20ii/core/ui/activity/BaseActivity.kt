@@ -11,6 +11,7 @@ import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
 import com.kuelye.vkcup20ii.core.Config
+import com.kuelye.vkcup20ii.core.utils.getStatusBarHeight
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
@@ -34,6 +35,8 @@ open class BaseActivity : AppCompatActivity(), OnLoginListener {
             }
             decorView.systemUiVisibility = systemUiFlags
             statusBarColor = TRANSPARENT
+            decorView.setPadding(decorView.paddingLeft, getStatusBarHeight(context),
+                decorView.paddingRight, decorView.paddingBottom)
         }
     }
 

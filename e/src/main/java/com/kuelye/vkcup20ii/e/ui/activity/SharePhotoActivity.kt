@@ -47,7 +47,6 @@ class SharePhotoActivity : BaseActivity() {
         photoUri = savedInstanceState?.getParcelable(EXTRA_PHOTO_URI)
         setContentView(R.layout.activity_share_photo)
         initializeLayout()
-        Log.v(TAG, "onCreate: $photoUri")
         if (photoUri != null) showShareSheet(photoUri!!)
     }
 
@@ -101,8 +100,8 @@ class SharePhotoActivity : BaseActivity() {
                 if (!yetCollapsed) bottomSheetLayout.animateExpanded(false)
             }
 
-            override fun fail(e: VKApiExecutionException) {
-                Log.v(TAG, "wallPost>fail", e) // TODO
+            override fun fail(error: Exception) {
+                Log.v(TAG, "wallPost>fail", error) // TODO
             }
         })
     }

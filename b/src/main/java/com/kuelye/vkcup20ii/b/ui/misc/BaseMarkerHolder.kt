@@ -13,12 +13,10 @@ import androidx.core.graphics.translationMatrix
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.ClusterItem
-import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import com.squareup.picasso.Transformation
 import com.vk.api.sdk.utils.VKUtils.dp
-
 
 abstract class BaseMarkerHolder(
     private val clusterRenderer: MarkerRenderer<in BaseMarkerHolder>
@@ -26,14 +24,7 @@ abstract class BaseMarkerHolder(
 
     companion object {
         private val TAG = Marker::class.java.simpleName
-        private val ICON_BORDER_WIDTH = dp(3)
-        private const val ICON_BORDER_COLOR = WHITE
-        private val ICON_SHADOW_SIZE_DEFAULT = dp(4)
-        private val ICON_SHADOW_SIZE_SELECTED = dp(8)
-        private const val ICON_SHADOW_COLOR = 0x40000000
     }
-
-    abstract fun updateIcon()
 
     override fun getTitle(): String? = null
 
@@ -50,48 +41,8 @@ abstract class BaseMarkerHolder(
         clusterRenderer.getMarker(this)?.setIcon(icon)
     }
 
-    class BorderTransformation(
-        private val selected: Boolean
-    ) : Transformation {
-        override fun transform(source: Bitmap): Bitmap {
-            val shadowSize = if (selected) ICON_SHADOW_SIZE_SELECTED else ICON_SHADOW_SIZE_DEFAULT
-            val size = source.width + ICON_BORDER_WIDTH * 2 + shadowSize * 2
-            val result = Bitmap.createBitmap(size, size, source.config)
-            val canvas = Canvas(result)
+    abstract fun updateIcon()
 
-            val shadowPaint = Paint().apply {
-                style = FILL
-                color = ICON_SHADOW_COLOR
-                flags = ANTI_ALIAS_FLAG
-                maskFilter = BlurMaskFilter(shadowSize.toFloat(), OUTER)
-            }
-            val center = size.toFloat() / 2
-            val bitmapRadius = source.width.toFloat() / 2
-            val borderRadius = bitmapRadius + ICON_BORDER_WIDTH / 2
-            canvas.drawCircle(center, center, borderRadius, shadowPaint)
-
-            val borderPaint = Paint().apply {
-                style = STROKE
-                strokeWidth = ICON_BORDER_WIDTH.toFloat()
-                color = ICON_BORDER_COLOR
-                isAntiAlias = true
-            }
-            canvas.drawCircle(center, center, borderRadius, borderPaint)
-
-            val bitmapPaint = Paint().apply {
-                isAntiAlias = true
-                shader = BitmapShader(source, CLAMP, CLAMP)
-                scaleMatrix()
-                val d = (shadowSize + ICON_BORDER_WIDTH).toFloat()
-                shader.setLocalMatrix(translationMatrix(d, d))
-            }
-            canvas.drawCircle(center, center, bitmapRadius, bitmapPaint)
-            source.recycle()
-
-            return result
-        }
-
-        override fun key() = "border-${if (selected) "1" else "0"}"
-    }
+    open fun getClusterBitmap(clusterSize: Int): Bitmap? = null
 
 }

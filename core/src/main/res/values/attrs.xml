@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DeprecatedBottomSheetLayout_Layout">
-        <attr name="layout_scrimEnabled" format="boolean" />
-    </declare-styleable>
     <declare-styleable name="BottomSheetLayout_Layout">
         <attr name="layout_expanded" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Toolbar">
+        <attr name="title" format="string" />
+        <attr name="subtitle" format="string" />
     </declare-styleable>
 </resources>

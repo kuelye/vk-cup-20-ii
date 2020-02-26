@@ -3,10 +3,8 @@ package com.kuelye.vkcup20ii.core.utils
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.Bitmap.Config.ARGB_8888
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -244,7 +242,7 @@ fun getImagePath(context: Context, imageUri: Uri): Uri? {
     }
 }
 
-inline fun <T> SparseArray<T>.toList(): List<T> {
+fun <T> SparseArray<T>.toList(): List<T> {
     val result = mutableListOf<T>()
     for (i in 0 until size()) {
         result.add(get(keyAt(i)))
@@ -259,6 +257,16 @@ inline fun <T> SparseArray<T>.filter(predicate: (T) -> Boolean): List<T> {
         if (predicate(element)) result.add(element)
     }
     return result
+}
+
+fun getHeight(paint: Paint, text: String?): Int {
+    return if (text == null) {
+        0
+    } else {
+        val bounds = Rect()
+        paint.getTextBounds(text, 0, text.length, bounds)
+        return bounds.height()
+    }
 }
 
 // # VK

@@ -5,7 +5,7 @@
     <dimen name="padding_standard">16dp</dimen>
     <dimen name="padding_standard_three_quarters">12dp</dimen>
     <dimen name="padding_standard_half">8dp</dimen>
-    <dimen name="padding_standard_quarter">8dp</dimen>
+    <dimen name="padding_standard_quarter">4dp</dimen>
 
     <dimen name="avatar_size">100dp</dimen>
     <dimen name="very_small_icon_size">20dp</dimen>

@@ -161,15 +161,15 @@ class DeprecatedBottomSheetLayout @JvmOverloads constructor(
         var scrimEnabled: Boolean = SCRIM_ENABLED_DEFAULT
 
         init {
-            val a = c.obtainStyledAttributes(attrs, R.styleable.DeprecatedBottomSheetLayout_Layout)
-            for (i in 0 until a.indexCount) {
-                when (val attr = a.getIndex(i)) {
-                    R.styleable.DeprecatedBottomSheetLayout_Layout_layout_scrimEnabled -> {
-                        scrimEnabled = a.getBoolean(attr, SCRIM_ENABLED_DEFAULT)
-                    }
-                }
-            }
-            a.recycle()
+//            val a = c.obtainStyledAttributes(attrs, R.styleable.DeprecatedBottomSheetLayout_Layout)
+//            for (i in 0 until a.indexCount) {
+//                when (val attr = a.getIndex(i)) {
+//                    R.styleable.DeprecatedBottomSheetLayout_Layout_layout_scrimEnabled -> {
+//                        scrimEnabled = a.getBoolean(attr, SCRIM_ENABLED_DEFAULT)
+//                    }
+//                }
+//            }
+//            a.recycle()
         }
 
     }

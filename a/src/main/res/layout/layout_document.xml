@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/padding_standard"
+    android:paddingEnd="@dimen/padding_standard">
+
+    <com.kuelye.vkcup20ii.core.ui.view.CircleImageView
+        android:id="@+id/iconImageView"
+        android:layout_width="@dimen/document_icon_size"
+        android:layout_height="@dimen/document_icon_size"
+        android:layout_marginTop="@dimen/padding_standard_three_quarters"
+        android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_placeholder_document_book_72" />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard_three_quarters"
+        android:layout_marginBottom="@dimen/padding_standard_quarter"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/title_color"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/typeSizeDataTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iconImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="passworddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" />
+
+    <TextView
+        android:id="@+id/typeSizeDataTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard_three_quarters"
+        android:layout_marginBottom="@dimen/padding_standard_quarter"
+        android:textColor="@color/subtitle_color"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/tagsTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iconImageView"
+        app:layout_constraintTop_toBottomOf="@id/nameTextView"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="TXT	• 0 КБ • 18 авг 2019" />
+
+    <ImageView
+        android:id="@+id/tagsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard_three_quarters"
+        android:src="@drawable/ic_tag_12"
+        android:tint="@color/subtitle_color"
+        app:layout_constraintBottom_toBottomOf="@id/tagsTextView"
+        app:layout_constraintStart_toEndOf="@id/iconImageView"
+        app:layout_constraintTop_toTopOf="@id/tagsTextView"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/tagsTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_standard_quarter"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/subtitle_color"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tagsImageView"
+        app:layout_constraintTop_toBottomOf="@id/typeSizeDataTextView"
+        tools:text="биржа, данные, биткоин, биткоин, биткоин, биткоин, биткоин, биткоин, биткоин, биткоин, биткоин" />
+</androidx.constraintlayout.widget.ConstraintLayout>

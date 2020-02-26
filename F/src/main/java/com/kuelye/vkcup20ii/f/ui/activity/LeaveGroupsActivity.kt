@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.DESCRIPTION_FIELD_KEY
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.MEMBERS_COUNT_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.model.VKGroup.Field.MEMBERS_COUNT
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
@@ -25,7 +25,6 @@ import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope.GROUPS
-import com.vk.api.sdk.exceptions.VKApiExecutionException
 import com.vk.api.sdk.utils.VKUtils
 import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.activity_leave_group.*
@@ -38,7 +37,7 @@ class LeaveGroupsActivity : BaseActivity() {
     companion object {
         private val TAG = LeaveGroupsActivity::class.java.simpleName
         private const val EXTRA_SELECTED_GROUPS_IDS = "SELECTED_GROUPS_IDS"
-        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION_FIELD_KEY, MEMBERS_COUNT_FIELD_KEY)
+        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION, MEMBERS_COUNT)
     }
 
     private lateinit var adapter: Adapter
@@ -72,15 +71,18 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun requestGroups() {
-        GroupRepository.getGroups(GROUP_EXTENDED_FIELDS, object : VKApiCallback<List<VKGroup>> {
-            override fun success(result: List<VKGroup>) {
-                adapter.groups = result
-            }
+        GroupRepository.getGroups(
+            GROUP_EXTENDED_FIELDS,
+            null,
+            object : VKApiCallback<List<VKGroup>> {
+                override fun success(result: List<VKGroup>) {
+                    adapter.groups = result
+                }
 
-            override fun fail(e: VKApiExecutionException) {
-                Log.e(TAG, "requestGroups>fail", e) // TODO
-            }
-        })
+                override fun fail(error: Exception) {
+                    Log.e(TAG, "requestGroups>fail", error) // TODO
+                }
+            })
     }
 
     private fun requestGroup(groupId: Int) {
@@ -89,21 +91,21 @@ class LeaveGroupsActivity : BaseActivity() {
                 updateGroupInfoLayout(result)
             }
 
-            override fun fail(e: VKApiExecutionException) {
-                Log.e(TAG, "requestGroup>fail", e) // TODO
+            override fun fail(error: Exception) {
+                Log.e(TAG, "requestGroup>fail", error) // TODO
             }
         })
     }
 
     private fun initializeLayout() {
         updateToolbarTitle(EXPANDED_STATE)
-        toolbar.subtitle = getString(R.string.leave_subtitle)
         toolbar.onExpandedStateChangedListener = { state -> updateToolbarTitle(state) }
 
         val paddingStandard = dimen(this, R.dimen.padding_standard)
         val totalWidth = VKUtils.width(this) - paddingStandard * 2
         val itemWidth = dimen(this, R.dimen.group_item_width)
-        val spanCount = floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
+        val spanCount =
+            floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
         val horizontalSpace = (totalWidth - spanCount * itemWidth) / (spanCount - 1)
 
         adapter = Adapter(this)
@@ -113,7 +115,7 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun updateLeaveLayout() {
-        bottomSheetLayout.animateVisible(R.id.leaveLayout, selectedGroupsIds.isNotEmpty())
+        bottomSheetLayout.animateExpanded(selectedGroupsIds.isNotEmpty())
     }
 
     private fun updateToolbarTitle(expandedState: Float) {
@@ -156,7 +158,7 @@ class LeaveGroupsActivity : BaseActivity() {
             }
 
             holder.itemView.setOnLongClickListener {
-                bottomSheetLayout.switch(R.id.groupInfoLayout)
+                bottomSheetLayout.animateExpanded(true)
                 requestGroup(group.id)
                 true
             }

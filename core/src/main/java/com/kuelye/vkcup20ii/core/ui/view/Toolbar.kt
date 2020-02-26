@@ -1,9 +1,11 @@
 package com.kuelye.vkcup20ii.core.ui.view
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Outline
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
@@ -18,6 +20,7 @@ import androidx.core.view.ViewCompat.TYPE_TOUCH
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeDimen
+import com.kuelye.vkcup20ii.core.utils.themeDrawable
 import kotlinx.android.synthetic.main.view_toolbar.view.*
 
 class Toolbar @JvmOverloads constructor(
@@ -25,9 +28,9 @@ class Toolbar @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
 
     companion object {
+        private val TAG = Toolbar::class.java.simpleName
         const val COLLAPSED_STATE = 0f
         const val EXPANDED_STATE = 1f
-        private val TAG = Toolbar::class.java.simpleName
     }
 
     var title: String? = null
@@ -58,19 +61,22 @@ class Toolbar @JvmOverloads constructor(
             update()
         }
 
+    private var stateAnimator: ValueAnimator? = null
+
+    private var targetElevation: Int = 0
+    private var elevationAnimator: ValueAnimator? = null
+
     init {
         LayoutInflater.from(context).inflate(R.layout.view_toolbar, this, true)
+        background = themeDrawable(android.R.attr.windowBackground)
+        initializeAttrs(attrs)
+        if (subtitle == null) actualHeight = collapsedHeight
     }
-
-    private var animator: ValueAnimator? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(
             widthMeasureSpec,
-            if (actualHeight == null) heightMeasureSpec else makeMeasureSpec(
-                actualHeight!!,
-                EXACTLY
-            )
+            if (actualHeight == null) heightMeasureSpec else makeMeasureSpec(actualHeight!!, EXACTLY)
         )
     }
 
@@ -79,6 +85,18 @@ class Toolbar @JvmOverloads constructor(
         outlineProvider = OutlineProvider(w, h)
         if (oldh != h && actualHeight == null) expandedHeight = h
         update()
+    }
+
+    @SuppressLint("PrivateResource")
+    private fun initializeAttrs(attrs: AttributeSet?) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.Toolbar)
+        for (i in 0 until a.indexCount) {
+            when (val attr = a.getIndex(i)) {
+                R.styleable.Toolbar_title -> title = a.getString(attr)
+                R.styleable.Toolbar_subtitle -> subtitle = a.getString(attr)
+            }
+        }
+        a.recycle()
     }
 
     private fun scroll(dy: Int): Int {
@@ -96,41 +114,63 @@ class Toolbar @JvmOverloads constructor(
     private fun animate(targetHeight: Int) {
         //Log.v(TAG, "animate: targetHeight=$targetHeight")
         if (actualHeight != null) {
-            if (animator == null) {
-                animator = ValueAnimator().apply {
+            if (stateAnimator == null) {
+                stateAnimator = ValueAnimator().apply {
                     interpolator = DecelerateInterpolator()
-                    addUpdateListener { actualHeight = animator!!.animatedValue as Int? }
+                    addUpdateListener { actualHeight = stateAnimator!!.animatedValue as Int }
                 }
             } else {
-                animator!!.cancel()
+                stateAnimator!!.cancel()
             }
 
-            animator!!.setIntValues(actualHeight!!, targetHeight)
-            animator!!.start()
+            stateAnimator!!.setIntValues(actualHeight!!, targetHeight)
+            stateAnimator!!.start()
+        }
+    }
+
+    private fun animateElevation(elevated: Boolean) =
+        animateElevation(if (elevated) paddingStandard / 4 else 0)
+
+    private fun animateElevation(targetElevation: Int) {
+        if (this.targetElevation != targetElevation) {
+            this.targetElevation = targetElevation
+            if (elevationAnimator == null) {
+                elevationAnimator = ValueAnimator().apply {
+                    interpolator = DecelerateInterpolator()
+                    addUpdateListener { elevation = elevationAnimator!!.animatedValue as Float }
+                }
+            } else {
+                elevationAnimator!!.cancel()
+            }
+            elevationAnimator!!.apply {
+                setFloatValues(elevation, targetElevation.toFloat())
+                start()
+            }
         }
     }
 
     private fun update() {
-        val state = when {
+        val s = when {
             expandedHeight == collapsedHeight -> COLLAPSED_STATE
             actualHeight == null -> EXPANDED_STATE
             else -> (actualHeight!! - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
         }
 
-        val translationX =
-            ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * state + paddingStandard
-        titleTextView.setPadding(0, (state * paddingStandard + paddingStandard).toInt(), 0, 0)
-        titleTextView.translationX = translationX
+        if (subtitle != null) animateElevation(s != EXPANDED_STATE)
 
-        subtitleTextView.alpha = state
+        val tX = ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * s + paddingStandard
+        val tH = com.kuelye.vkcup20ii.core.utils.getHeight(titleTextView.paint, title)
+        val pT = ((collapsedHeight - tH) / 2 - paddingStandard) * s + paddingStandard
+        titleTextView.setPadding(0, pT.toInt(), 0, 0)
+        titleTextView.translationX = tX
+
+        subtitleTextView.alpha = s
         subtitleTextView.setPadding(
-            paddingStandard * 2, (state * paddingStandard / 2).toInt(),
+            paddingStandard * 2, (s * paddingStandard / 2).toInt(),
             paddingStandard * 2, 0
         )
 
-        this.elevation = (1 - state) * paddingStandard / 4
-
-        onExpandedStateChangedListener?.invoke(state)
+        onExpandedStateChangedListener?.invoke(s)
         requestLayout()
     }
 
@@ -188,7 +228,7 @@ class Toolbar @JvmOverloads constructor(
         ): Boolean {
             val started = axes and SCROLL_AXIS_VERTICAL != 0
             if (started && type == TYPE_TOUCH) {
-                child.animator?.cancel()
+                child.stateAnimator?.cancel()
                 ignoreScroll = false
                 flingVelocityY = null
             }
@@ -209,7 +249,9 @@ class Toolbar @JvmOverloads constructor(
             dxConsumed: Int, dyConsumed: Int,
             dxUnconsumed: Int, dyUnconsumed: Int, type: Int
         ) {
-            if (!ignoreScroll && dyUnconsumed < 0) {
+            if (child.subtitle == null) {
+                child.animateElevation(dyConsumed != 0 || dyUnconsumed > 0)
+            } else if (!ignoreScroll && dyUnconsumed < 0) {
                 child.scroll(dyUnconsumed)
             }
         }

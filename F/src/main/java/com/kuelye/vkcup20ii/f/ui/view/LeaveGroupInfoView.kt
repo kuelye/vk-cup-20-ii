@@ -11,8 +11,6 @@ import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.NO_POSTS_DATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.formatTime
 import com.kuelye.vkcup20ii.f.R
-import com.kuelye.vkcup20ii.f.model.VKGroup
-import com.kuelye.vkcup20ii.f.model.VKGroup.Companion.NO_POSTS_DATE
 import kotlinx.android.synthetic.main.layout_leave_group_info.view.*
 import kotlin.math.floor
 
@@ -87,9 +85,9 @@ class LeaveGroupInfoView @JvmOverloads constructor(
 
     private fun formatMembers(group: VKGroup): String {
         val membersCount = when {
-            group.membersCount < 1000 -> "${group.membersCount}"
-            group.membersCount < 1000000 -> "${formatShort(group.membersCount.toFloat() / 1000)}K"
-            else -> "${group.membersCount / 1000000}M"
+            group.membersCount!! < 1000 -> "${group.membersCount}"
+            group.membersCount!! < 1000000 -> "${formatShort(group.membersCount!!.toFloat() / 1000)}K"
+            else -> "${group.membersCount!! / 1000000}M"
         }
         return String.format(
             context.getString(R.string.info_members_template),

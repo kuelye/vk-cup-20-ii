@@ -1,2 +1,2 @@
-include ':core', ':f', ':e', ':b'
+include ':core', ':f', ':e', ':b', ':a'
 rootProject.name='VK Cup 2020 II'

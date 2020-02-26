@@ -17,12 +17,18 @@ object GroupRepository {
 
     fun getGroups(
         extendedFields: Array<VKGroup.Field>,
-        type: VKGroup.Type,
+        type: VKGroup.Type?,
         callback: VKApiCallback<List<VKGroup>>
     ) {
-        if (groupsCache != null) callback.success(groupsCache!!.filter { it.type == type.value })
+        if (groupsCache != null) {
+            if (type == null) {
+                callback.success(groupsCache!!.toList())
+            } else {
+                callback.success(groupsCache!!.filter { it.type == type.value })
+            }
+        }
         if (!VK.isLoggedIn()) return
-        VK.execute(VKGroupsCommand(extendedFields, type.filter), object : VKApiCallback<List<VKGroup>> {
+        VK.execute(VKGroupsCommand(extendedFields, type?.filter), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 ensureCache()
                 groupsCache!!.clear()

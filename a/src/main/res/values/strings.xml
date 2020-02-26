@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">A</string>
+    <string name="documents_title">Документы</string>
+    <string name="document_size_kb">КБ</string>
+    <string name="document_size_mb">МБ</string>
+    <string name="document_size_gb">ГБ</string>
+    <string name="document_rename">Переименовать</string>
+    <string name="document_remove">Удалить документ</string>
+</resources>

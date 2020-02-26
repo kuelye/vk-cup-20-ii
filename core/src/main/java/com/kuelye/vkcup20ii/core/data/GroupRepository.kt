@@ -4,6 +4,8 @@ import android.util.SparseArray
 import com.kuelye.vkcup20ii.core.api.VKGroupCommand
 import com.kuelye.vkcup20ii.core.api.VKGroupsCommand
 import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.utils.filter
+import com.kuelye.vkcup20ii.core.utils.toList
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
@@ -18,9 +20,7 @@ object GroupRepository {
         type: VKGroup.Type,
         callback: VKApiCallback<List<VKGroup>>
     ) {
-        if (groupsCache != null) {
-            callback.success(groupsCache!!.toList().filter { it.type == type.value })
-        }
+        if (groupsCache != null) callback.success(groupsCache!!.filter { it.type == type.value })
         if (!VK.isLoggedIn()) return
         VK.execute(VKGroupsCommand(extendedFields, type.filter), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
@@ -65,14 +65,6 @@ object GroupRepository {
         if (groupsCache == null) {
             groupsCache = SparseArray()
         }
-    }
-
-    private fun SparseArray<VKGroup>.toList(): List<VKGroup> {
-        val l = mutableListOf<VKGroup>()
-        for (i in 0 until size()) {
-            l.add(get(keyAt(i)))
-        }
-        return l
     }
 
 }

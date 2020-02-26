@@ -14,7 +14,6 @@ import com.google.maps.android.clustering.ClusterManager
 import com.kuelye.vkcup20ii.b.ui.misc.MarkerRenderer
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
-import com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
 import kotlinx.android.synthetic.main.fragment_group_map.*
 
 abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapReadyCallback,
@@ -121,6 +120,8 @@ abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapRead
             true
         }
         clusterManager!!.setOnClusterItemClickListener(this)
+
+        requestData()
     }
 
     private fun checkLocationPermission() {

@@ -3,7 +3,6 @@ package com.kuelye.vkcup20ii.core.utils
 import android.app.Activity.INPUT_METHOD_SERVICE
 import android.content.Context
 import android.content.Intent
-import android.content.res.TypedArray
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.Canvas
@@ -13,6 +12,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
+import android.util.SparseArray
 import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.view.View
@@ -242,6 +242,23 @@ fun getImagePath(context: Context, imageUri: Uri): Uri? {
             // ignore
         }
     }
+}
+
+inline fun <T> SparseArray<T>.toList(): List<T> {
+    val result = mutableListOf<T>()
+    for (i in 0 until size()) {
+        result.add(get(keyAt(i)))
+    }
+    return result
+}
+
+inline fun <T> SparseArray<T>.filter(predicate: (T) -> Boolean): List<T> {
+    val result = mutableListOf<T>()
+    for (i in 0 until size()) {
+        val element = get(keyAt(i))
+        if (predicate(element)) result.add(element)
+    }
+    return result
 }
 
 // # VK

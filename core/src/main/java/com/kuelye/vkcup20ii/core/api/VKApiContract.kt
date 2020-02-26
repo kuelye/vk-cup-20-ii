@@ -5,6 +5,7 @@ const val RESPONSE_FIELD_KEY = "response"
 const val COUNT_FIELD_KEY = "count"
 const val ITEMS_FIELD_KEY = "items"
 const val ID_FIELD_KEY = "id"
+const val DATE_FIELD_KEY = "date"
 
 // VKGroup
 const val NAME_FIELD_KEY = "name"
@@ -32,3 +33,16 @@ const val CITY_ID_FIELD_KEY = "city_id"
 
 // VKCity
 const val TITLE_FIELD_KEY = "title"
+
+// VKPhoto
+class VKPhotoColumns {
+    companion object {
+        const val LAT_FIELD_KEY = "lat"
+        const val LONG_FIELD_KEY = "long"
+        const val SIZES_FIELD_KEY = "sizes"
+        const val SIZE_TYPE_FIELD_KEY = "type"
+        const val SIZE_URL_FIELD_KEY = "url"
+        const val SIZE_WIDTH_FIELD_KEY = "width"
+        const val SIZE_HEIGHT_FIELD_KEY = "height"
+    }
+}

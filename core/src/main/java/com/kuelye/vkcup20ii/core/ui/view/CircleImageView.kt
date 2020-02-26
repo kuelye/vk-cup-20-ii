@@ -91,8 +91,8 @@ open class CircleImageView @JvmOverloads constructor(
                 reset()
                 val drawingRect = Rect().apply { getDrawingRect(this) }
                 val d = drawingRect.width().toFloat() * (1f - scale) / 2
-                val scale = drawingRect.width().toFloat() * scale / bitmap!!.width
-                setScale(scale, scale)
+                val s = drawingRect.width().toFloat() * scale / bitmap!!.width
+                setScale(s, s)
                 postTranslate(d, d)
             }
             paint.shader!!.setLocalMatrix(shaderMatrix)

@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.fragment.GroupMapFragment
+import com.kuelye.vkcup20ii.b.ui.fragment.PhotoMapFragment
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.model.VKGroup
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
@@ -62,7 +63,7 @@ class GroupAndPhotoMapActivity : BaseActivity() {
         override fun getItem(position: Int): Fragment =
             when (position) {
                 0 -> GroupMapFragment.newInstance(VKGroup.Type.EVENT)
-                1 -> GroupMapFragment.newInstance(VKGroup.Type.PAGE)
+                1 -> PhotoMapFragment()
                 2 -> GroupMapFragment.newInstance(VKGroup.Type.GROUP)
                 else -> throw IllegalArgumentException()
             }

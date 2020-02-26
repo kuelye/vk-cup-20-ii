@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.maps.android.clustering.view;
+package com.kuelye.vkcup20ii.b.ui.misc;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -50,6 +50,7 @@ import com.google.maps.android.R;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.geometry.Point;
 import com.google.maps.android.projection.SphericalMercatorProjection;
 import com.google.maps.android.ui.IconGenerator;
@@ -807,6 +808,21 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
      */
     public Cluster<T> getCluster(Marker marker) {
         return mMarkerToCluster.get(marker);
+    }
+
+    /**
+     * Get the cluster marker from a ClusterItem
+     *
+     * @param clusterItem ClusterItem which you will obtain its marker
+     * @return a cluster marker from a ClusterItem or null if it does not exists
+     */
+    public Marker getClusterMarker(T clusterItem) {
+        for (Cluster<T> cluster : mClusters) {
+            if (cluster.getItems().contains(clusterItem)) {
+                return getMarker(cluster);
+            }
+        }
+        return null;
     }
 
     /**

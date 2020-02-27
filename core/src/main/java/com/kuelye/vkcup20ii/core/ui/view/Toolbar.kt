@@ -213,7 +213,7 @@ class Toolbar @JvmOverloads constructor(
         }
 
         private fun updateOffsetTop(child: View) {
-            child.translationY = (offsetTop - child.top - layoutTop).toFloat()
+//            child.translationY = (offsetTop - child.top - layoutTop).toFloat()
         }
 
     }

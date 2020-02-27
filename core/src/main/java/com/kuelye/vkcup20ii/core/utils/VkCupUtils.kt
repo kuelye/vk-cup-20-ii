@@ -56,11 +56,14 @@ fun themeColor(context: Context, @AttrRes attr: Int): Int {
 fun View.themeColor(@AttrRes attr: Int): Int = themeColor(context, attr)
 
 @Dimension
-fun View.themeDimen(@AttrRes res: Int): Int {
+fun themeDimen(context: Context, @AttrRes attr: Int): Int {
     val typedValue = TypedValue()
-    context.theme.resolveAttribute(res, typedValue, true)
+    context.theme.resolveAttribute(attr, typedValue, true)
     return typedValue.getDimension(context.resources.displayMetrics).toInt()
 }
+
+@Dimension
+fun View.themeDimen(@AttrRes attr: Int): Int = themeDimen(context, attr)
 
 fun View.themeDrawable(@AttrRes attr : Int): Drawable {
     val typedValue = TypedValue()

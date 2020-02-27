@@ -15,6 +15,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils.clamp
+import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
 import androidx.core.view.ViewCompat.TYPE_TOUCH
 import com.kuelye.vkcup20ii.core.R

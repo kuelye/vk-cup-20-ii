@@ -17,8 +17,10 @@ import com.kuelye.vkcup20ii.a.data.DocumentRepository
 import com.kuelye.vkcup20ii.a.model.VKDocument
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.utils.themeDimen
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
+import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.activity_documents.*
 
 class DocumentsActivity : BaseActivity() {
@@ -47,6 +49,9 @@ class DocumentsActivity : BaseActivity() {
         adapter = Adapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+        swipeRefreshLayout.setProgressViewOffset(true, 0, dp(32))
+        swipeRefreshLayout.setSlingshotDistance(dp(64))
+        swipeRefreshLayout.setOnRefreshListener { requestDocuments() }
     }
 
     private fun requestDocuments() {
@@ -54,6 +59,7 @@ class DocumentsActivity : BaseActivity() {
             object : VKApiCallback<List<VKDocument>> {
                 override fun success(result: List<VKDocument>) {
                     adapter.documents = result
+                    swipeRefreshLayout.isRefreshing = false
                 }
 
                 override fun fail(error: Exception) {

@@ -7,4 +7,13 @@
         <attr name="title" format="string" />
         <attr name="subtitle" format="string" />
     </declare-styleable>
+    <declare-styleable name="BorderImageView">
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="borderType" format="enum">
+            <enum name="circle" value="0"/>
+            <enum name="square" value="1"/>
+        </attr>
+        <attr name="borderCornerRadius" format="dimension" />
+    </declare-styleable>
 </resources>

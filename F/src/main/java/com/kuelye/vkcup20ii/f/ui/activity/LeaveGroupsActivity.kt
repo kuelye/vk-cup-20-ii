@@ -21,7 +21,7 @@ import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.f.R
-import com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
+import com.kuelye.vkcup20ii.f.ui.view.SelectableBorderImageView
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope.GROUPS
@@ -173,7 +173,7 @@ class LeaveGroupsActivity : BaseActivity() {
             private val nameTextView =
                 itemView.findViewById<TextView>(R.id.nameTextView)
             private val photoImageView =
-                itemView.findViewById<SelectableCircleImageView>(R.id.photoImageView)
+                itemView.findViewById<SelectableBorderImageView>(R.id.photoImageView)
 
             fun setSelected(selected: Boolean, animate: Boolean) {
                 if (animate) {

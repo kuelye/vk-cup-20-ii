@@ -8,7 +8,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
-import com.kuelye.vkcup20ii.core.ui.view.CircleImageView
+import com.kuelye.vkcup20ii.core.ui.view.BorderImageView
 import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.interpolateColor
 import com.kuelye.vkcup20ii.core.utils.toBitmap
@@ -16,12 +16,12 @@ import com.kuelye.vkcup20ii.f.R
 import com.vk.api.sdk.utils.VKUtils.dp
 import kotlin.math.sqrt
 
-class SelectableCircleImageView @JvmOverloads constructor(
+class SelectableBorderImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : CircleImageView(context, attrs, defStyleAttr) {
+) : BorderImageView(context, attrs, defStyleAttr) {
 
     companion object {
-        private val TAG = SelectableCircleImageView::class.java.simpleName
+        private val TAG = SelectableBorderImageView::class.java.simpleName
         private val SQUARE_OF_TWO = sqrt(2f)
 
         private val UNSELECTED_BORDER_WIDTH = dp(1).toFloat()

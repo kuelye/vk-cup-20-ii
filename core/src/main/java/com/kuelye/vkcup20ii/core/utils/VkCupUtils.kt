@@ -28,9 +28,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.GregorianCalendar.YEAR
-import kotlin.math.absoluteValue
-import kotlin.math.ceil
-import kotlin.math.sign
+import kotlin.math.*
 
 
 // # RESOURCES
@@ -129,6 +127,15 @@ fun ceil(dividend: Int, divisor: Int) =
     dividend.sign * divisor.sign * (dividend.absoluteValue + divisor.absoluteValue - 1) /
             divisor.absoluteValue
 
+fun formatShort(value: Float, decimals: Int = 1, floor: Boolean = false): String {
+    return if (decimals == 0) {
+        (if (floor) floor(value).toInt() else round(value).toInt()).toString()
+    } else {
+        val tenValues = if (floor) floor(value * 10) else round(value * 10)
+        "%.1f".format(tenValues / 10).replace(".0", "")
+    }
+}
+
 // # COLOR
 
 @ColorInt
@@ -193,6 +200,14 @@ inline fun <R> JSONArray.map(transform: (JSONObject) -> R): List<R> {
     val destination = mutableListOf<R>()
     for (i in 0 until length()) {
         destination.add(transform.invoke(getJSONObject(i)))
+    }
+    return destination
+}
+
+fun JSONArray.toStringList(): List<String> {
+    val destination = mutableListOf<String>()
+    for (i in 0 until length()) {
+        destination.add(getString(i))
     }
     return destination
 }

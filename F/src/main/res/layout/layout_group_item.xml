@@ -7,7 +7,7 @@
     android:background="@drawable/bg_leave_group_selectable_item"
     android:orientation="vertical">
 
-    <com.kuelye.vkcup20ii.f.ui.view.SelectableCircleImageView
+    <com.kuelye.vkcup20ii.f.ui.view.SelectableBorderImageView
         android:id="@+id/photoImageView"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"

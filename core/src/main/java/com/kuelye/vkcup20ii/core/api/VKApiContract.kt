@@ -6,11 +6,12 @@ const val COUNT_FIELD_KEY = "count"
 const val ITEMS_FIELD_KEY = "items"
 const val ID_FIELD_KEY = "id"
 const val DATE_FIELD_KEY = "date"
+const val TITLE_FIELD_KEY = "title"
+const val TYPE_FIELD_KEY = "type"
 
 // VKGroup
 const val NAME_FIELD_KEY = "name"
 const val SCREEN_NAME_FIELD_KEY = "screen_name"
-const val TYPE_FIELD_KEY = "type"
 const val IS_MEMBER_FIELD_KEY = "is_member"
 const val PHOTO_200_FIELD_KEY = "photo_200"
 const val DESCRIPTION_FIELD_KEY = "description"
@@ -31,9 +32,6 @@ const val LONGITUDE_FIELD_KEY = "longitude"
 const val ADDRESS_FIELD_KEY = "address"
 const val CITY_ID_FIELD_KEY = "city_id"
 
-// VKCity
-const val TITLE_FIELD_KEY = "title"
-
 // VKPhoto
 class VKPhotoColumns {
     companion object {
@@ -44,5 +42,14 @@ class VKPhotoColumns {
         const val SIZE_URL_FIELD_KEY = "url"
         const val SIZE_WIDTH_FIELD_KEY = "width"
         const val SIZE_HEIGHT_FIELD_KEY = "height"
+    }
+}
+
+// VKDocument
+class VKDocumentColumns {
+    companion object {
+        const val SIZE_FIELD_KEY = "size"
+        const val EXT_FIELD_KEY = "ext"
+        const val TAGS_FIELD_KEY = "tags"
     }
 }

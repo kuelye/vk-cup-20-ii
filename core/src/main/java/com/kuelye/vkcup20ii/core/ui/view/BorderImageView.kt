@@ -8,16 +8,20 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.toBitmap
 import com.vk.api.sdk.utils.VKUtils.dp
 
-open class CircleImageView @JvmOverloads constructor(
+open class BorderImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ImageView(context, attrs, defStyleAttr) {
 
     companion object {
+        private val TAG = BorderImageView::class.java.simpleName
         private const val BORDER_COLOR_DEFAULT = Color.RED
         private val BORDER_WIDTH_DEFAULT = dp(1)
+        private val BORDER_TYPE_DEFAULT = BorderType.CIRCLE
+        private val BORDER_CORNER_RADIUS = dp(6)
     }
 
     @ColorInt
@@ -32,6 +36,16 @@ open class CircleImageView @JvmOverloads constructor(
         set(value) {
             field = value
             borderPaint.strokeWidth = borderWidth
+            invalidate()
+        }
+    var borderType: BorderType = BORDER_TYPE_DEFAULT
+        set(value) {
+            field = value
+            invalidate()
+        }
+    var borderCornerRadius: Float = BORDER_CORNER_RADIUS.toFloat()
+        set(value) {
+            field = value
             invalidate()
         }
     var scale: Float = 1f
@@ -55,6 +69,10 @@ open class CircleImageView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
+    init {
+        initializeAttrs(attrs)
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         updateByDrawable()
@@ -62,17 +80,43 @@ open class CircleImageView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         if (bitmap != null) {
-            val halfWidth = width.toFloat() / 2
-            val halfHeight = height.toFloat() / 2
-            val r = halfWidth - borderWidth / 2
-            canvas.drawCircle(halfWidth, halfHeight, r, borderPaint)
-            canvas.drawCircle(halfWidth, halfHeight, r * scale, paint)
+            val hW = width.toFloat() / 2
+            val hH = height.toFloat() / 2
+            val hBW = borderWidth / 2
+            if (borderType == BorderType.CIRCLE) {
+                val r = hW - hBW
+                if (borderWidth > 0) canvas.drawCircle(hW, hH, r, borderPaint)
+                canvas.drawCircle(hW, hH, (hW - borderWidth) * scale, paint)
+            } else {
+                if (borderWidth > 0) canvas.drawRoundRect(hBW, hBW, width - hBW, height - hBW,
+                    borderCornerRadius, borderCornerRadius, borderPaint)
+                // TODO support scale in square mode
+                canvas.drawRoundRect(borderWidth, borderWidth, width - borderWidth,
+                    height - borderWidth, borderCornerRadius, borderCornerRadius, paint)
+            }
         }
     }
 
     override fun setImageDrawable(drawable: Drawable?) {
         super.setImageDrawable(drawable)
         updateByDrawable()
+    }
+
+    private fun initializeAttrs(attrs: AttributeSet?) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.BorderImageView)
+        for (i in 0 until a.indexCount) {
+            when (val attr = a.getIndex(i)) {
+                R.styleable.BorderImageView_borderColor -> borderColor =
+                    a.getColor(attr, BORDER_COLOR_DEFAULT)
+                R.styleable.BorderImageView_borderWidth -> borderWidth =
+                    a.getDimension(attr, BORDER_WIDTH_DEFAULT.toFloat())
+                R.styleable.BorderImageView_borderType -> borderType =
+                    BorderType.forValue(a.getInt(attr, BORDER_TYPE_DEFAULT.value))
+                R.styleable.BorderImageView_borderCornerRadius -> borderCornerRadius =
+                    a.getDimension(attr, BORDER_CORNER_RADIUS.toFloat())
+            }
+        }
+        a.recycle()
     }
 
     private fun updateByDrawable() {
@@ -96,6 +140,14 @@ open class CircleImageView @JvmOverloads constructor(
                 postTranslate(d, d)
             }
             paint.shader!!.setLocalMatrix(shaderMatrix)
+        }
+    }
+
+    enum class BorderType(val value: Int) {
+        CIRCLE(0), SQUARE(1);
+        companion object {
+            fun forValue(value: Int): BorderType =
+                values().firstOrNull { it.value == value } ?: BORDER_TYPE_DEFAULT
         }
     }
 

@@ -8,8 +8,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.MeasureSpec.EXACTLY
-import android.view.View.MeasureSpec.makeMeasureSpec
+import android.view.View.MeasureSpec.*
 import android.view.ViewOutlineProvider
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
@@ -190,6 +189,21 @@ class Toolbar @JvmOverloads constructor(
         private var layoutTop: Int = 0
         private var offsetTop: Int = 0
 
+        override fun onMeasureChild(
+            parent: CoordinatorLayout,
+            child: View,
+            parentWidthMeasureSpec: Int,
+            widthUsed: Int,
+            parentHeightMeasureSpec: Int,
+            heightUsed: Int
+        ): Boolean {
+            val dependencies = parent.getDependencies(child)
+            val toolbar = dependencies.firstOrNull { it is Toolbar } ?: return false
+            val heightMeasureSpec = makeMeasureSpec(parent.height - toolbar.height, AT_MOST)
+            parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed, heightMeasureSpec, heightUsed)
+            return true
+        }
+
         override fun onLayoutChild(
             parent: CoordinatorLayout, child: View, layoutDirection: Int
         ): Boolean {
@@ -213,7 +227,7 @@ class Toolbar @JvmOverloads constructor(
         }
 
         private fun updateOffsetTop(child: View) {
-//            child.translationY = (offsetTop - child.top - layoutTop).toFloat()
+            child.translationY = (offsetTop - child.top - layoutTop).toFloat()
         }
 
     }

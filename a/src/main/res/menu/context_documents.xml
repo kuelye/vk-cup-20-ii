@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/rename_action"
+        android:title="@string/document_rename" />
+
+    <item
+        android:id="@+id/remove_action"
+        android:title="@string/document_remove" />
+</menu>

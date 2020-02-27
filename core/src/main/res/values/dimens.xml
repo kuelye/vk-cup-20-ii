@@ -18,4 +18,5 @@
     <dimen name="medium_button_height">44dp</dimen>
     <dimen name="bottom_sheet_toolbar_height">52dp</dimen>
     <dimen name="bottom_sheet_toolbar_elevation">4dp</dimen>
+    <dimen name="popup_corner_radius">16dp</dimen>
 </resources>

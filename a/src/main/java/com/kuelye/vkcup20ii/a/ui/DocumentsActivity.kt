@@ -3,12 +3,14 @@ package com.kuelye.vkcup20ii.a.ui
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity.END
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,7 @@ import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
 import kotlinx.android.synthetic.main.activity_documents.*
+import kotlinx.android.synthetic.main.layout_document.*
 
 class DocumentsActivity : BaseActivity() {
 
@@ -79,6 +82,10 @@ class DocumentsActivity : BaseActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val document = documents!![position]
+            updateLayout(holder, document)
+        }
+
+        private fun updateLayout(holder: ViewHolder, document: VKDocument) {
             holder.iconImageView.setImageResource(document.type.drawable)
             holder.titleTextView.text = document.title
             holder.infoTextView.text = document.getFormattedInfo(this@DocumentsActivity)
@@ -99,10 +106,21 @@ class DocumentsActivity : BaseActivity() {
             val infoTextView: TextView = itemView.findViewById(R.id.infoTextView)
             val tagsImageView: ImageView = itemView.findViewById(R.id.tagsImageView)
             val tagsTextView: TextView = itemView.findViewById(R.id.tagsTextView)
+            val moreImageView: ImageView = itemView.findViewById(R.id.moreImageView)
+
+            init {
+                moreImageView.setOnClickListener { showMenu(it) }
+            }
 
             fun setTagsVisible(visible: Boolean) {
                 tagsImageView.visibility = if (visible) VISIBLE else GONE
                 tagsTextView.visibility = if (visible) VISIBLE else GONE
+            }
+
+            private fun showMenu(v: View) {
+                val menu = PopupMenu(this@DocumentsActivity, v)
+                menu.inflate(R.menu.context_documents)
+                menu.show()
             }
 
         }

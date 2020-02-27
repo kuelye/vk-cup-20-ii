@@ -5,6 +5,20 @@
 
     <style name="Base.V21.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/background_color</item>
+        <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
+        <item name="popupMenuStyle">@style/AppTheme.PopupMenu</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/itemTextStyle.AppTheme</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/itemTextStyle.AppTheme</item>
+    </style>
+
+    <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/bg_popup</item>
+        <item name="android:paddingTop">100dp</item>
+    </style>
+
+    <style name="itemTextStyle.AppTheme" parent="TextAppearance.AppCompat.Widget.PopupMenu.Small">
+        <item name="android:textColor">@color/title_color</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>

@@ -102,6 +102,11 @@ open class BorderImageView @JvmOverloads constructor(
         updateByDrawable()
     }
 
+    override fun setImageResource(resId: Int) {
+        super.setImageResource(resId)
+        updateByDrawable()
+    }
+
     private fun initializeAttrs(attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BorderImageView)
         for (i in 0 until a.indexCount) {

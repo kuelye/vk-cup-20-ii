@@ -3,10 +3,7 @@ package com.kuelye.vkcup20ii.a.model
 import android.content.Context
 import androidx.annotation.DrawableRes
 import com.kuelye.vkcup20ii.a.R
-import com.kuelye.vkcup20ii.core.api.DATE_FIELD_KEY
-import com.kuelye.vkcup20ii.core.api.ID_FIELD_KEY
-import com.kuelye.vkcup20ii.core.api.TITLE_FIELD_KEY
-import com.kuelye.vkcup20ii.core.api.TYPE_FIELD_KEY
+import com.kuelye.vkcup20ii.core.api.*
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.EXT_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.SIZE_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.TAGS_FIELD_KEY
@@ -20,6 +17,7 @@ import java.util.Locale.ENGLISH
 
 data class VKDocument(
     val id: Int,
+    val ownerId: Int,
     val title: String,
     val size: Int,
     val ext: String,
@@ -38,6 +36,7 @@ data class VKDocument(
         fun parse(jo: JSONObject): VKDocument {
             return VKDocument(
                 id = jo.getInt(ID_FIELD_KEY),
+                ownerId = jo.getInt(OWNER_ID_FIELD_KEY),
                 title = jo.getString(TITLE_FIELD_KEY),
                 size = jo.getInt(SIZE_FIELD_KEY),
                 ext = jo.getString(EXT_FIELD_KEY),
@@ -78,6 +77,10 @@ data class VKDocument(
         companion object {
             fun forValue(value: Int): Type = values().firstOrNull { it.value == value } ?: UNKNOWN
         }
+    }
+
+    class DateComparator : Comparator<VKDocument> {
+        override fun compare(o1: VKDocument, o2: VKDocument): Int = o2.date.compareTo(o1.date)
     }
 
 }

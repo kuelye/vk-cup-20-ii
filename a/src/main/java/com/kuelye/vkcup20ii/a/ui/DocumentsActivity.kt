@@ -1,9 +1,7 @@
 package com.kuelye.vkcup20ii.a.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity.END
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -22,7 +20,6 @@ import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
 import kotlinx.android.synthetic.main.activity_documents.*
-import kotlinx.android.synthetic.main.layout_document.*
 
 class DocumentsActivity : BaseActivity() {
 
@@ -65,6 +62,35 @@ class DocumentsActivity : BaseActivity() {
             })
     }
 
+    private fun showDocumentMenu(v: View, document: VKDocument) {
+        val menu = PopupMenu(this@DocumentsActivity, v)
+        menu.inflate(R.menu.context_documents)
+        menu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+//                        R.id.rename_action ->
+                R.id.remove_action -> {
+                    removeDocument(document)
+                    true
+                }
+                else -> false
+            }
+        }
+        menu.show()
+    }
+
+    private fun removeDocument(document: VKDocument) {
+        DocumentRepository.removeDocument(document, object : VKApiCallback<Int> {
+            override fun success(result: Int) {
+                requestDocuments()
+                Log.v(TAG, "success: $result")
+            }
+
+            override fun fail(error: Exception) {
+                Log.e(TAG, "fail", error)
+            }
+        })
+    }
+
     private inner class Adapter : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         private val layoutInflater: LayoutInflater = LayoutInflater.from(this@DocumentsActivity)
@@ -97,6 +123,7 @@ class DocumentsActivity : BaseActivity() {
                 holder.titleTextView.maxLines = 1
                 holder.tagsTextView.text = document.tags.joinToString(", ")
             }
+            holder.moreImageView.setOnClickListener { v -> showDocumentMenu(v, document) }
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -108,19 +135,9 @@ class DocumentsActivity : BaseActivity() {
             val tagsTextView: TextView = itemView.findViewById(R.id.tagsTextView)
             val moreImageView: ImageView = itemView.findViewById(R.id.moreImageView)
 
-            init {
-                moreImageView.setOnClickListener { showMenu(it) }
-            }
-
             fun setTagsVisible(visible: Boolean) {
                 tagsImageView.visibility = if (visible) VISIBLE else GONE
                 tagsTextView.visibility = if (visible) VISIBLE else GONE
-            }
-
-            private fun showMenu(v: View) {
-                val menu = PopupMenu(this@DocumentsActivity, v)
-                menu.inflate(R.menu.context_documents)
-                menu.show()
             }
 
         }

@@ -257,7 +257,9 @@ fun getImagePath(context: Context, imageUri: Uri): Uri? {
     }
 }
 
-fun <T> SparseArray<T>.toList(): List<T> {
+fun <T> SparseArray<T>.toList() = toMutableList()
+
+fun <T> SparseArray<T>.toMutableList(): MutableList<T> {
     val result = mutableListOf<T>()
     for (i in 0 until size()) {
         result.add(get(keyAt(i)))

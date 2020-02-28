@@ -91,6 +91,8 @@ class DocumentsActivity : BaseActivity() {
         swipeRefreshLayout.setProgressViewOffset(true, 0, dp(32))
         swipeRefreshLayout.setSlingshotDistance(dp(64))
         swipeRefreshLayout.setOnRefreshListener { requestDocuments() }
+
+        showDocuments(null)
     }
 
     private fun requestDocuments() {
@@ -98,7 +100,7 @@ class DocumentsActivity : BaseActivity() {
             pagesCount,
             object : VKApiCallback<DocumentRepository.GetDocumentsResult> {
                 override fun success(result: DocumentRepository.GetDocumentsResult) {
-                    adapter.swap(result.documents, result.documents.size != result.totalCount)
+                    showDocuments(result.documents, result.documents.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
 
@@ -127,11 +129,17 @@ class DocumentsActivity : BaseActivity() {
         menu.show()
     }
 
+    private fun showDocuments(documents: List<VKDocument>?,  hasMore: Boolean = false) {
+        progressBar.visibility = if (documents == null) VISIBLE else GONE
+        recyclerView.visibility = if (documents.isNullOrEmpty()) GONE else VISIBLE
+        noItemsTextView.visibility = if (documents != null && documents.isEmpty()) VISIBLE else GONE
+        adapter.swap(documents, hasMore)
+    }
+
     private fun removeDocument(document: VKDocument) {
         DocumentRepository.removeDocument(document, object : VKApiCallback<Int> {
             override fun success(result: Int) {
                 requestDocuments()
-                Log.v(TAG, "success: $result")
             }
 
             override fun fail(error: Exception) {
@@ -144,7 +152,6 @@ class DocumentsActivity : BaseActivity() {
         DocumentRepository.renameDocument(document, document.title, object : VKApiCallback<Int> {
             override fun success(result: Int) {
                 requestDocuments()
-                Log.v(TAG, "success: $result")
             }
 
             override fun fail(error: Exception) {

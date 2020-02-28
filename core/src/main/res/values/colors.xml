@@ -6,6 +6,7 @@
     <color name="hint_color">#818C99</color>
     <color name="subtitle_color">#818C99</color>
     <color name="icon_color">#FF99A2AD</color>
+    <color name="accent_color">#3F8AE0</color>
     <color name="button_color_default">#4986CC</color>
     <color name="button_color_disabled">#804986CC</color>
     <color name="filled_box_edit_text_stroke_color">#E1E3E6</color>

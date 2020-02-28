@@ -16,13 +16,14 @@ object DocumentRepository {
     const val COUNT_PER_PAGE = 10
 
     private var documents: SparseArray<VKDocument>? = null
+    private var totalCount: Int? = null
     private var sortedDocuments: MutableList<VKDocument>? = null
 
     fun getDocuments(
         pagesCount: Int,
         callback: VKApiCallback<GetDocumentsResult>
     ) {
-        if (sortedDocuments != null) callback.success(GetDocumentsResult(sortedDocuments!!))
+        if (sortedDocuments != null) callback.success(GetDocumentsResult(sortedDocuments!!, totalCount))
         if (!VK.isLoggedIn()) return
         VK.execute(VKDocsGetRequest(0, pagesCount * COUNT_PER_PAGE),
             object : VKApiCallback<VKDocsGetRequest.Response> {
@@ -30,6 +31,7 @@ object DocumentRepository {
                     ensureCache()
                     documents!!.clear()
                     for (document in result.items) documents!!.put(document.id, document)
+                    totalCount = result.count
                     sortedDocuments = documents!!.toMutableList()
                     Collections.sort(sortedDocuments!!, VKDocument.DateComparator())
                     callback.success(GetDocumentsResult(sortedDocuments!!, result.count))

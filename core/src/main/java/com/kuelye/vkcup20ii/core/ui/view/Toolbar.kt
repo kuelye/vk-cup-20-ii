@@ -199,6 +199,7 @@ class Toolbar @JvmOverloads constructor(
         ): Boolean {
             val dependencies = parent.getDependencies(child)
             val toolbar = dependencies.firstOrNull { it is Toolbar } ?: return false
+            if (!ViewCompat.isLaidOut(toolbar)) return false
             val heightMeasureSpec = makeMeasureSpec(parent.height - toolbar.height, AT_MOST)
             parent.onMeasureChild(child, parentWidthMeasureSpec, widthUsed, heightMeasureSpec, heightUsed)
             return true
@@ -228,6 +229,7 @@ class Toolbar @JvmOverloads constructor(
 
         private fun updateOffsetTop(child: View) {
             child.translationY = (offsetTop - child.top - layoutTop).toFloat()
+            child.requestLayout()
         }
 
     }

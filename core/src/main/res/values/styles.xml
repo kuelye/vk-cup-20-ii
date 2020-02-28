@@ -9,6 +9,7 @@
         <item name="popupMenuStyle">@style/AppTheme.PopupMenu</item>
         <item name="android:textAppearanceLargePopupMenu">@style/itemTextStyle.AppTheme</item>
         <item name="android:textAppearanceSmallPopupMenu">@style/itemTextStyle.AppTheme</item>
+        <item name="colorAccent">@color/accent_color</item>
     </style>
 
     <style name="AppTheme.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">

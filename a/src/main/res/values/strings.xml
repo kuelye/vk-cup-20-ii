@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">A</string>
     <string name="documents_title">Документы</string>
+    <string name="documents_empty">Здесь будут отображаться Ваши документы.</string>
     <string name="document_size_b">Б</string>
     <string name="document_size_kb">КБ</string>
     <string name="document_size_mb">МБ</string>

@@ -1,9 +1,9 @@
 package com.kuelye.vkcup20ii.core.data
 
 import android.util.SparseArray
-import com.kuelye.vkcup20ii.core.api.VKGroupCommand
-import com.kuelye.vkcup20ii.core.api.VKGroupsCommand
-import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.api.groups.VKGroupCommand
+import com.kuelye.vkcup20ii.core.api.groups.VKGroupsCommand
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.utils.filter
 import com.kuelye.vkcup20ii.core.utils.toList
 import com.vk.api.sdk.VK
@@ -28,7 +28,11 @@ object GroupRepository {
             }
         }
         if (!VK.isLoggedIn()) return
-        VK.execute(VKGroupsCommand(extendedFields, type?.filter), object : VKApiCallback<List<VKGroup>> {
+        VK.execute(
+            VKGroupsCommand(
+                extendedFields,
+                type?.filter
+            ), object : VKApiCallback<List<VKGroup>> {
             override fun success(result: List<VKGroup>) {
                 ensureCache()
                 groupsCache!!.clear()

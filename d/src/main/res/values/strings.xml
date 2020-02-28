@@ -12,5 +12,6 @@
         <item quantity="two">%d фотографии</item>
         <item quantity="few">%d фотографии</item>
         <item quantity="many">%d фотографий</item>
+        <item quantity="other">%d фотографий</item>
     </plurals>
 </resources>

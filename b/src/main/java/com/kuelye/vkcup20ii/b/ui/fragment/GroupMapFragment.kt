@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.misc.GroupMarkerHolder
 import com.kuelye.vkcup20ii.core.data.GroupRepository
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.ADDRESSES
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.ADDRESSES
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
 import com.vk.api.sdk.VKApiCallback
 import kotlinx.android.synthetic.main.fragment_group_map.*

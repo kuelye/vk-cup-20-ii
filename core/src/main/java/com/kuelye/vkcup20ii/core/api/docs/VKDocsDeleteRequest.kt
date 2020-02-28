@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.a.api
+package com.kuelye.vkcup20ii.core.api.docs
 
 import com.kuelye.vkcup20ii.core.api.OWNER_ID_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.RESPONSE_FIELD_KEY

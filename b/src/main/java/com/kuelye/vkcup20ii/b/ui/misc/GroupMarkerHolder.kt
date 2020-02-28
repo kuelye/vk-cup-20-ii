@@ -3,15 +3,13 @@ package com.kuelye.vkcup20ii.b.ui.misc
 import android.graphics.*
 import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.BlurMaskFilter.Blur.OUTER
-import android.graphics.Color.WHITE
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Paint.Style.FILL
 import android.graphics.Paint.Style.STROKE
 import com.google.android.gms.maps.model.LatLng
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder.IconTransformation.BorderType.CIRCLE
-import com.kuelye.vkcup20ii.core.model.VKAddress
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.utils.sp
+import com.kuelye.vkcup20ii.core.model.groups.VKAddress
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.vk.api.sdk.utils.VKUtils.dp
 import kotlin.math.max
 

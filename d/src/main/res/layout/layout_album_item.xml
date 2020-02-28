@@ -13,10 +13,11 @@
         android:layout_height="@dimen/albums_item_min_width"
         app:borderCornerRadius="@dimen/small_corner_radius_6"
         app:borderType="square"
+        app:borderWidth="0dp"
         tools:background="#999" />
 
     <TextView
-        android:id="@+id/nameTextView"
+        android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

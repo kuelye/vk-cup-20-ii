@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.misc.PhotoMarkerHolder
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
-import com.kuelye.vkcup20ii.core.model.VKPhoto
+import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.vk.api.sdk.VKApiCallback
 
 class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {

@@ -1,9 +1,9 @@
-package com.kuelye.vkcup20ii.core.api
+package com.kuelye.vkcup20ii.core.api.groups
 
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.NO_POSTS_DATE
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.MEMBERS_COUNT
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Companion.NO_POSTS_DATE
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.MEMBERS_COUNT
 import com.vk.api.sdk.VKApiManager
 import com.vk.api.sdk.VKApiResponseParser
 import com.vk.api.sdk.VKMethodCall

@@ -1,11 +1,12 @@
-package com.kuelye.vkcup20ii.core.api
+package com.kuelye.vkcup20ii.core.api.groups
 
 import android.util.Log
-import com.kuelye.vkcup20ii.core.model.VKAddress
-import com.kuelye.vkcup20ii.core.model.VKCity
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.ADDRESSES
-import com.kuelye.vkcup20ii.core.model.VKGroupsGetAddressesResponse
+import com.kuelye.vkcup20ii.core.api.*
+import com.kuelye.vkcup20ii.core.model.groups.VKAddress
+import com.kuelye.vkcup20ii.core.model.database.VKCity
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.ADDRESSES
+import com.kuelye.vkcup20ii.core.model.groups.VKGroupsGetAddressesResponse
 import com.kuelye.vkcup20ii.core.utils.ceil
 import com.kuelye.vkcup20ii.core.utils.map
 import com.vk.api.sdk.VKApiManager
@@ -34,7 +35,9 @@ class VKGroupsCommand(
         extendedFields?.let { callBuilder.args("fields",
             extendedFields.mapNotNull { it.key }.joinToString(",")) }
         filter?.let { callBuilder.args("filter", filter) }
-        val groups = manager.execute(callBuilder.build(), GroupsGetParser())
+        val groups = manager.execute(callBuilder.build(),
+            GroupsGetParser()
+        )
 
         if (extendedFields?.contains(ADDRESSES) == true) {
             val cityIds = mutableSetOf<Int>()
@@ -64,7 +67,9 @@ class VKGroupsCommand(
         var response = getAddresses(manager, groupId, 0)
         return if (response.addresses.size < response.count) {
             val addresses = response.addresses.toMutableList()
-            for (i in 1..(ceil(response.count, ADDRESSES_COUNT_PER_REQUEST))) {
+            for (i in 1..(ceil(response.count,
+                ADDRESSES_COUNT_PER_REQUEST
+            ))) {
                 response = getAddresses(manager, groupId, ADDRESSES_COUNT_PER_REQUEST * i)
                 addresses.addAll(response.addresses)
             }
@@ -82,10 +87,14 @@ class VKGroupsCommand(
             .args("group_id", groupId)
             .args("fields", "$ADDRESS_FIELD_KEY,$LATITUDE_FIELD_KEY,$LONGITUDE_FIELD_KEY,$CITY_ID_FIELD_KEY")
             .args("offset", offset)
-            .args("count", ADDRESSES_COUNT_PER_REQUEST)
+            .args("count",
+                ADDRESSES_COUNT_PER_REQUEST
+            )
             .version(manager.config.version)
             .build()
-        return manager.execute(call, GroupsGetAddressesParser())
+        return manager.execute(call,
+            GroupsGetAddressesParser()
+        )
     }
 
     private fun getCities(
@@ -96,7 +105,9 @@ class VKGroupsCommand(
             .args("city_ids", cityIds.joinToString(","))
             .version(manager.config.version)
             .build()
-        return manager.execute(call, DatabaseGetCitiesByIdParser())
+        return manager.execute(call,
+            DatabaseGetCitiesByIdParser()
+        )
     }
 
     private class GroupsGetParser : VKApiResponseParser<List<VKGroup>> {

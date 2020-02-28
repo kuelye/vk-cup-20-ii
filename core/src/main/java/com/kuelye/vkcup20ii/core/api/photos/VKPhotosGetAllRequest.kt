@@ -1,6 +1,7 @@
-package com.kuelye.vkcup20ii.core.api
+package com.kuelye.vkcup20ii.core.api.photos
 
-import com.kuelye.vkcup20ii.core.model.VKPhotosGetAllResponse
+import com.kuelye.vkcup20ii.core.api.RESPONSE_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.photos.VKPhotosGetAllResponse
 import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 

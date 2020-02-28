@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.data.GroupRepository
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.DESCRIPTION
-import com.kuelye.vkcup20ii.core.model.VKGroup.Field.MEMBERS_COUNT
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.MEMBERS_COUNT
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE

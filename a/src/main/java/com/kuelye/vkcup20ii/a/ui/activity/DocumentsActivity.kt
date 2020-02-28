@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.a.ui
+package com.kuelye.vkcup20ii.a.ui.activity
 
 import android.content.Context
 import android.os.Bundle
@@ -16,11 +16,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.a.R
-import com.kuelye.vkcup20ii.a.data.DocumentRepository
-import com.kuelye.vkcup20ii.a.model.VKDocument
-import com.kuelye.vkcup20ii.a.model.VKDocument.Type.GIF
-import com.kuelye.vkcup20ii.a.model.VKDocument.Type.IMAGE
+import com.kuelye.vkcup20ii.a.model.Type
+import com.kuelye.vkcup20ii.a.model.Type.GIF
+import com.kuelye.vkcup20ii.a.model.Type.IMAGE
+import com.kuelye.vkcup20ii.a.model.getFormattedInfo
+import com.kuelye.vkcup20ii.core.data.DocumentRepository
+import com.kuelye.vkcup20ii.core.model.docs.VKDocument
 import com.kuelye.vkcup20ii.core.Config
+import com.kuelye.vkcup20ii.core.data.BaseRepository.GetItemsResult
 import com.kuelye.vkcup20ii.core.ui.activity.BaseRecyclerActivity
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
@@ -51,17 +54,17 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
         super.initializeLayout()
     }
 
-    override fun requestData() {
+    override fun requestData(onlyCache: Boolean) {
         DocumentRepository.getDocuments(
-            pagesCount,
-            object : VKApiCallback<DocumentRepository.GetDocumentsResult> {
-                override fun success(result: DocumentRepository.GetDocumentsResult) {
-                    showData(result.documents, result.documents.size != result.totalCount)
+            (pagesCount - 1) * countPerPage, pagesCount * countPerPage, onlyCache,
+            object : VKApiCallback<GetItemsResult<VKDocument>> {
+                override fun success(result: GetItemsResult<VKDocument>) {
+                    showData(result.items, result.items.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
 
                 override fun fail(error: Exception) {
-                    Log.e(TAG, "requestGroups>fail", error) // TODO
+                    Log.e(TAG, "requestData>fail", error) // TODO
                 }
             })
     }
@@ -88,11 +91,11 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
     private fun removeDocument(document: VKDocument) {
         DocumentRepository.removeDocument(document, object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                requestData()
+                requestData(true)
             }
 
             override fun fail(error: Exception) {
-                Log.e(TAG, "fail", error)
+                Log.e(TAG, "removeDocument>fail", error)
             }
         })
     }
@@ -100,11 +103,11 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
     private fun renameDocument(document: VKDocument) {
         DocumentRepository.renameDocument(document, document.title, object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                requestData()
+                requestData(true)
             }
 
             override fun fail(error: Exception) {
-                Log.e(TAG, "fail", error)
+                Log.e(TAG, "renameDocument>fail", error)
             }
         })
     }
@@ -125,8 +128,11 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return when (viewType) {
-                ITEM_VIEW_VALUE -> ItemViewHolder(layoutInflater.inflate(
-                    R.layout.layout_document, parent, false))
+                ITEM_VIEW_VALUE -> ItemViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.layout_document, parent, false
+                    )
+                )
                 else -> super.onCreateViewHolder(parent, viewType)
             }
         }
@@ -155,7 +161,7 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
             } else {
                 holder.setTagsVisible(true)
                 holder.titleTextView.maxLines = 1
-                holder.tagsTextView.text = document.tags.joinToString(", ")
+                holder.tagsTextView.text = document.tags!!.joinToString(", ")
             }
 
             if (renameEnabled) {
@@ -172,14 +178,15 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
                 }
             }
 
-            if (document.type == IMAGE || document.type == GIF && document.iconUrl != null) {
+            val type = Type.forValue(document.type)
+            if (type == IMAGE || type == GIF && document.iconUrl != null) {
                 Picasso.get().load(document.iconUrl)
                     .fit().centerCrop()
                     .placeholder(R.drawable.ic_placeholder_document_image_72)
                     .error(R.drawable.ic_placeholder_document_image_72)
                     .into(holder.iconImageView)
             } else {
-                holder.iconImageView.setImageResource(document.type.drawable)
+                holder.iconImageView.setImageResource(type.drawable)
             }
         }
 

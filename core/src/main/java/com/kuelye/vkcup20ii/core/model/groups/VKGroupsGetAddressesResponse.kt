@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.model
+package com.kuelye.vkcup20ii.core.model.groups
 
 import com.kuelye.vkcup20ii.core.api.COUNT_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.ITEMS_FIELD_KEY
@@ -13,7 +13,11 @@ data class VKGroupsGetAddressesResponse(
         fun parse(jo: JSONObject): VKGroupsGetAddressesResponse {
             return VKGroupsGetAddressesResponse(
                 count = jo.getInt(COUNT_FIELD_KEY),
-                addresses = jo.getJSONArray(ITEMS_FIELD_KEY).map { VKAddress.parse(it) }
+                addresses = jo.getJSONArray(ITEMS_FIELD_KEY).map {
+                    VKAddress.parse(
+                        it
+                    )
+                }
             )
         }
     }

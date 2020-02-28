@@ -63,3 +63,11 @@ class VKPhotoSizeColumns {
         const val HEIGHT_FIELD_KEY = "height"
     }
 }
+
+class VKPhotoAlbumColumns {
+    companion object {
+        const val SIZE_FIELD_KEY = "size"
+        const val SIZES_FIELD_KEY = "sizes"
+        const val UPDATED_FIELD_KEY = "updated"
+    }
+}

@@ -2,11 +2,10 @@ package com.kuelye.vkcup20ii.b.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import com.kuelye.vkcup20ii.b.R
-import com.kuelye.vkcup20ii.core.model.VKAddress
-import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKAddress
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.ui.view.BottomSheet
 import com.kuelye.vkcup20ii.core.utils.open
 import kotlinx.android.synthetic.main.layout_map_group_address_info.view.*

@@ -35,6 +35,7 @@ open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseA
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onLogin() {
+        pagesCount = 1
         requestData()
     }
 
@@ -73,12 +74,12 @@ open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseA
 
         swipeRefreshLayout.setProgressViewOffset(true, 0, VKUtils.dp(32))
         swipeRefreshLayout.setSlingshotDistance(VKUtils.dp(64))
-        swipeRefreshLayout.setOnRefreshListener { requestData() }
+        swipeRefreshLayout.setOnRefreshListener { pagesCount = 1; requestData() }
+
+        showData(null)
     }
 
-    protected open fun requestData() {
-
-    }
+    protected open fun requestData(onlyCache: Boolean = false) {}
 
     protected fun showData(documents: List<I>?,  hasMore: Boolean = false) {
         progressBar.visibility = if (documents == null) VISIBLE else GONE

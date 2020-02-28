@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.model
+package com.kuelye.vkcup20ii.core.model.groups
 
 import com.kuelye.vkcup20ii.core.api.*
 import org.json.JSONObject

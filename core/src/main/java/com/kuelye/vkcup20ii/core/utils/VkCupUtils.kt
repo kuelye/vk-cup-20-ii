@@ -17,7 +17,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.*
 import com.kuelye.vkcup20ii.core.R
-import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.vk.api.sdk.utils.VKUtils.density
 import com.vk.api.sdk.utils.VKUtils.getDisplayMetrics
 import org.json.JSONArray

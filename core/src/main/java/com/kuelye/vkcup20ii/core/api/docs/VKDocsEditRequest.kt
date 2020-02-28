@@ -1,9 +1,8 @@
-package com.kuelye.vkcup20ii.a.api
+package com.kuelye.vkcup20ii.core.api.docs
 
-import android.util.Log
-import com.kuelye.vkcup20ii.a.model.VKDocument
-import com.kuelye.vkcup20ii.core.api.*
-import com.kuelye.vkcup20ii.core.utils.map
+import com.kuelye.vkcup20ii.core.api.OWNER_ID_FIELD_KEY
+import com.kuelye.vkcup20ii.core.api.RESPONSE_FIELD_KEY
+import com.kuelye.vkcup20ii.core.api.TITLE_FIELD_KEY
 import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 

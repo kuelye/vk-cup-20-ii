@@ -6,14 +6,13 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.kuelye.vkcup20ii.core.model.VKGroup
-import com.kuelye.vkcup20ii.core.model.VKGroup.Companion.NO_POSTS_DATE
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Companion.NO_POSTS_DATE
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.formatShort
 import com.kuelye.vkcup20ii.core.utils.formatTime
 import com.kuelye.vkcup20ii.f.R
 import kotlinx.android.synthetic.main.layout_leave_group_info.view.*
-import kotlin.math.floor
 
 
 class LeaveGroupInfoView @JvmOverloads constructor(

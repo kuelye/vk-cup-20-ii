@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.model
+package com.kuelye.vkcup20ii.core.model.database
 
 import com.kuelye.vkcup20ii.core.api.ID_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.TITLE_FIELD_KEY

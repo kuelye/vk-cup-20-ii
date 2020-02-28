@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.model
+package com.kuelye.vkcup20ii.core.model.photos
 
 import com.kuelye.vkcup20ii.core.api.COUNT_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.ITEMS_FIELD_KEY

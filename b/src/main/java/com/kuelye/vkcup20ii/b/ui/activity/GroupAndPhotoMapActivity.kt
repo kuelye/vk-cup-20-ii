@@ -2,17 +2,15 @@ package com.kuelye.vkcup20ii.b.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.ViewPager
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.fragment.GroupMapFragment
 import com.kuelye.vkcup20ii.b.ui.fragment.PhotoMapFragment
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.model.VKGroup
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.auth.VKScope.PHOTOS

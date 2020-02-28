@@ -1,4 +1,4 @@
-package com.kuelye.vkcup20ii.core.model
+package com.kuelye.vkcup20ii.core.model.misc
 
 import com.kuelye.vkcup20ii.core.api.VKPhotoSizeColumns.Companion.HEIGHT_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKPhotoSizeColumns.Companion.SRC_FIELD_KEY

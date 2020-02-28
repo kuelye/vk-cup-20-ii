@@ -3,7 +3,7 @@ package com.kuelye.vkcup20ii.b.ui.misc
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder.IconTransformation.BorderType.SQUARE
-import com.kuelye.vkcup20ii.core.model.VKPhoto
+import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.vk.api.sdk.utils.VKUtils.dp
 
 @Suppress("UNCHECKED_CAST")

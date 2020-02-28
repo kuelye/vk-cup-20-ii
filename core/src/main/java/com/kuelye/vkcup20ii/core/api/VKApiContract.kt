@@ -39,10 +39,6 @@ class VKPhotoColumns {
         const val LAT_FIELD_KEY = "lat"
         const val LONG_FIELD_KEY = "long"
         const val SIZES_FIELD_KEY = "sizes"
-        const val SIZE_TYPE_FIELD_KEY = "type"
-        const val SIZE_URL_FIELD_KEY = "url"
-        const val SIZE_WIDTH_FIELD_KEY = "width"
-        const val SIZE_HEIGHT_FIELD_KEY = "height"
     }
 }
 
@@ -50,13 +46,20 @@ class VKDocumentColumns {
     companion object {
         const val SIZE_FIELD_KEY = "size"
         const val EXT_FIELD_KEY = "ext"
+        const val URL_FIELD_KEY = "url"
         const val TAGS_FIELD_KEY = "tags"
+        const val PREVIEW_FIELD_KEY = "preview"
+        const val PHOTO_FIELD_KEY = "photo"
+        const val SIZES_FIELD_KEY = "sizes"
     }
 }
 
-class VKErrorColumns {
+class VKPhotoSizeColumns {
     companion object {
-        const val CODE_FIELD_KEY = "error_code"
-        const val MESSAGE_FIELD_KEY = "error_msg"
+        const val TYPE_FIELD_KEY = "type"
+        const val URL_FIELD_KEY = "url"
+        const val SRC_FIELD_KEY = "src"
+        const val WIDTH_FIELD_KEY = "width"
+        const val HEIGHT_FIELD_KEY = "height"
     }
 }

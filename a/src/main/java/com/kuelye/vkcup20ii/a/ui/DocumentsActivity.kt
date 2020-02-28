@@ -19,8 +19,11 @@ import com.kuelye.vkcup20ii.a.R
 import com.kuelye.vkcup20ii.a.data.DocumentRepository
 import com.kuelye.vkcup20ii.a.data.DocumentRepository.COUNT_PER_PAGE
 import com.kuelye.vkcup20ii.a.model.VKDocument
+import com.kuelye.vkcup20ii.a.model.VKDocument.Type.GIF
+import com.kuelye.vkcup20ii.a.model.VKDocument.Type.IMAGE
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
 import com.vk.api.sdk.utils.VKUtils.dp
@@ -71,8 +74,9 @@ class DocumentsActivity : BaseActivity() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (adapter.hasMore
-                        && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
-                        && adapter.itemCount >= pagesCount * COUNT_PER_PAGE) {
+                    && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
+                    && adapter.itemCount >= pagesCount * COUNT_PER_PAGE
+                ) {
                     pagesCount++
                     requestDocuments()
                 }
@@ -152,14 +156,30 @@ class DocumentsActivity : BaseActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return when (viewType) {
-                ITEM_VIEW_VALUE -> ItemViewHolder(layoutInflater.inflate(R.layout.layout_document, parent, false))
-                else -> ProgressViewHolder(layoutInflater.inflate(R.layout.layout_progress, parent, false))
+                ITEM_VIEW_VALUE -> ItemViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.layout_document,
+                        parent,
+                        false
+                    )
+                )
+                else -> ProgressViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.layout_progress,
+                        parent,
+                        false
+                    )
+                )
             }
         }
 
-        override fun onBindViewHolder(holder:  RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val document = documents!![position]
             if (document != null) updateItemLayout(holder as ItemViewHolder, document)
+        }
+
+        override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+            if (holder is ItemViewHolder) Picasso.get().cancelRequest(holder.iconImageView)
         }
 
         override fun getItemViewType(position: Int): Int {
@@ -181,7 +201,6 @@ class DocumentsActivity : BaseActivity() {
         private fun isProgress(position: Int) = hasMore && position == documents?.lastIndex
 
         private fun updateItemLayout(holder: ItemViewHolder, document: VKDocument) {
-            holder.iconImageView.setImageResource(document.type.drawable)
             holder.titleTextView.text = document.title
             holder.infoTextView.text = document.getFormattedInfo(context)
             if (document.tags == null) {
@@ -192,12 +211,20 @@ class DocumentsActivity : BaseActivity() {
                 holder.titleTextView.maxLines = 1
                 holder.tagsTextView.text = document.tags.joinToString(", ")
             }
-            holder.moreImageView.setOnClickListener { v -> onMenuClickListener?.invoke(v, document) }
-        }
+            holder.moreImageView.setOnClickListener { v ->
+                onMenuClickListener?.invoke(v, document)
+            }
 
-//        class Item(val document: VKDocument? = null) {
-//            val id: Long = document?.id?.toLong() ?: 0L
-//        }
+            if (document.type == IMAGE || document.type == GIF && document.iconUrl != null) {
+                Picasso.get().load(document.iconUrl)
+                    .fit().centerCrop()
+                    .placeholder(R.drawable.ic_placeholder_document_image_72)
+                    .error(R.drawable.ic_placeholder_document_image_72)
+                    .into(holder.iconImageView)
+            } else {
+                holder.iconImageView.setImageResource(document.type.drawable)
+            }
+        }
 
         class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

@@ -15,10 +15,11 @@ import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.model.VKAlbum
 import com.kuelye.vkcup20ii.core.ui.activity.BaseRecyclerActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
+import com.kuelye.vkcup20ii.core.ui.view.MenuView
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.vk.api.sdk.auth.VKScope
 import com.vk.api.sdk.utils.VKUtils
-import kotlin.math.ceil
+import kotlinx.android.synthetic.main.activity_albums.*
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -26,6 +27,8 @@ class AlbumsActivity : BaseRecyclerActivity<VKAlbum, AlbumsActivity.Adapter>() {
 
     companion object {
         private val TAG = AlbumsActivity::class.java.simpleName
+        private const val EDIT_MENU_ITEM_ID = 0
+        private const val ADD_MENU_ITEM_ID = 1
     }
 
     init {
@@ -36,6 +39,12 @@ class AlbumsActivity : BaseRecyclerActivity<VKAlbum, AlbumsActivity.Adapter>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_albums)
         initializeLayout()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        toolbar.setMenu(listOf(MenuView.Item(R.drawable.ic_edit_outline_28, EDIT_MENU_ITEM_ID),
+            MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID)))
     }
 
     override fun requestData() {

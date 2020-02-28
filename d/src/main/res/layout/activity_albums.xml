@@ -7,6 +7,7 @@
     tools:context=".AlbumsActivity">
 
     <com.kuelye.vkcup20ii.core.ui.view.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/albums_title" />

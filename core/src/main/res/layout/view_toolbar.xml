@@ -32,4 +32,10 @@
         android:textColor="@color/title_color"
         android:textSize="20sp"
         tools:text="Titleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" />
+
+    <com.kuelye.vkcup20ii.core.ui.view.MenuView
+        android:id="@+id/menuView"
+        android:layout_width="wrap_content"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentEnd="true" />
 </merge>

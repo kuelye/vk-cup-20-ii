@@ -6,12 +6,11 @@ import android.content.Context
 import android.graphics.Outline
 import android.util.AttributeSet
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.MeasureSpec.*
-import android.view.ViewOutlineProvider
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils.clamp
 import androidx.core.view.ViewCompat
@@ -22,6 +21,7 @@ import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeDimen
 import com.kuelye.vkcup20ii.core.utils.themeDrawable
 import kotlinx.android.synthetic.main.view_toolbar.view.*
+import javax.security.auth.callback.Callback
 
 class Toolbar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -85,6 +85,10 @@ class Toolbar @JvmOverloads constructor(
         outlineProvider = OutlineProvider(w, h)
         if (oldh != h && actualHeight == null) expandedHeight = h
         update()
+    }
+
+    fun setMenu(menuItems: List<MenuView.Item>? = null) {
+        menuView.setMenu(menuItems)
     }
 
     @SuppressLint("PrivateResource")

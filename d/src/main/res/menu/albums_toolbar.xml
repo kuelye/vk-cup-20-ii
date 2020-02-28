@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/renameAction"
+        android:title="@string/albums_edit"
+        android:icon="@drawable/ic_edit_outline_28" />
+</menu>

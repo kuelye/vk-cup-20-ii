@@ -4,7 +4,7 @@
     android:layout_width="@dimen/group_item_width"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:background="@drawable/bg_leave_group_selectable_item"
+    android:background="@drawable/bg_selectable_8_corners"
     android:orientation="vertical">
 
     <com.kuelye.vkcup20ii.f.ui.view.SelectableBorderImageView

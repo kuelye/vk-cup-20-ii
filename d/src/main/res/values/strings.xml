@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">D</string>
+    <string name="albums_title">Альбомы</string>
+    <string name="edit_title">Редактирование</string>
+    <string name="albums_edit">Изменить</string>
+    <string name="albums_done">Готово</string>
+    <string name="albums_empty">Здесь будут отображаться Ваши альбомы</string>
+    <string name="album_empty">В этом альбоме ещё нет фотографий</string>
+    <plurals name="album_size_template">
+        <item quantity="zero">%d фотографий</item>
+        <item quantity="one">%d фотография</item>
+        <item quantity="two">%d фотографии</item>
+        <item quantity="few">%d фотографии</item>
+        <item quantity="many">%d фотографий</item>
+    </plurals>
+</resources>

@@ -104,8 +104,7 @@ class LeaveGroupsActivity : BaseActivity() {
         val paddingStandard = dimen(this, R.dimen.padding_standard)
         val totalWidth = VKUtils.width(this) - paddingStandard * 2
         val itemWidth = dimen(this, R.dimen.group_item_width)
-        val spanCount =
-            floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
+        val spanCount = floor((totalWidth + paddingStandard * .5) / (itemWidth + paddingStandard * .5)).toInt()
         val horizontalSpace = (totalWidth - spanCount * itemWidth) / (spanCount - 1)
 
         adapter = Adapter(this)
@@ -140,7 +139,7 @@ class LeaveGroupsActivity : BaseActivity() {
         override fun getItemCount(): Int = groups?.size ?: 0
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(layoutInflater.inflate(R.layout.layout_group_item, parent, false))
+            ViewHolder(layoutInflater.inflate(R.layout.layout_group, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val group = groups!![position]

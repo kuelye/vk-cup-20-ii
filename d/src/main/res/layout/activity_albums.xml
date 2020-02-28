@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.DocumentsActivity">
+    tools:context=".AlbumsActivity">
 
     <com.kuelye.vkcup20ii.core.ui.view.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/documents_title" />
+        app:title="@string/albums_title" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@id/swipeRefreshLayout"
@@ -27,10 +26,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:text="@string/albums_empty"
                 android:textColor="@color/subtitle_color"
-                android:textSize="14sp"
-                android:text="@string/documents_empty" />
-
+                android:textSize="14sp" />
 
             <ProgressBar
                 android:id="@android:id/progress"
@@ -43,11 +41,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingTop="@dimen/padding_standard_three_quarters"
-                android:paddingBottom="@dimen/padding_standard_three_quarters"
+                android:paddingStart="@dimen/padding_standard"
+                android:paddingTop="@dimen/padding_standard_half"
+                android:paddingEnd="@dimen/padding_standard"
+                android:paddingBottom="@dimen/padding_standard_half"
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollbars="vertical"
-                tools:listitem="@layout/layout_document" />
+                tools:listitem="@layout/layout_album_item" />
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

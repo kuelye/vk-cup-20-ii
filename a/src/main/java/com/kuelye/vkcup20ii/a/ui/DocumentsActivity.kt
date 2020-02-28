@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.InputType.TYPE_NULL
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -14,26 +13,21 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.a.R
 import com.kuelye.vkcup20ii.a.data.DocumentRepository
-import com.kuelye.vkcup20ii.a.data.DocumentRepository.COUNT_PER_PAGE
 import com.kuelye.vkcup20ii.a.model.VKDocument
 import com.kuelye.vkcup20ii.a.model.VKDocument.Type.GIF
 import com.kuelye.vkcup20ii.a.model.VKDocument.Type.IMAGE
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseRecyclerActivity
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
-import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.activity_documents.*
 
-
-class DocumentsActivity : BaseActivity() {
+class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Adapter>() {
 
     companion object {
         private val TAG = DocumentsActivity::class.java.simpleName
@@ -43,64 +37,26 @@ class DocumentsActivity : BaseActivity() {
         Config.scopes = listOf(VKScope.DOCS)
     }
 
-    private lateinit var adapter: Adapter
-    private var pagesCount = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_documents)
         initializeLayout()
     }
 
-    override fun onLogin() {
-        requestDocuments()
-    }
-
-    private fun initializeLayout() {
+    override fun initializeLayout() {
         adapter = Adapter(this)
         adapter.onMenuClickListener = { v, document -> showDocumentMenu(v, document) }
         adapter.onRenameClickListener = { document -> renameDocument(document)}
-
-        val layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
-        recyclerView.itemAnimator = object : DefaultItemAnimator() {
-            override fun animateMove(
-                holder: RecyclerView.ViewHolder?, fromX: Int, fromY: Int, toX: Int, toY: Int
-            ): Boolean {
-                return if (holder is Adapter.ProgressViewHolder) {
-                    dispatchMoveFinished(holder)
-                    false
-                } else {
-                    super.animateMove(holder, fromX, fromY, toX, toY)
-                }
-            }
-        }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (adapter.hasMore
-                    && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
-                    && adapter.itemCount >= pagesCount * COUNT_PER_PAGE
-                ) {
-                    pagesCount++
-                    requestDocuments()
-                }
-            }
-        })
-
-        swipeRefreshLayout.setProgressViewOffset(true, 0, dp(32))
-        swipeRefreshLayout.setSlingshotDistance(dp(64))
-        swipeRefreshLayout.setOnRefreshListener { requestDocuments() }
-
-        showDocuments(null)
+        layoutManager = LinearLayoutManager(this)
+        super.initializeLayout()
     }
 
-    private fun requestDocuments() {
+    override fun requestData() {
         DocumentRepository.getDocuments(
             pagesCount,
             object : VKApiCallback<DocumentRepository.GetDocumentsResult> {
                 override fun success(result: DocumentRepository.GetDocumentsResult) {
-                    showDocuments(result.documents, result.documents.size != result.totalCount)
+                    showData(result.documents, result.documents.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
 
@@ -129,17 +85,10 @@ class DocumentsActivity : BaseActivity() {
         menu.show()
     }
 
-    private fun showDocuments(documents: List<VKDocument>?,  hasMore: Boolean = false) {
-        progressBar.visibility = if (documents == null) VISIBLE else GONE
-        recyclerView.visibility = if (documents.isNullOrEmpty()) GONE else VISIBLE
-        noItemsTextView.visibility = if (documents != null && documents.isEmpty()) VISIBLE else GONE
-        adapter.swap(documents, hasMore)
-    }
-
     private fun removeDocument(document: VKDocument) {
         DocumentRepository.removeDocument(document, object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                requestDocuments()
+                requestData()
             }
 
             override fun fail(error: Exception) {
@@ -151,7 +100,7 @@ class DocumentsActivity : BaseActivity() {
     private fun renameDocument(document: VKDocument) {
         DocumentRepository.renameDocument(document, document.title, object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                requestDocuments()
+                requestData()
             }
 
             override fun fail(error: Exception) {
@@ -160,17 +109,10 @@ class DocumentsActivity : BaseActivity() {
         })
     }
 
-    private class Adapter(
-        val context: Context
-    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    class Adapter(
+        context: Context
+    ) : BaseAdapter<VKDocument>(context) {
 
-        companion object {
-            private const val ITEM_VIEW_VALUE = 0
-            private const val PROGRESS_VIEW_VALUE = 1
-            private const val PROGRESS_VIEW_ID = 0L
-        }
-
-        var hasMore: Boolean = false
         var onMenuClickListener: ((View, VKDocument) -> Unit)? = null
         var onRenameClickListener: ((VKDocument) -> Unit)? = null
         var renameDocumentId: Int? = null
@@ -181,63 +123,22 @@ class DocumentsActivity : BaseActivity() {
                 }
             }
 
-        private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-        private val documents: MutableList<VKDocument?> by lazy { mutableListOf<VKDocument?>() }
-
-        init {
-            setHasStableIds(true)
-        }
-
-        override fun getItemCount(): Int = documents?.size ?: 0
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return when (viewType) {
-                ITEM_VIEW_VALUE -> ItemViewHolder(
-                    layoutInflater.inflate(
-                        R.layout.layout_document,
-                        parent,
-                        false
-                    )
-                )
-                else -> ProgressViewHolder(
-                    layoutInflater.inflate(
-                        R.layout.layout_progress,
-                        parent,
-                        false
-                    )
-                )
+                ITEM_VIEW_VALUE -> ItemViewHolder(layoutInflater.inflate(
+                    R.layout.layout_document, parent, false))
+                else -> super.onCreateViewHolder(parent, viewType)
             }
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val document = documents!![position]
+            val document = items[position]
             if (document != null) updateItemLayout(holder as ItemViewHolder, document)
         }
 
         override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
             if (holder is ItemViewHolder) Picasso.get().cancelRequest(holder.iconImageView)
         }
-
-        override fun getItemViewType(position: Int): Int {
-            return if (isProgress(position)) PROGRESS_VIEW_VALUE else ITEM_VIEW_VALUE
-        }
-
-        override fun getItemId(position: Int): Long {
-            return if (isProgress(position)) PROGRESS_VIEW_ID else documents[position]!!.id.toLong()
-        }
-
-        fun swap(documents: List<VKDocument>?, hasMore: Boolean) {
-            Log.v(TAG, "swap: ${documents?.size}, $hasMore")
-            val oldDocuments = this.documents
-            val newDocuments = if (hasMore) documents?.plus<VKDocument?>(null) else documents
-            val diffResult = DiffUtil.calculateDiff(DiffCallback(oldDocuments, newDocuments))
-            this.hasMore = hasMore
-            this.documents.clear()
-            if (newDocuments != null) this.documents.addAll(newDocuments)
-            diffResult.dispatchUpdatesTo(this)
-        }
-
-        private fun isProgress(position: Int) = hasMore && position == documents?.lastIndex
 
         private fun updateItemLayout(holder: ItemViewHolder, document: VKDocument) {
             val renameEnabled = document.id == renameDocumentId
@@ -283,7 +184,6 @@ class DocumentsActivity : BaseActivity() {
         }
 
         class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
             val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
             val titleTextView: EditText = itemView.findViewById(R.id.titleTextView)
             val infoTextView: TextView = itemView.findViewById(R.id.infoTextView)
@@ -295,26 +195,6 @@ class DocumentsActivity : BaseActivity() {
                 tagsImageView.visibility = if (visible) VISIBLE else GONE
                 tagsTextView.visibility = if (visible) VISIBLE else GONE
             }
-
-        }
-
-        class ProgressViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-        class DiffCallback(
-            val oldDocuments: List<VKDocument?>?,
-            val newDocuments: List<VKDocument?>?
-        ) : DiffUtil.Callback() {
-
-            override fun getOldListSize(): Int = oldDocuments?.size ?: 0
-
-            override fun getNewListSize(): Int = newDocuments?.size ?: 0
-
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldDocuments?.get(oldItemPosition)?.id == newDocuments?.get(newItemPosition)?.id
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldDocuments?.get(oldItemPosition) == newDocuments?.get(newItemPosition)
-
         }
 
     }

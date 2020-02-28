@@ -14,6 +14,7 @@
     <dimen name="small_icon_size_28">28dp</dimen>
     <dimen name="medium_icon_size_36">36dp</dimen>
     <dimen name="large_icon_size">56dp</dimen>
+    <dimen name="small_corner_radius_6">6dp</dimen>
     <dimen name="button_corner_radius">8dp</dimen>
     <dimen name="bottom_sheet_corner_radius">12dp</dimen>
     <dimen name="small_button_height">36dp</dimen>

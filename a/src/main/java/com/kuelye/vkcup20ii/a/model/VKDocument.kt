@@ -11,6 +11,7 @@ import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.SIZES_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.SIZE_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.TAGS_FIELD_KEY
 import com.kuelye.vkcup20ii.core.api.VKDocumentColumns.Companion.URL_FIELD_KEY
+import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.kuelye.vkcup20ii.core.model.VKPhotoSize
 import com.kuelye.vkcup20ii.core.utils.formatShort
 import com.kuelye.vkcup20ii.core.utils.formatTime
@@ -21,7 +22,7 @@ import java.util.*
 import java.util.Locale.ENGLISH
 
 data class VKDocument(
-    val id: Int,
+    override val id: Int,
     val ownerId: Int,
     var title: String,
     val size: Int,
@@ -31,7 +32,7 @@ data class VKDocument(
     val type: Type,
     val tags: List<String>?,
     val iconUrl: String?
-) {
+) : Identifiable {
     companion object {
         private val TAG = VKDocument::class.java.simpleName
         private const val INFO_TEMPLATE = "%s • %s • %s"

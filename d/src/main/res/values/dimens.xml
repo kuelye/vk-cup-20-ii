@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="swipeRefreshLayout" type="id" />
+    <dimen name="albums_item_min_width">128dp</dimen>
 </resources>

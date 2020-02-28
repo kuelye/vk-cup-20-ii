@@ -182,7 +182,7 @@ class DocumentsActivity : BaseActivity() {
             }
 
         private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-        private var documents: List<VKDocument?>? = null
+        private val documents: MutableList<VKDocument?> by lazy { mutableListOf<VKDocument?>() }
 
         init {
             setHasStableIds(true)
@@ -223,15 +223,18 @@ class DocumentsActivity : BaseActivity() {
         }
 
         override fun getItemId(position: Int): Long {
-            return if (isProgress(position)) PROGRESS_VIEW_ID else documents!![position]!!.id.toLong()
+            return if (isProgress(position)) PROGRESS_VIEW_ID else documents[position]!!.id.toLong()
         }
 
         fun swap(documents: List<VKDocument>?, hasMore: Boolean) {
+            Log.v(TAG, "swap: ${documents?.size}, $hasMore")
             val oldDocuments = this.documents
             val newDocuments = if (hasMore) documents?.plus<VKDocument?>(null) else documents
+            val diffResult = DiffUtil.calculateDiff(DiffCallback(oldDocuments, newDocuments))
             this.hasMore = hasMore
-            this.documents = newDocuments
-            DiffUtil.calculateDiff(DiffCallback(oldDocuments, newDocuments)).dispatchUpdatesTo(this)
+            this.documents.clear()
+            if (newDocuments != null) this.documents.addAll(newDocuments)
+            diffResult.dispatchUpdatesTo(this)
         }
 
         private fun isProgress(position: Int) = hasMore && position == documents?.lastIndex

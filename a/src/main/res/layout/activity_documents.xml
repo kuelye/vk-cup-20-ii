@@ -41,7 +41,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingTop="@dimen/padding_standard_three_quarters"
                 android:paddingBottom="@dimen/padding_standard_three_quarters"

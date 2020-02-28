@@ -53,6 +53,7 @@ object DocumentRepository {
                 ensureCache()
                 if (result == 1) {
                     documents!!.remove(document.id)
+                    if (totalCount != null) totalCount = totalCount!! - 1
                     if (sortedDocuments != null) sortedDocuments!!.remove(document)
                 }
                 callback.success(result)

@@ -8,4 +8,6 @@
     <color name="icon_color">#FF99A2AD</color>
     <color name="button_color_default">#4986CC</color>
     <color name="button_color_disabled">#804986CC</color>
+    <color name="filled_box_edit_text_stroke_color">#E1E3E6</color>
+    <color name="filled_box_edit_text_fill_color">#F2F3F5</color>
 </resources>

@@ -23,7 +23,7 @@ import java.util.Locale.ENGLISH
 data class VKDocument(
     val id: Int,
     val ownerId: Int,
-    val title: String,
+    var title: String,
     val size: Int,
     val ext: String,
     val url: String,

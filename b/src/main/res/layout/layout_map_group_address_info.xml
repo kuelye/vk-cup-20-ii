@@ -22,8 +22,8 @@
         android:paddingBottom="@dimen/padding_standard_half">
 
         <ImageView
-            android:layout_width="@dimen/very_small_icon_size"
-            android:layout_height="@dimen/very_small_icon_size"
+            android:layout_width="@dimen/small_icon_size_20"
+            android:layout_height="@dimen/small_icon_size_20"
             android:layout_marginEnd="@dimen/padding_standard_three_quarters"
             android:src="@drawable/place_outline_20"
             android:tint="@color/icon_color" />
@@ -48,8 +48,8 @@
         android:paddingBottom="@dimen/padding_standard_half">
 
         <ImageView
-            android:layout_width="@dimen/very_small_icon_size"
-            android:layout_height="@dimen/very_small_icon_size"
+            android:layout_width="@dimen/small_icon_size_20"
+            android:layout_height="@dimen/small_icon_size_20"
             android:layout_marginEnd="@dimen/padding_standard_three_quarters"
             android:src="@drawable/article_outline_20"
             android:tint="#99A2AD" />

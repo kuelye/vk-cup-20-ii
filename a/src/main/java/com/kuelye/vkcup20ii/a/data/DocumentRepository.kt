@@ -2,6 +2,7 @@ package com.kuelye.vkcup20ii.a.data
 
 import android.util.SparseArray
 import com.kuelye.vkcup20ii.a.api.VKDocsDeleteRequest
+import com.kuelye.vkcup20ii.a.api.VKDocsEditRequest
 import com.kuelye.vkcup20ii.a.api.VKDocsGetRequest
 import com.kuelye.vkcup20ii.a.model.VKDocument
 import com.kuelye.vkcup20ii.core.utils.toMutableList
@@ -59,6 +60,29 @@ object DocumentRepository {
                 callback.fail(error)
             }
         })
+    }
+
+    fun renameDocument(
+        document: VKDocument,
+        title: String,
+        callback: VKApiCallback<Int>
+    ) {
+        if (!VK.isLoggedIn()) return
+        VK.execute(VKDocsEditRequest(document.id, document.ownerId, title),
+            object : VKApiCallback<Int> {
+                override fun success(result: Int) {
+                    ensureCache()
+                    if (result == 1) {
+                        val document = documents!!.get(document.id)
+                        if (document != null) document.title = title
+                    }
+                    callback.success(result)
+                }
+
+                override fun fail(error: Exception) {
+                    callback.fail(error)
+                }
+            })
     }
 
     private fun ensureCache() {

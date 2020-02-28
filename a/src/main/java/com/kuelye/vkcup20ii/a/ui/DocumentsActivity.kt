@@ -2,12 +2,15 @@ package com.kuelye.vkcup20ii.a.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.text.InputType.TYPE_CLASS_TEXT
+import android.text.InputType.TYPE_NULL
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
@@ -56,6 +59,8 @@ class DocumentsActivity : BaseActivity() {
     private fun initializeLayout() {
         adapter = Adapter(this)
         adapter.onMenuClickListener = { v, document -> showDocumentMenu(v, document) }
+        adapter.onRenameClickListener = { document -> renameDocument(document)}
+
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
@@ -108,7 +113,10 @@ class DocumentsActivity : BaseActivity() {
         menu.inflate(R.menu.context_documents)
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-//                        R.id.rename_action ->
+                R.id.rename_action -> {
+                    adapter.renameDocumentId = document.id
+                    true
+                }
                 R.id.remove_action -> {
                     removeDocument(document)
                     true
@@ -132,6 +140,19 @@ class DocumentsActivity : BaseActivity() {
         })
     }
 
+    private fun renameDocument(document: VKDocument) {
+        DocumentRepository.renameDocument(document, document.title, object : VKApiCallback<Int> {
+            override fun success(result: Int) {
+                requestDocuments()
+                Log.v(TAG, "success: $result")
+            }
+
+            override fun fail(error: Exception) {
+                Log.e(TAG, "fail", error)
+            }
+        })
+    }
+
     private class Adapter(
         val context: Context
     ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -144,6 +165,14 @@ class DocumentsActivity : BaseActivity() {
 
         var hasMore: Boolean = false
         var onMenuClickListener: ((View, VKDocument) -> Unit)? = null
+        var onRenameClickListener: ((VKDocument) -> Unit)? = null
+        var renameDocumentId: Int? = null
+            set(value) {
+                if (field != value) {
+                    field = value
+                    notifyDataSetChanged()
+                }
+            }
 
         private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
         private var documents: List<VKDocument?>? = null
@@ -201,7 +230,13 @@ class DocumentsActivity : BaseActivity() {
         private fun isProgress(position: Int) = hasMore && position == documents?.lastIndex
 
         private fun updateItemLayout(holder: ItemViewHolder, document: VKDocument) {
-            holder.titleTextView.text = document.title
+            val renameEnabled = document.id == renameDocumentId
+            holder.titleTextView.isEnabled = renameEnabled
+            holder.titleTextView.isSingleLine = renameEnabled
+            holder.titleTextView.inputType = if (renameEnabled) TYPE_CLASS_TEXT else TYPE_NULL
+            if (!renameEnabled) holder.titleTextView.keyListener = null
+            holder.titleTextView.setText(document.title)
+
             holder.infoTextView.text = document.getFormattedInfo(context)
             if (document.tags == null) {
                 holder.setTagsVisible(false)
@@ -211,8 +246,19 @@ class DocumentsActivity : BaseActivity() {
                 holder.titleTextView.maxLines = 1
                 holder.tagsTextView.text = document.tags.joinToString(", ")
             }
-            holder.moreImageView.setOnClickListener { v ->
-                onMenuClickListener?.invoke(v, document)
+
+            if (renameEnabled) {
+                holder.moreImageView.setImageResource(R.drawable.ic_check_black_16)
+                holder.moreImageView.setOnClickListener {
+                    renameDocumentId = null
+                    document.title = holder.titleTextView.text.toString()
+                    onRenameClickListener?.invoke(document)
+                }
+            } else {
+                holder.moreImageView.setImageResource(R.drawable.ic_more_vertical_16)
+                holder.moreImageView.setOnClickListener { v ->
+                    onMenuClickListener?.invoke(v, document)
+                }
             }
 
             if (document.type == IMAGE || document.type == GIF && document.iconUrl != null) {
@@ -229,7 +275,7 @@ class DocumentsActivity : BaseActivity() {
         class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
-            val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
+            val titleTextView: EditText = itemView.findViewById(R.id.titleTextView)
             val infoTextView: TextView = itemView.findViewById(R.id.infoTextView)
             val tagsTextView: TextView = itemView.findViewById(R.id.tagsTextView)
             val moreImageView: ImageView = itemView.findViewById(R.id.moreImageView)

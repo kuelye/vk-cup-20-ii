@@ -9,8 +9,9 @@
     <dimen name="padding_standard_eight">2dp</dimen>
 
     <dimen name="avatar_size">100dp</dimen>
-    <dimen name="very_small_icon_size">20dp</dimen>
-    <dimen name="small_icon_size">24dp</dimen>
+    <dimen name="small_icon_size_20">20dp</dimen>
+    <dimen name="small_icon_size_24">24dp</dimen>
+    <dimen name="small_icon_size_28">28dp</dimen>
     <dimen name="large_icon_size">56dp</dimen>
     <dimen name="button_corner_radius">8dp</dimen>
     <dimen name="bottom_sheet_corner_radius">12dp</dimen>

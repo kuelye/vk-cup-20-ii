@@ -2,4 +2,5 @@
 <resources>
     <dimen name="document_icon_size">72dp</dimen>
     <dimen name="document_icon_corner_radius">6dp</dimen>
+    <dimen name="filled_box_edit_text_corner_radius_small">8dp</dimen>
 </resources>

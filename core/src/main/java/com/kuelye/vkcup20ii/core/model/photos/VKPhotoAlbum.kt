@@ -37,6 +37,9 @@ class VKPhotoAlbum(
     val photo: String
         get() = sizes.last().url
 
+    val isSystem: Boolean
+        get() = id < 0
+
     class DefaultComparator : Comparator<VKPhotoAlbum> {
         override fun compare(o1: VKPhotoAlbum, o2: VKPhotoAlbum): Int {
             return if (o1.created == null) {

@@ -1,11 +1,13 @@
 package com.kuelye.vkcup20ii.core.ui.view
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.Style.STROKE
 import android.graphics.Shader.TileMode.CLAMP
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import com.kuelye.vkcup20ii.core.R
@@ -22,6 +24,8 @@ open class BorderImageView @JvmOverloads constructor(
         private val BORDER_WIDTH_DEFAULT = dp(1)
         private val BORDER_TYPE_DEFAULT = BorderType.CIRCLE
         private val BORDER_CORNER_RADIUS = dp(6)
+        private val DISABLED_ALPHA = .5f
+        private val ENABLED_ALPHA = 1f
     }
 
     @ColorInt
@@ -69,6 +73,8 @@ open class BorderImageView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
+    private var enabledAnimator: ValueAnimator? = null
+
     init {
         initializeAttrs(attrs)
     }
@@ -113,6 +119,21 @@ open class BorderImageView @JvmOverloads constructor(
         updateByDrawable()
     }
 
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        alpha = getAlpha(enabled)
+    }
+
+    fun animateEnabled(enabled: Boolean) {
+        if (isEnabled != enabled) {
+            super.setEnabled(enabled)
+            animate()
+                .setInterpolator(DecelerateInterpolator())
+                .alpha(getAlpha(enabled))
+                .start()
+        }
+    }
+
     private fun initializeAttrs(attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BorderImageView)
         for (i in 0 until a.indexCount) {
@@ -154,6 +175,8 @@ open class BorderImageView @JvmOverloads constructor(
             paint.shader!!.setLocalMatrix(shaderMatrix)
         }
     }
+
+    private fun getAlpha(enabled: Boolean) = if (enabled) ENABLED_ALPHA else DISABLED_ALPHA
 
     enum class BorderType(val value: Int) {
         CIRCLE(0), SQUARE(1);

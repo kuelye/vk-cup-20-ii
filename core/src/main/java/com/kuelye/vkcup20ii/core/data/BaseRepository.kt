@@ -44,6 +44,22 @@ open class BaseRepository {
             //Log.v(TAG, "set: totalCounts=$totalCounts, this.items.size=${this.items?.size()}")
         }
 
+        fun remove(
+            item: I,
+            filter: Int? = null
+        ) {
+            if (items != null) {
+                items!!.remove(item.id)
+                sortedItems?.remove(item)
+                var totalCount = totalCounts[null]
+                if (totalCount != null) totalCounts[null] = totalCount - 1
+                if (filter != null) {
+                    totalCount = totalCounts[filter]
+                    if (totalCount != null) totalCounts[filter] = totalCount - 1
+                }
+            }
+        }
+
         private fun clear(filter: Int? = null) {
             if (filterBlock == null || filter == null) {
                 items?.clear()

@@ -30,8 +30,6 @@ import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.activity_leave_group.*
 import kotlin.math.floor
 
-const val PLACEHOLDER_COLOR = 0xFFECEDF1.toInt()
-
 class LeaveGroupsActivity : BaseActivity() {
 
     companion object {

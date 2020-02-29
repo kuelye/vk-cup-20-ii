@@ -86,6 +86,8 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         layoutManager = GridLayoutManager(context!!, spanCount)
         adapter = Adapter(context!!, itemWidth)
         adapter.onItemClickListener = { album -> show(AlbumFragment.newInstance(album)) }
+        adapter.onItemLongClickListener = { editModeEnabled = !editModeEnabled }
+        adapter.onItemBadgeClickListener = { album -> removePhotoAlbum(album) }
 
         super.initializeLayout()
 
@@ -123,6 +125,18 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         }
     }
 
+    private fun removePhotoAlbum(album: VKPhotoAlbum) {
+        PhotoRepository.removePhotoAlbum(album, object : VKApiCallback<Int> {
+            override fun success(result: Int) {
+                requestData(true)
+            }
+
+            override fun fail(error: Exception) {
+                Log.e(TAG, "removePhotoAlbum>fail", error)
+            }
+        })
+    }
+
     class Adapter(
         context: Context,
         private val itemWidth: Int
@@ -130,6 +144,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
 
         var onItemClickListener: ((VKPhotoAlbum) -> Unit)? = null
         var onItemLongClickListener: (() -> Unit)? = null
+        var onItemBadgeClickListener: ((VKPhotoAlbum) -> Unit)? = null
 
         var editModeEnabled: Boolean = false
             set(value) {
@@ -152,24 +167,32 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
             if (album != null) updateItemLayout(holder as ItemViewHolder, album)
         }
 
-        private fun updateItemLayout(holder: ItemViewHolder, photoAlbum: VKPhotoAlbum) {
+        private fun updateItemLayout(holder: ItemViewHolder, album: VKPhotoAlbum) {
             holder.photoImageView.layoutParams.apply {
                 width = itemWidth
                 height = itemWidth
             }
 
-            Picasso.get().load(photoAlbum.photo)
+            Picasso.get().load(album.photo)
                 .fit().centerCrop()
                 .placeholder(ColorDrawable(color(context, R.color.placeholder_color)))
                 .error(ColorDrawable(color(context, R.color.placeholder_color)))
                 .into(holder.photoImageView)
-            holder.photoImageView.animateSelected(editModeEnabled)
+            holder.photoImageView.animateSelected(editModeEnabled && !album.isSystem)
+            holder.photoImageView.animateEnabled(!editModeEnabled || !album.isSystem)
+            holder.photoImageView.onBadgeClickListener = {
+                onItemBadgeClickListener?.invoke(album)
+            }
 
-            holder.titleTextView.text = photoAlbum.title
+            holder.titleTextView.text = album.title
             holder.infoTextView.text = context.resources.getQuantityString(
-                R.plurals.album_size_template, photoAlbum.size, photoAlbum.size)
+                R.plurals.album_size_template, album.size, album.size)
 
-            holder.itemView.setOnClickListener { onItemClickListener?.invoke(photoAlbum) }
+            if (editModeEnabled) {
+                holder.itemView.setOnClickListener(null)
+            } else {
+                holder.itemView.setOnClickListener { onItemClickListener?.invoke(album) }
+            }
             holder.itemView.setOnLongClickListener { onItemLongClickListener?.invoke(); true }
         }
 

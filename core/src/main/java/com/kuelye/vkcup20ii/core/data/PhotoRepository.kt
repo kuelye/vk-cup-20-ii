@@ -7,6 +7,7 @@ import com.kuelye.vkcup20ii.core.api.photos.VKPhotosGetAllRequest
 import com.kuelye.vkcup20ii.core.api.photos.VKPhotosGetRequest
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
+import com.kuelye.vkcup20ii.core.model.photos.VKPhotosDeleteAlbumRequest
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
@@ -33,6 +34,24 @@ object PhotoRepository : BaseRepository() {
             override fun success(result: VKPhotoAlbumsGetRequest.Response) {
                 photoAlbumCache.set(result.items, result.count, clear = offset == 0)
                 callback.success(GetItemsResult.from(photoAlbumCache))
+            }
+
+            override fun fail(error: Exception) {
+                callback.fail(error)
+            }
+        })
+    }
+
+    fun removePhotoAlbum(
+        album: VKPhotoAlbum,
+        callback: VKApiCallback<Int>
+    ) {
+        if (!VK.isLoggedIn()) return
+        val request = VKPhotosDeleteAlbumRequest(album.id)
+        VK.execute(request, object : VKApiCallback<Int> {
+            override fun success(result: Int) {
+                if (result == 1) photoAlbumCache.remove(album)
+                callback.success(result)
             }
 
             override fun fail(error: Exception) {

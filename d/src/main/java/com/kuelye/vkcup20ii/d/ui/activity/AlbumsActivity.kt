@@ -14,6 +14,7 @@ class AlbumsActivity : BaseActivity() {
     companion object {
         const val EDIT_MENU_ITEM_ID = 0
         const val ADD_MENU_ITEM_ID = 1
+        const val BACK_MENU_ITEM_ID = 2
         private val TAG = AlbumsActivity::class.java.simpleName
     }
 

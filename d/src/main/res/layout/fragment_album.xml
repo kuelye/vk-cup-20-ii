@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/albums_empty"
+            android:text="@string/album_empty"
             android:textColor="@color/subtitle_color"
             android:textSize="14sp" />
 

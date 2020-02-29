@@ -26,7 +26,7 @@ class MenuView @JvmOverloads constructor(
 
     init {
         gravity = CENTER
-        setPadding(0, 0, dimen(R.dimen.padding_standard), 0)
+        setPadding(dimen(R.dimen.padding_standard_half), 0, dimen(R.dimen.padding_standard_half), 0)
     }
 
     fun setMenu(vararg items: Item) {
@@ -57,7 +57,8 @@ class MenuView @JvmOverloads constructor(
 
     class Item(
         @DrawableRes val icon: Int,
-        val id: Int
+        val id: Int,
+        val navigation: Boolean = false
     )
 
 }

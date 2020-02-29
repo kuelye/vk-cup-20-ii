@@ -7,6 +7,11 @@
     android:orientation="vertical"
     tools:parentTag="android.widget.RelativeLayout">
 
+    <com.kuelye.vkcup20ii.core.ui.view.MenuView
+        android:id="@+id/startMenuView"
+        android:layout_width="wrap_content"
+        android:layout_height="?actionBarSize" />
+
     <TextView
         android:id="@+id/subtitleTextView"
         android:layout_width="match_parent"
@@ -34,7 +39,7 @@
         tools:text="Titleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" />
 
     <com.kuelye.vkcup20ii.core.ui.view.MenuView
-        android:id="@+id/menuView"
+        android:id="@+id/endMenuView"
         android:layout_width="wrap_content"
         android:layout_height="?actionBarSize"
         android:layout_alignParentEnd="true" />

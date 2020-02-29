@@ -10,6 +10,8 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_CLOSE
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
@@ -68,6 +70,7 @@ open class BaseActivity : AppCompatActivity(), OnLoginListener {
 
     fun show(fragment: BaseFragment) {
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit()

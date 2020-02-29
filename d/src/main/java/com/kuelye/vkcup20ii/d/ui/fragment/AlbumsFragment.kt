@@ -77,9 +77,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
 
         layoutManager = GridLayoutManager(context!!, spanCount)
         adapter = Adapter(context!!, itemWidth)
-        adapter.onItemClickListener = {
-            photoAlbum -> show(AlbumFragment.newInstance(photoAlbum.id))
-        }
+        adapter.onItemClickListener = { album -> show(AlbumFragment.newInstance(album)) }
 
         super.initializeLayout()
 

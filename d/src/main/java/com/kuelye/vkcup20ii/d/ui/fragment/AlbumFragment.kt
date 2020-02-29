@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.data.BaseRepository.GetItemsResult
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
+import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.MenuView
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.d.R
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.ADD_MENU_ITEM_ID
+import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.BACK_MENU_ITEM_ID
 import com.kuelye.vkcup20ii.d.ui.fragment.AlbumFragment.Adapter
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
@@ -29,16 +31,23 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     companion object {
         private val TAG = AlbumFragment::class.java.simpleName
         private const val EXTRA_ALBUM_ID = "ALBUM_ID"
+        private const val EXTRA_ALBUM_TITLE = "ALBUM_TITLE"
 
-        fun newInstance(albumId: Int): AlbumFragment {
+        fun newInstance(album: VKPhotoAlbum): AlbumFragment {
             val fragment = AlbumFragment()
-            fragment.arguments = Bundle().apply { putInt(EXTRA_ALBUM_ID, albumId) }
+            fragment.arguments = Bundle().apply {
+                putInt(EXTRA_ALBUM_ID, album.id)
+                putString(EXTRA_ALBUM_TITLE, album.title)
+            }
             return fragment
         }
     }
 
-    private val groupId: Int?
+    private val albumId: Int?
         get() = arguments?.getInt(EXTRA_ALBUM_ID)
+
+    private val albumTitle: String?
+        get() = arguments?.getString(EXTRA_ALBUM_TITLE)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -55,17 +64,17 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         super.onResume()
         requestData(true)
         toolbar?.apply {
-            title = null
-            setMenu(MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
+            title = albumTitle
+            setMenu(MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
+                MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
         }
     }
 
     override fun requestData(onlyCache: Boolean) {
-        PhotoRepository.getPhotos(groupId,
+        PhotoRepository.getPhotos(albumId,
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
             object : VKApiCallback<GetItemsResult<VKPhoto>> {
                 override fun success(result: GetItemsResult<VKPhoto>) {
-                    Log.v(TAG, "GUB success: items.size=${result.items?.size} totalCount=${result.totalCount}")
                     showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }

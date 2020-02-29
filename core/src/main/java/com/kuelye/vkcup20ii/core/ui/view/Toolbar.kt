@@ -5,12 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Outline
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.view.View.MeasureSpec.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils.clamp
 import androidx.core.view.ViewCompat
@@ -21,7 +19,6 @@ import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeDimen
 import com.kuelye.vkcup20ii.core.utils.themeDrawable
 import kotlinx.android.synthetic.main.view_toolbar.view.*
-import javax.security.auth.callback.Callback
 
 class Toolbar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -88,7 +85,8 @@ class Toolbar @JvmOverloads constructor(
     }
 
     fun setMenu(vararg menuItems: MenuView.Item) {
-        menuView.setMenu(*menuItems)
+        endMenuView.setMenu(*(menuItems.filter { !it.navigation }.toTypedArray()))
+        startMenuView.setMenu(*(menuItems.filter { it.navigation }.toTypedArray()))
     }
 
     @SuppressLint("PrivateResource")
@@ -162,7 +160,9 @@ class Toolbar @JvmOverloads constructor(
 
         if (subtitle != null) animateElevation(s != EXPANDED_STATE)
 
-        val tX = ((measuredWidth - titleTextView.measuredWidth) / 2 - paddingStandard) * s + paddingStandard
+        val offsetCollapsed = if (startMenuView.measuredWidth == 0) paddingStandard else
+            startMenuView.measuredWidth
+        val tX = ((measuredWidth - titleTextView.measuredWidth) / 2 - offsetCollapsed) * s + offsetCollapsed
         val tH = com.kuelye.vkcup20ii.core.utils.getHeight(titleTextView.paint, title)
         val pT = ((collapsedHeight - tH) / 2 - paddingStandard) * s + paddingStandard
         titleTextView.setPadding(0, pT.toInt(), 0, 0)

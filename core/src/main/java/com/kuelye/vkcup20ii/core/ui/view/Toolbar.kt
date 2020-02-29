@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Outline
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
+import android.view.View.GONE
 import android.view.View.MeasureSpec.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
@@ -14,11 +16,14 @@ import androidx.core.math.MathUtils.clamp
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
 import androidx.core.view.ViewCompat.TYPE_TOUCH
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.dimen
+import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.themeDimen
 import com.kuelye.vkcup20ii.core.utils.themeDrawable
 import kotlinx.android.synthetic.main.view_toolbar.view.*
+import kotlin.math.exp
 
 class Toolbar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -40,17 +45,29 @@ class Toolbar @JvmOverloads constructor(
         set(value) {
             field = value
             subtitleTextView.text = value
+            update()
+        }
+
+    var alwaysCollapsed: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                if (actualHeight == null) actualHeight = if (value) expandedHeight else collapsedHeight
+                animate(if (value) collapsedHeight else expandedHeight)
+                update()
+            }
         }
 
     val scrollingOffset: Int
-        get() = if (actualHeight == null) height else actualHeight!!
+        get() = if (actualHeight == null || alwaysCollapsed) height else actualHeight!!
 
     var onExpandedStateChangedListener: ((Float) -> Unit)? = null
 
     private val collapsedHeight: Int = themeDimen(android.R.attr.actionBarSize)
-    private var expandedHeight: Int = collapsedHeight
+    private var expandedHeight: Int = dimen(R.dimen.toolbar_expanded_height)
 
-    private val paddingStandard: Int = dimen(R.dimen.padding_standard)
+    private val pS: Int = dimen(R.dimen.padding_standard)
+    private val nullSubtitleY: Int = dimen(R.dimen.toolbar_expanded_no_subtitle_y)
 
     private var actualHeight: Int? = null
         set(value) {
@@ -59,6 +76,12 @@ class Toolbar @JvmOverloads constructor(
         }
 
     private var stateAnimator: ValueAnimator? = null
+    private val state: Float
+        get() = when {
+            expandedHeight == collapsedHeight -> COLLAPSED_STATE
+            actualHeight == null -> EXPANDED_STATE
+            else -> (actualHeight!! - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
+        }
 
     private var targetElevation: Int = 0
     private var elevationAnimator: ValueAnimator? = null
@@ -67,20 +90,20 @@ class Toolbar @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.view_toolbar, this, true)
         background = themeDrawable(android.R.attr.windowBackground)
         initializeAttrs(attrs)
-        if (subtitle == null) actualHeight = collapsedHeight
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(
-            widthMeasureSpec,
-            if (actualHeight == null) heightMeasureSpec else makeMeasureSpec(actualHeight!!, EXACTLY)
-        )
+        @Suppress("NAME_SHADOWING") val heightMeasureSpec = when {
+            alwaysCollapsed -> collapsedHeight
+            actualHeight != null -> makeMeasureSpec(actualHeight!!, EXACTLY)
+            else -> heightMeasureSpec
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         outlineProvider = OutlineProvider(w, h)
-        if (oldh != h && actualHeight == null) expandedHeight = h
         update()
     }
 
@@ -102,19 +125,21 @@ class Toolbar @JvmOverloads constructor(
     }
 
     private fun scroll(dy: Int): Int {
-        return if (dy == 0) {
+        return if (dy == 0 || alwaysCollapsed) {
             0
         } else {
             if (actualHeight == null) actualHeight = height
             val actualHeight = clamp(actualHeight!! - dy, collapsedHeight, expandedHeight)
             val consumed = this.actualHeight!! - actualHeight
             this.actualHeight = actualHeight
+            Log.v(TAG, "scroll: $dy, ${this.actualHeight}, $expandedHeight, $collapsedHeight")
             consumed
         }
     }
 
     private fun animate(targetHeight: Int) {
-        //Log.v(TAG, "animate: targetHeight=$targetHeight")
+        Log.v(TAG, "animate: targetHeight=$targetHeight")
+        if (alwaysCollapsed && targetHeight != collapsedHeight) return
         if (actualHeight != null) {
             if (stateAnimator == null) {
                 stateAnimator = ValueAnimator().apply {
@@ -131,7 +156,7 @@ class Toolbar @JvmOverloads constructor(
     }
 
     private fun animateElevation(elevated: Boolean) =
-        animateElevation(if (elevated) paddingStandard / 4 else 0)
+        animateElevation(if (elevated) pS / 4 else 0)
 
     private fun animateElevation(targetElevation: Int) {
         if (this.targetElevation != targetElevation) {
@@ -152,27 +177,26 @@ class Toolbar @JvmOverloads constructor(
     }
 
     private fun update() {
-        val s = when {
-            expandedHeight == collapsedHeight -> COLLAPSED_STATE
-            actualHeight == null -> EXPANDED_STATE
-            else -> (actualHeight!! - collapsedHeight).toFloat() / (expandedHeight - collapsedHeight)
-        }
-
-        if (subtitle != null) animateElevation(s != EXPANDED_STATE)
-
-        val offsetCollapsed = if (startMenuView.measuredWidth == 0) paddingStandard else
-            startMenuView.measuredWidth
-        val tX = ((measuredWidth - titleTextView.measuredWidth) / 2 - offsetCollapsed) * s + offsetCollapsed
+        val s = state
+        Log.v(TAG, "update: $s")
         val tH = com.kuelye.vkcup20ii.core.utils.getHeight(titleTextView.paint, title)
-        val pT = ((collapsedHeight - tH) / 2 - paddingStandard) * s + paddingStandard
-        titleTextView.setPadding(0, pT.toInt(), 0, 0)
-        titleTextView.translationX = tX
+        val x = interpolate(s,
+            pS + startMenuView.realWidth,
+            if (subtitle == null) pS else (measuredWidth - titleTextView.measuredWidth) / 2)
+        val y = interpolate(s,
+            pS,
+            if (subtitle == null) nullSubtitleY else (collapsedHeight - tH) / 2)
+        titleTextView.setPadding(0, y, 0, 0)
+        titleTextView.translationX = x.toFloat()
 
+        subtitleTextView.visibility = if (subtitle == null) GONE else VISIBLE
         subtitleTextView.alpha = s
         subtitleTextView.setPadding(
-            paddingStandard * 2, (s * paddingStandard / 2).toInt(),
-            paddingStandard * 2, 0
+            pS * 2, (s * pS / 2).toInt(),
+            pS * 2, 0
         )
+
+        if (subtitle != null) animateElevation(s != EXPANDED_STATE)
 
         onExpandedStateChangedListener?.invoke(s)
         requestLayout()
@@ -260,7 +284,9 @@ class Toolbar @JvmOverloads constructor(
             coordinatorLayout: CoordinatorLayout, child: Toolbar, target: View,
             dx: Int, dy: Int, consumed: IntArray, type: Int
         ) {
-            if (!ignoreScroll && dy > 0) {
+            if (ignoreScroll) return
+            val state = child.state
+            if (dy > 0 || state < 1) {
                 consumed[1] = child.scroll(dy)
             }
         }
@@ -295,13 +321,13 @@ class Toolbar @JvmOverloads constructor(
             target: View,
             type: Int
         ) {
+            Log.v(TAG, "onStopNestedScroll: ignoreScroll=$ignoreScroll, " +
+                    "flingVelocityY=$flingVelocityY, type=$type")
             if (!ignoreScroll) {
                 if (flingVelocityY == null && type == TYPE_TOUCH) {
                     child.animate(child.getNearestTargetHeight())
                 } else if (flingVelocityY != null && type == TYPE_NON_TOUCH) {
-                    if (!target.canScrollVertically(-1)) {
-                        child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
-                    }
+                    child.animate(child.getTargetHeightByVelocityY(flingVelocityY!!))
                 }
             }
         }

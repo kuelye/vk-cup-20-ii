@@ -48,6 +48,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         requestData(true)
         toolbar?.apply {
             title = getString(R.string.albums_title)
+            alwaysCollapsed = true
             setMenu(MenuView.Item(R.drawable.ic_edit_outline_28, EDIT_MENU_ITEM_ID),
                 MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
         }

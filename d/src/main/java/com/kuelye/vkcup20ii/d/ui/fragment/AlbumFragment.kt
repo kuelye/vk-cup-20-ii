@@ -1,14 +1,18 @@
 package com.kuelye.vkcup20ii.d.ui.fragment
 
 import android.content.Context
-import android.graphics.Color
+import android.content.Intent
+import android.content.Intent.ACTION_PICK
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.data.BaseRepository.GetItemsResult
@@ -33,6 +37,7 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         private val TAG = AlbumFragment::class.java.simpleName
         private const val EXTRA_ALBUM_ID = "ALBUM_ID"
         private const val EXTRA_ALBUM_TITLE = "ALBUM_TITLE"
+        private const val PICK_PHOTO_REQUEST_CODE = 99
 
         fun newInstance(album: VKPhotoAlbum): AlbumFragment {
             val fragment = AlbumFragment()
@@ -67,15 +72,27 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         toolbar?.apply {
             title = albumTitle
             alwaysCollapsed = false
-            setMenu(MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
-                MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
+            setMenu(
+                MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
+                MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID)
+            )
             setOnMenuItemClickListener { id ->
-                when(id) {
+                when (id) {
                     BACK_MENU_ITEM_ID -> fragmentManager?.popBackStack()
-                    // ADD_MENU_ITEM_ID -> TODO
+                    ADD_MENU_ITEM_ID -> pickPhoto()
                 }
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (requestCode == PICK_PHOTO_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && intent != null && intent.data != null) {
+                savePhoto(intent.data!!)
+            } else {
+                // TODO
+            }
+        } else super.onActivityResult(requestCode, resultCode, intent)
     }
 
     override fun requestData(onlyCache: Boolean) {
@@ -83,6 +100,8 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
             object : VKApiCallback<GetItemsResult<VKPhoto>> {
                 override fun success(result: GetItemsResult<VKPhoto>) {
+                    Log.v(TAG, "requestData>success: result.items.size=${result.items?.size}, " +
+                            "result.totalCount=${result.totalCount}")
                     showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
@@ -93,12 +112,31 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
             })
     }
 
+    private fun pickPhoto() {
+        val intent = Intent(ACTION_PICK, EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_PHOTO_REQUEST_CODE)
+    }
+
+    private fun savePhoto(photo: Uri) {
+        PhotoRepository.savePhoto(context!!, photo, albumId!!, object : VKApiCallback<VKPhoto> {
+            override fun success(result: VKPhoto) {
+                requestData(true)
+            }
+
+            override fun fail(error: Exception) {
+                Log.e(TAG, "requestData>fail", error) // TODO
+            }
+        })
+    }
+
     override fun initializeLayout() {
         val space = dimen(context!!, R.dimen.padding_standard_eight)
-        val (spanCount, itemWidth) = calculateLayout(context!!,
+        val (spanCount, itemWidth) = calculateLayout(
+            context!!,
             padding = 0,
             space = space,
-            itemMinWidth = dimen(context!!, R.dimen.albums_item_min_width))
+            itemMinWidth = dimen(context!!, R.dimen.albums_item_min_width)
+        )
 
         layoutManager = GridLayoutManager(context!!, spanCount)
         adapter = Adapter(context!!, itemWidth)
@@ -122,7 +160,8 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return when (viewType) {
                 ITEM_VIEW_VALUE -> ItemViewHolder(
-                    layoutInflater.inflate(R.layout.layout_photo_item, parent, false))
+                    layoutInflater.inflate(R.layout.layout_photo_item, parent, false)
+                )
                 else -> super.onCreateViewHolder(parent, viewType)
             }
         }

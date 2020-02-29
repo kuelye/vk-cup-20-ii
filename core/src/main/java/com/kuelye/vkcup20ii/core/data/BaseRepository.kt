@@ -1,13 +1,11 @@
 package com.kuelye.vkcup20ii.core.data
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.util.SparseArray
 import androidx.core.util.forEach
 import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.kuelye.vkcup20ii.core.utils.toMutableList
 import java.util.*
-import kotlin.Comparator
 import kotlin.collections.HashMap
 
 open class BaseRepository {
@@ -36,18 +34,14 @@ open class BaseRepository {
             totalCounts[filter] = totalCount
             if (items != null) {
                 for (document in items) this.items!!.put(document.id, document)
-                sortedItems = this.items!!.toMutableList()
-                if (defaultComparator != null) Collections.sort(sortedItems!!, defaultComparator)
+                sort()
             } else {
                 sortedItems = null
             }
             //Log.v(TAG, "set: totalCounts=$totalCounts, this.items.size=${this.items?.size()}")
         }
 
-        fun remove(
-            item: I,
-            filter: Int? = null
-        ) {
+        fun remove(item: I, filter: Int? = null) {
             if (items != null) {
                 items!!.remove(item.id)
                 sortedItems?.remove(item)
@@ -56,6 +50,19 @@ open class BaseRepository {
                 if (filter != null) {
                     totalCount = totalCounts[filter]
                     if (totalCount != null) totalCounts[filter] = totalCount - 1
+                }
+            }
+        }
+
+        fun add(item: I, filter: Int? = null) {
+            if (items != null) {
+                items!!.put(item.id, item)
+                sort()
+                var totalCount = totalCounts[null]
+                if (totalCount != null) totalCounts[null] = totalCount + 1
+                if (filter != null) {
+                    totalCount = totalCounts[filter]
+                    if (totalCount != null) totalCounts[filter] = totalCount + 1
                 }
             }
         }
@@ -73,6 +80,13 @@ open class BaseRepository {
                     sortedItems?.remove(item)
                 }
                 //Log.v(TAG, "clear: filter=$filter items.size=${items?.size()}")
+            }
+        }
+
+        private fun sort() {
+            if (this.items != null) {
+                sortedItems = this.items!!.toMutableList()
+                if (defaultComparator != null) Collections.sort(sortedItems!!, defaultComparator)
             }
         }
 

@@ -1,10 +1,10 @@
 package com.kuelye.vkcup20ii.core.data
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
-import com.kuelye.vkcup20ii.core.api.photos.BaseVKPhotosGetRequest
-import com.kuelye.vkcup20ii.core.api.photos.VKPhotoAlbumsGetRequest
-import com.kuelye.vkcup20ii.core.api.photos.VKPhotosGetAllRequest
-import com.kuelye.vkcup20ii.core.api.photos.VKPhotosGetRequest
+import com.kuelye.vkcup20ii.core.api.photos.*
+import com.kuelye.vkcup20ii.core.api.wall.VKWallPostCommand
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotosDeleteAlbumRequest
@@ -75,6 +75,23 @@ object PhotoRepository : BaseRepository() {
             override fun success(result: BaseVKPhotosGetRequest.Response) {
                 photoCache.set(result.items, result.count, photoAlbumId, offset == 0)
                 callback.success(GetItemsResult.from(photoCache, photoAlbumId))
+            }
+
+            override fun fail(error: Exception) {
+                callback.fail(error)
+            }
+        })
+    }
+
+    fun savePhoto(
+        context: Context, photo: Uri, albumId: Int,
+        callback: VKApiCallback<VKPhoto>
+    ) {
+        if (!VK.isLoggedIn()) return
+        VK.execute(VKSavePhotoCommand(context, photo, albumId), object : VKApiCallback<VKPhoto> {
+            override fun success(result: VKPhoto) {
+                photoCache.add(result, result.albumId)
+                callback.success(result)
             }
 
             override fun fail(error: Exception) {

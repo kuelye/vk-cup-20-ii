@@ -4,18 +4,17 @@ import android.content.Intent
 import android.content.Intent.ACTION_PICK
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.util.Log
 import com.kuelye.vkcup20ii.core.Config
+import com.kuelye.vkcup20ii.core.api.wall.VKWallPostCommand
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.utils.hideKeyboard
 import com.kuelye.vkcup20ii.e.R
-import com.kuelye.vkcup20ii.e.api.VKWallPostCommand
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope.PHOTOS
 import com.vk.api.sdk.auth.VKScope.WALL
-import com.vk.api.sdk.exceptions.VKApiExecutionException
 import kotlinx.android.synthetic.main.activity_share_photo.*
 
 
@@ -81,14 +80,14 @@ class SharePhotoActivity : BaseActivity() {
     }
 
     private fun pickPhoto() {
-        val pickPhoto = Intent(ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(pickPhoto, PICK_PHOTO_REQUEST_CODE)
+        val intent = Intent(ACTION_PICK, EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_PHOTO_REQUEST_CODE)
     }
 
     private fun showShareSheet(photoUri: Uri) {
         photoImageView.setImageURI(photoUri)
         bottomSheetLayout.animateExpanded(true)
-        sendButton.setOnClickListener {wallPost(photoUri) }
+        sendButton.setOnClickListener { wallPost(photoUri) }
     }
 
     private fun wallPost(photoUri: Uri) {

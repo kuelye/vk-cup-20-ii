@@ -1,10 +1,8 @@
-package com.kuelye.vkcup20ii.core.ui.activity
+package com.kuelye.vkcup20ii.core.ui.fragment
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -16,12 +14,26 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.model.Identifiable
+import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment.BaseAdapter
 import com.vk.api.sdk.utils.VKUtils
+import kotlin.math.floor
 
-open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseAdapter<I>> : BaseActivity() {
+open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFragment() {
 
     companion object {
         private const val COUNT_PER_PAGE_DEFAULT = 10
+
+        fun calculateLayout(
+            context: Context,
+            padding: Int,
+            space: Int,
+            itemMinWidth: Int
+        ): Pair<Int, Int> {
+            val totalWidth = (VKUtils.width(context) - padding * 2).toFloat()
+            val spanCount = floor((totalWidth - space) / (itemMinWidth + space)).toInt()
+            val itemWidth = ((totalWidth - (spanCount - 1) * space) / spanCount).toInt()
+            return Pair(spanCount, itemWidth)
+        }
     }
 
     protected lateinit var adapter: A
@@ -30,9 +42,9 @@ open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseA
     protected var countPerPage = COUNT_PER_PAGE_DEFAULT
 
     protected lateinit var recyclerView: RecyclerView
+    protected lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var progressBar: ProgressBar
     private lateinit var emptyTextView: TextView
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onLogin() {
         pagesCount = 1
@@ -41,10 +53,10 @@ open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseA
 
     @CallSuper
     protected open fun initializeLayout() {
-        progressBar = findViewById(android.R.id.progress)
-        recyclerView = findViewById(android.R.id.list)
-        emptyTextView = findViewById(android.R.id.empty)
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        progressBar = view!!.findViewById(android.R.id.progress)
+        recyclerView = view!!.findViewById(android.R.id.list)
+        emptyTextView = view!!.findViewById(android.R.id.empty)
+        swipeRefreshLayout = view!!.findViewById(R.id.swipeRefreshLayout)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
@@ -82,9 +94,9 @@ open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseA
     protected open fun requestData(onlyCache: Boolean = false) {}
 
     protected fun showData(documents: List<I>?,  hasMore: Boolean = false) {
-        progressBar.visibility = if (documents == null) VISIBLE else GONE
-        recyclerView.visibility = if (documents.isNullOrEmpty()) GONE else VISIBLE
-        emptyTextView.visibility = if (documents != null && documents.isEmpty()) VISIBLE else GONE
+        progressBar.visibility = if (documents == null) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (documents.isNullOrEmpty()) View.GONE else View.VISIBLE
+        emptyTextView.visibility = if (documents != null && documents.isEmpty()) View.VISIBLE else View.GONE
         adapter.swap(documents, hasMore)
     }
 

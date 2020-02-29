@@ -87,8 +87,8 @@ class Toolbar @JvmOverloads constructor(
         update()
     }
 
-    fun setMenu(menuItems: List<MenuView.Item>? = null) {
-        menuView.setMenu(menuItems)
+    fun setMenu(vararg menuItems: MenuView.Item) {
+        menuView.setMenu(*menuItems)
     }
 
     @SuppressLint("PrivateResource")

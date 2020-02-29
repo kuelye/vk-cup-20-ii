@@ -56,7 +56,7 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
 
     override fun requestData(onlyCache: Boolean) {
         DocumentRepository.getDocuments(
-            (pagesCount - 1) * countPerPage, pagesCount * countPerPage, onlyCache,
+            (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
             object : VKApiCallback<GetItemsResult<VKDocument>> {
                 override fun success(result: GetItemsResult<VKDocument>) {
                     showData(result.items, result.items.size != result.totalCount)

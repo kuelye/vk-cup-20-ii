@@ -8,12 +8,13 @@ import com.kuelye.vkcup20ii.core.utils.map
 import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 
-class VKPhotosGetAllRequest(
-    offset: Int, count: Int
-) : BaseVKPhotosGetRequest("photos.getAll", offset, count) {
+class VKPhotosGetRequest(
+    albumId: Int?, offset: Int, count: Int
+) : BaseVKPhotosGetRequest("photos.get", offset, count) {
 
     init {
-        addParam("skip_hidden", 1)
+        if (albumId != null) addParam("album_id", albumId)
+        addParam("rev", 1)
     }
 
 }

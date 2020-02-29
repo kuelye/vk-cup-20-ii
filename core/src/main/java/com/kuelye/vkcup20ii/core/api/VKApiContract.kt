@@ -36,6 +36,7 @@ const val CITY_ID_FIELD_KEY = "city_id"
 
 class VKPhotoColumns {
     companion object {
+        const val ALBUM_ID_FIELD_KEY = "album_id"
         const val LAT_FIELD_KEY = "lat"
         const val LONG_FIELD_KEY = "long"
         const val SIZES_FIELD_KEY = "sizes"
@@ -68,6 +69,6 @@ class VKPhotoAlbumColumns {
     companion object {
         const val SIZE_FIELD_KEY = "size"
         const val SIZES_FIELD_KEY = "sizes"
-        const val UPDATED_FIELD_KEY = "updated"
+        const val CREATED_FIELD_KEY = "created"
     }
 }

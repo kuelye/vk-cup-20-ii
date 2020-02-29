@@ -29,8 +29,8 @@ class MenuView @JvmOverloads constructor(
         setPadding(0, 0, dimen(R.dimen.padding_standard), 0)
     }
 
-    fun setMenu(items: List<Item>? = null) {
-        val itemsSize = items?.size ?: 0
+    fun setMenu(vararg items: Item) {
+        val itemsSize = items.size
         for (i in itemsSize until childCount) removeViewAt(i)
         for (i in childCount until itemsSize) addItem()
         for (i in 0 until itemsSize) updateItem(getChildAt(i) as ImageView, items!![i])

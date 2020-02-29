@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kuelye.vkcup20ii.core.ui.view.BorderImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/album_item_min_width"
+    android:layout_height="@dimen/album_item_min_width"
+    android:background="@drawable/bg_selectable_8_corners"
+    app:borderCornerRadius="@dimen/tiny_corner_radius_2"
+    app:borderType="square"
+    app:borderWidth="0dp"
+    tools:background="#999" />

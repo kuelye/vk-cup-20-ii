@@ -11,6 +11,9 @@ import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
 import com.kuelye.vkcup20ii.core.Config
+import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
+import com.kuelye.vkcup20ii.core.ui.view.Toolbar
 import com.kuelye.vkcup20ii.core.utils.getStatusBarHeight
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
@@ -23,6 +26,7 @@ open class BaseActivity : AppCompatActivity(), OnLoginListener {
     }
 
     val onLoginListeners: MutableList<OnLoginListener> by lazy { mutableListOf<OnLoginListener>() }
+    val toolbar: Toolbar? by lazy { findViewById<Toolbar>(R.id.toolbar) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,9 +34,7 @@ open class BaseActivity : AppCompatActivity(), OnLoginListener {
             clearFlags(FLAG_TRANSLUCENT_STATUS)
             addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             var systemUiFlags = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            if (SDK_INT >= 23) {
-                systemUiFlags = systemUiFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            if (SDK_INT >= 23) systemUiFlags = systemUiFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             decorView.systemUiVisibility = systemUiFlags
             statusBarColor = TRANSPARENT
             decorView.setPadding(decorView.paddingLeft, getStatusBarHeight(context),
@@ -62,6 +64,13 @@ open class BaseActivity : AppCompatActivity(), OnLoginListener {
 
     override fun onLogin() {
         onLoginListeners.map { it.onLogin() }
+    }
+
+    fun show(fragment: BaseFragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun checkLogin() {

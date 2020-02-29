@@ -18,6 +18,7 @@ import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.MenuView
+import com.kuelye.vkcup20ii.core.utils.color
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.d.R
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.ADD_MENU_ITEM_ID
@@ -132,7 +133,6 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         }
 
         private fun updateItemLayout(holder: ItemViewHolder, photo: VKPhoto) {
-            holder.photoImageView.setImageDrawable(ColorDrawable(Color.RED))
             holder.photoImageView.layoutParams.apply {
                 width = itemWidth
                 height = itemWidth
@@ -140,8 +140,8 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
 
             Picasso.get().load(photo.photo)
                 .fit().centerCrop()
-                .placeholder(ColorDrawable(Color.RED))
-                .error(ColorDrawable(Color.RED))
+                .placeholder(ColorDrawable(color(context, R.color.placeholder_color)))
+                .error(ColorDrawable(color(context, R.color.placeholder_color)))
                 .into(holder.photoImageView)
 
             holder.itemView.setOnClickListener { onItemClickListener?.invoke(photo) }

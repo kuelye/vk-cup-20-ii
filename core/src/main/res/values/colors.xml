@@ -11,4 +11,5 @@
     <color name="button_color_disabled">#804986CC</color>
     <color name="filled_box_edit_text_stroke_color">#E1E3E6</color>
     <color name="filled_box_edit_text_fill_color">#F2F3F5</color>
+    <color name="placeholder_color">#ECEDF1</color>
 </resources>

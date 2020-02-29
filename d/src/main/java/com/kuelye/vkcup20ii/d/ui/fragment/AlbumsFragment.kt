@@ -1,14 +1,12 @@
 package com.kuelye.vkcup20ii.d.ui.fragment
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +15,12 @@ import com.kuelye.vkcup20ii.core.data.PhotoRepository
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
+import com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView
+import com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView.Companion.UNSELECTED_BORDER_COLOR
+import com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView.Companion.UNSELECTED_BORDER_WIDTH
+import com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView.Position.TOP_RIGHT
 import com.kuelye.vkcup20ii.core.ui.view.MenuView
+import com.kuelye.vkcup20ii.core.utils.color
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.d.R
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.ADD_MENU_ITEM_ID
@@ -25,7 +28,6 @@ import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.DISMISS_MENU_
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.EDIT_MENU_ITEM_ID
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
-import kotlinx.android.synthetic.main.fragment_albums.*
 
 class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter>() {
 
@@ -74,10 +76,11 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     }
 
     override fun initializeLayout() {
-        val space = dimen(context!!, R.dimen.padding_standard_three_quarters)
+        val horizontalSpace = dimen(context!!, R.dimen.padding_standard_quarter)
+        val verticalSpace = dimen(context!!, R.dimen.padding_standard_three_quarters)
         val (spanCount, itemWidth) = calculateLayout(context!!,
-            padding = dimen(context!!, R.dimen.padding_standard),
-            space = space,
+            padding = dimen(context!!, R.dimen.padding_standard_three_quarters),
+            space = horizontalSpace,
             itemMinWidth = dimen(context!!, R.dimen.albums_item_min_width))
 
         layoutManager = GridLayoutManager(context!!, spanCount)
@@ -86,11 +89,13 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
 
         super.initializeLayout()
 
-        recyclerView.addItemDecoration(SpaceItemDecoration(space, space, spanCount))
+        recyclerView.addItemDecoration(
+            SpaceItemDecoration(horizontalSpace, verticalSpace, spanCount))
     }
 
     private fun updateByEditMode() {
         updateToolbar()
+        adapter.editModeEnabled = editModeEnabled
     }
 
     private fun updateToolbar() {
@@ -126,9 +131,17 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         var onItemClickListener: ((VKPhotoAlbum) -> Unit)? = null
         var onItemLongClickListener: (() -> Unit)? = null
 
+        var editModeEnabled: Boolean = false
+            set(value) {
+                if (field != value) {
+                    field = value
+                    notifyDataSetChanged()
+                }
+            }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return when (viewType) {
-                ITEM_VIEW_VALUE -> ItemViewHolder(
+                ITEM_VIEW_VALUE -> ItemViewHolder(context,
                     layoutInflater.inflate(R.layout.layout_album_item, parent, false))
                 else -> super.onCreateViewHolder(parent, viewType)
             }
@@ -140,7 +153,6 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         }
 
         private fun updateItemLayout(holder: ItemViewHolder, photoAlbum: VKPhotoAlbum) {
-            holder.photoImageView.setImageDrawable(ColorDrawable(Color.RED))
             holder.photoImageView.layoutParams.apply {
                 width = itemWidth
                 height = itemWidth
@@ -148,9 +160,11 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
 
             Picasso.get().load(photoAlbum.photo)
                 .fit().centerCrop()
-                .placeholder(ColorDrawable(Color.RED))
-                .error(ColorDrawable(Color.RED))
+                .placeholder(ColorDrawable(color(context, R.color.placeholder_color)))
+                .error(ColorDrawable(color(context, R.color.placeholder_color)))
                 .into(holder.photoImageView)
+            holder.photoImageView.animateSelected(editModeEnabled)
+
             holder.titleTextView.text = photoAlbum.title
             holder.infoTextView.text = context.resources.getQuantityString(
                 R.plurals.album_size_template, photoAlbum.size, photoAlbum.size)
@@ -159,10 +173,21 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
             holder.itemView.setOnLongClickListener { onItemLongClickListener?.invoke(); true }
         }
 
-        class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val photoImageView: ImageView = itemView.findViewById(R.id.photoImageView)
+        class ItemViewHolder(
+            context: Context,
+            itemView: View
+        ) : RecyclerView.ViewHolder(itemView) {
+            val photoImageView: BadgeBorderImageView = itemView.findViewById(R.id.photoImageView)
             val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
             val infoTextView: TextView = itemView.findViewById(R.id.infoTextView)
+
+            init {
+                photoImageView.selectedScale = 1f
+                photoImageView.selectedBorderWidth = UNSELECTED_BORDER_WIDTH
+                photoImageView.selectedBorderColor = UNSELECTED_BORDER_COLOR
+                photoImageView.setBadge(R.drawable.ic_remove_24,
+                    dimen(context, R.dimen.albums_remove_badge_size), TOP_RIGHT)
+            }
         }
 
     }

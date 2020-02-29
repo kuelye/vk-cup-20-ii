@@ -7,10 +7,11 @@
     android:background="@drawable/bg_selectable_8_corners"
     android:orientation="vertical">
 
-    <com.kuelye.vkcup20ii.core.ui.view.BorderImageView
+    <com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView
         android:id="@+id/photoImageView"
         android:layout_width="@dimen/albums_item_min_width"
         android:layout_height="@dimen/albums_item_min_width"
+        android:padding="4dp"
         app:borderCornerRadius="@dimen/small_corner_radius_6"
         app:borderType="square"
         app:borderWidth="0dp"
@@ -24,6 +25,8 @@
         android:layout_marginTop="@dimen/padding_standard_half"
         android:ellipsize="end"
         android:maxLines="2"
+        android:paddingStart="@dimen/padding_standard_quarter"
+        android:paddingEnd="@dimen/padding_standard_quarter"
         android:textColor="@color/title_color"
         android:textSize="14sp"
         tools:text="Фотографии с моей страницы" />
@@ -35,6 +38,8 @@
         android:layout_marginBottom="@dimen/padding_standard_half"
         android:ellipsize="end"
         android:maxLines="1"
+        android:paddingStart="@dimen/padding_standard_quarter"
+        android:paddingEnd="@dimen/padding_standard_quarter"
         android:textColor="@color/subtitle_color"
         android:textSize="13sp"
         tools:text="181 фотографииииииииия" />

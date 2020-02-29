@@ -80,19 +80,25 @@ open class BorderImageView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         if (bitmap != null) {
-            val hW = width.toFloat() / 2
-            val hH = height.toFloat() / 2
+            val w = width.toFloat() - paddingStart - paddingEnd
+            val h = height.toFloat() - paddingTop - paddingBottom
             val hBW = borderWidth / 2
             if (borderType == BorderType.CIRCLE) {
+                val hW = w / 2
+                val hH = h / 2
+                val cX = hW + paddingStart
+                val cY = hH + paddingTop
                 val r = hW - hBW
-                if (borderWidth > 0) canvas.drawCircle(hW, hH, r, borderPaint)
-                canvas.drawCircle(hW, hH, (hW - borderWidth) * scale, paint)
+                if (borderWidth > 0) canvas.drawCircle(cX, cY, r, borderPaint)
+                canvas.drawCircle(cX, cY, (hW - borderWidth) * scale, paint)
             } else {
-                if (borderWidth > 0) canvas.drawRoundRect(hBW, hBW, width - hBW, height - hBW,
+                if (borderWidth > 0) canvas.drawRoundRect(paddingStart + hBW, paddingTop + hBW,
+                    width - paddingEnd - hBW, height - paddingBottom - hBW,
                     borderCornerRadius, borderCornerRadius, borderPaint)
                 // TODO support scale in square mode
-                canvas.drawRoundRect(borderWidth, borderWidth, width - borderWidth,
-                    height - borderWidth, borderCornerRadius, borderCornerRadius, paint)
+                canvas.drawRoundRect(paddingStart + borderWidth, paddingTop + borderWidth,
+                    width - paddingEnd - borderWidth, height - paddingBottom - borderWidth,
+                    borderCornerRadius, borderCornerRadius, paint)
             }
         }
     }
@@ -140,8 +146,9 @@ open class BorderImageView @JvmOverloads constructor(
                 reset()
                 val drawingRect = Rect().apply { getDrawingRect(this) }
                 val d = drawingRect.width().toFloat() * (1f - scale) / 2
-                val s = drawingRect.width().toFloat() * scale / bitmap!!.width
-                setScale(s, s)
+                val w = drawingRect.width().toFloat() - paddingLeft - paddingRight
+                val h = drawingRect.height().toFloat() - paddingTop - paddingBottom
+                setScale(w * scale / bitmap!!.width, h * scale / bitmap!!.height)
                 postTranslate(d, d)
             }
             paint.shader!!.setLocalMatrix(shaderMatrix)

@@ -21,6 +21,7 @@ import com.kuelye.vkcup20ii.core.ui.view.MenuView
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.d.R
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.ADD_MENU_ITEM_ID
+import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.DISMISS_MENU_ITEM_ID
 import com.kuelye.vkcup20ii.d.ui.activity.AlbumsActivity.Companion.EDIT_MENU_ITEM_ID
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
@@ -31,6 +32,14 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     companion object {
         private val TAG = AlbumsFragment::class.java.simpleName
     }
+
+    var editModeEnabled: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                updateByEditMode()
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -46,12 +55,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     override fun onResume() {
         super.onResume()
         requestData(true)
-        toolbar?.apply {
-            title = getString(R.string.albums_title)
-            alwaysCollapsed = true
-            setMenu(MenuView.Item(R.drawable.ic_edit_outline_28, EDIT_MENU_ITEM_ID),
-                MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
-        }
+        updateToolbar()
     }
 
     override fun requestData(onlyCache: Boolean) {
@@ -83,6 +87,35 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         super.initializeLayout()
 
         recyclerView.addItemDecoration(SpaceItemDecoration(space, space, spanCount))
+    }
+
+    private fun updateByEditMode() {
+        updateToolbar()
+    }
+
+    private fun updateToolbar() {
+        toolbar?.apply {
+            if (editModeEnabled) {
+                title = getString(R.string.edit_title)
+                setMenu(MenuView.Item(R.drawable.ic_cancel_outlne_28, DISMISS_MENU_ITEM_ID, true))
+                setOnMenuItemClickListener { id ->
+                    when(id) {
+                        DISMISS_MENU_ITEM_ID -> editModeEnabled = false
+                    }
+                }
+            } else {
+                title = getString(R.string.albums_title)
+                setMenu(MenuView.Item(R.drawable.ic_edit_outline_28, EDIT_MENU_ITEM_ID),
+                    MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
+                setOnMenuItemClickListener { id ->
+                    when(id) {
+                        EDIT_MENU_ITEM_ID -> editModeEnabled = true
+                        // ADD_MENU_ITEM_ID -> TODO
+                    }
+                }
+            }
+            alwaysCollapsed = true
+        }
     }
 
     class Adapter(

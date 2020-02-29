@@ -37,6 +37,8 @@ class MenuView @JvmOverloads constructor(
             return width.toInt()
         }
 
+    var onRealWidthChangedListener: ((Int) -> Unit)? = null
+
     init {
         gravity = CENTER
         setPadding(dimen(R.dimen.padding_standard_half), 0, dimen(R.dimen.padding_standard_half), 0)
@@ -66,6 +68,7 @@ class MenuView @JvmOverloads constructor(
 
             animate()
                 .alpha(1f).scaleX(1f).scaleY(1f)
+                .setUpdateListener { emitRealWidth() }
                 .start()
         }
     }
@@ -74,6 +77,7 @@ class MenuView @JvmOverloads constructor(
         val view = getChildAt(i)
         view.animate()
             .alpha(0f).scaleX(0f).scaleY(0f)
+            .setUpdateListener { emitRealWidth() }
             .withEndAction { removeView(view) }
             .start()
         view.tag = true
@@ -95,6 +99,10 @@ class MenuView @JvmOverloads constructor(
         view.setOnClickListener {
             onItemClickListener?.invoke(item.id)
         }
+    }
+
+    private fun emitRealWidth() {
+        onRealWidthChangedListener?.invoke(realWidth)
     }
 
     class Item(

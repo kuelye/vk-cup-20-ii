@@ -7,7 +7,6 @@ import android.graphics.Outline
 import android.util.AttributeSet
 import android.util.Log
 import android.view.*
-import android.view.View.GONE
 import android.view.View.MeasureSpec.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
@@ -16,14 +15,9 @@ import androidx.core.math.MathUtils.clamp
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
 import androidx.core.view.ViewCompat.TYPE_TOUCH
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuelye.vkcup20ii.core.R
-import com.kuelye.vkcup20ii.core.utils.dimen
-import com.kuelye.vkcup20ii.core.utils.interpolate
-import com.kuelye.vkcup20ii.core.utils.themeDimen
-import com.kuelye.vkcup20ii.core.utils.themeDrawable
+import com.kuelye.vkcup20ii.core.utils.*
 import kotlinx.android.synthetic.main.view_toolbar.view.*
-import kotlin.math.exp
 
 class Toolbar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -67,7 +61,7 @@ class Toolbar @JvmOverloads constructor(
     private var expandedHeight: Int = dimen(R.dimen.toolbar_expanded_height)
 
     private val pS: Int = dimen(R.dimen.padding_standard)
-    private val nullSubtitleY: Int = dimen(R.dimen.toolbar_expanded_no_subtitle_y)
+    private val nullSubtitleTitleY: Int = dimen(R.dimen.toolbar_expanded_no_subtitle_title_y)
 
     private var actualHeight: Int? = null
         set(value) {
@@ -90,6 +84,7 @@ class Toolbar @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.view_toolbar, this, true)
         background = themeDrawable(android.R.attr.windowBackground)
         initializeAttrs(attrs)
+        startMenuView.onRealWidthChangedListener = { update() }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -110,6 +105,11 @@ class Toolbar @JvmOverloads constructor(
     fun setMenu(vararg menuItems: MenuView.Item) {
         endMenuView.setMenu(*(menuItems.filter { !it.navigation }.toTypedArray()))
         startMenuView.setMenu(*(menuItems.filter { it.navigation }.toTypedArray()))
+    }
+
+    fun setOnMenuItemClickListener(listener: ((Int) -> Unit)? = null) {
+        startMenuView.onItemClickListener = listener
+        endMenuView.onItemClickListener = listener
     }
 
     @SuppressLint("PrivateResource")
@@ -179,13 +179,13 @@ class Toolbar @JvmOverloads constructor(
     private fun update() {
         val s = state
         Log.v(TAG, "update: $s")
-        val tH = com.kuelye.vkcup20ii.core.utils.getHeight(titleTextView.paint, title)
+        val tH = titleTextView.paint.getHeight(title)
         val x = interpolate(s,
             pS + startMenuView.realWidth,
             if (subtitle == null) pS else (measuredWidth - titleTextView.measuredWidth) / 2)
         val y = interpolate(s,
             pS,
-            if (subtitle == null) nullSubtitleY else (collapsedHeight - tH) / 2)
+            if (subtitle == null) nullSubtitleTitleY else (collapsedHeight - tH) / 2)
         titleTextView.setPadding(0, y, 0, 0)
         titleTextView.translationX = x.toFloat()
 

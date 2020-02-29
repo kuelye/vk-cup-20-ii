@@ -279,12 +279,12 @@ inline fun <T> SparseArray<T>.filter(predicate: (T) -> Boolean): List<T> {
     return result
 }
 
-fun getHeight(paint: Paint, text: String?): Int {
+fun Paint.getHeight(text: String?): Int {
     return if (text == null) {
         0
     } else {
         val bounds = Rect()
-        paint.getTextBounds(text, 0, text.length, bounds)
+        getTextBounds(text, 0, text.length, bounds)
         return bounds.height()
     }
 }

@@ -68,6 +68,12 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
             alwaysCollapsed = false
             setMenu(MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
                 MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
+            setOnMenuItemClickListener { id ->
+                when(id) {
+                    BACK_MENU_ITEM_ID -> fragmentManager?.popBackStack()
+                    // ADD_MENU_ITEM_ID -> TODO
+                }
+            }
         }
     }
 

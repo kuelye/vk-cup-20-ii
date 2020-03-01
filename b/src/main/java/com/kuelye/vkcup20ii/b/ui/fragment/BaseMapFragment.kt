@@ -11,8 +11,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.ClusterManager
-import com.kuelye.vkcup20ii.b.ui.misc.MarkerRenderer
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder
+import com.kuelye.vkcup20ii.b.ui.misc.MarkerRenderer
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_group_map.*
 
@@ -28,8 +28,6 @@ abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapRead
     protected var clusterManager: ClusterManager<T>? = null
     protected var clusterRenderer: MarkerRenderer<T>? = null
     protected val markers: SparseArray<T> by lazy { SparseArray<T>() }
-
-    abstract fun requestData()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

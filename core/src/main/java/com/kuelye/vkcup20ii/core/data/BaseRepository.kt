@@ -1,10 +1,13 @@
 package com.kuelye.vkcup20ii.core.data
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.util.SparseArray
+import androidx.core.util.contains
 import androidx.core.util.forEach
 import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.kuelye.vkcup20ii.core.utils.toMutableList
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -24,12 +27,14 @@ open class BaseRepository {
         var sortedItems: MutableList<I>? = null
         val totalCounts: MutableMap<Int?, Int?> by lazy { HashMap<Int?, Int?>() }
 
+        val listeners: MutableSet<Listener<I>> by lazy { mutableSetOf<Listener<I>>() }
+
         fun set(
             items: List<I>?, totalCount: Int?,
             filter: Int? = null, clear: Boolean
         ) {
+            Log.v(TAG, "set: items.size=${items?.size}, totalCount=$totalCount, filter=$filter, clear=$clear")
             ensure()
-            //Log.v(TAG, "set: items.size=${items?.size}, totalCount=$totalCount, filter=$filter, clear=$clear")
             if (clear) clear(filter)
             totalCounts[filter] = totalCount
             if (items != null) {
@@ -38,10 +43,11 @@ open class BaseRepository {
             } else {
                 sortedItems = null
             }
-            //Log.v(TAG, "set: totalCounts=$totalCounts, this.items.size=${this.items?.size()}")
+            emit(filter)
         }
 
         fun remove(item: I, filter: Int? = null) {
+            Log.v(TAG, "remove: item=$item, filter=$filter")
             if (items != null) {
                 items!!.remove(item.id)
                 sortedItems?.remove(item)
@@ -54,20 +60,45 @@ open class BaseRepository {
             }
         }
 
-        fun add(item: I, filter: Int? = null) {
+        fun update(item: I, filter: Int? = null) {
+            Log.v(TAG, "update: item=$item, filter=$filter")
             if (items != null) {
+                val update = items!!.contains(item.id)
                 items!!.put(item.id, item)
                 sort()
-                var totalCount = totalCounts[null]
-                if (totalCount != null) totalCounts[null] = totalCount + 1
-                if (filter != null) {
-                    totalCount = totalCounts[filter]
-                    if (totalCount != null) totalCounts[filter] = totalCount + 1
+                if (!update) {
+                    var totalCount = totalCounts[null]
+                    if (totalCount != null) totalCounts[null] = totalCount + 1
+                    if (filter != null) {
+                        totalCount = totalCounts[filter]
+                        if (totalCount != null) totalCounts[filter] = totalCount + 1
+                    }
                 }
             }
         }
 
+        fun emit(
+            filter: Int? = null,
+            fromCache: Boolean = false
+        ): Boolean {
+            Log.v(TAG, "emit: filter=$filter, fromCache=$fromCache")
+            if (sortedItems == null) return false
+            listeners.forEach { listener ->
+                if (listener.getFilter() == null || listener.getFilter() == filter)
+                    listener.onNextItems(ItemsResult.from(this, listener.getFilter(), fromCache))
+            }
+            return true
+        }
+
+        fun fail(
+            error: Exception
+        ) {
+            Log.v(TAG, "fail: error=$error")
+            listeners.forEach { it.onFail(error) }
+        }
+
         private fun clear(filter: Int? = null) {
+            Log.v(TAG, "clear: filter=$filter")
             if (filterBlock == null || filter == null) {
                 items?.clear()
             } else {
@@ -79,7 +110,6 @@ open class BaseRepository {
                     items!!.remove(item.id)
                     sortedItems?.remove(item)
                 }
-                //Log.v(TAG, "clear: filter=$filter items.size=${items?.size()}")
             }
         }
 
@@ -96,21 +126,55 @@ open class BaseRepository {
 
     }
 
-    data class GetItemsResult<I : Identifiable>(
+    class RequestManager {
+
+        private val activeArguments: MutableSet<Arguments> by lazy { mutableSetOf<Arguments>() }
+
+        fun request(arguments: Arguments): Boolean {
+            return if (activeArguments.contains(arguments)) {
+                false
+            } else {
+                activeArguments.add(arguments)
+                true
+            }
+        }
+
+        fun finish(arguments: Arguments) {
+            activeArguments.remove(arguments)
+        }
+
+        interface Arguments
+
+    }
+
+    class ItemsResult<I : Identifiable>(
         val items: List<I>?,
-        val totalCount: Int? = null
+        val totalCount: Int? = null,
+        val fromCache: Boolean = false
     ) {
 
         companion object {
             fun <I : Identifiable> from(
-                cache: Cache<I>, filter: Int? = null
-            ) : GetItemsResult<I> {
-                val items = if (cache.filterBlock == null) cache.sortedItems else
+                cache: Cache<I>,
+                filter: Int? = null,
+                fromCache: Boolean = false
+            ) : ItemsResult<I> {
+                val items = if (cache.filterBlock == null || filter == null) cache.sortedItems else
                     cache.sortedItems?.filter { cache.filterBlock.invoke(it, filter) }
-                return GetItemsResult(items, cache.totalCounts[filter])
+                return ItemsResult(items, cache.totalCounts[filter], fromCache)
             }
         }
 
+        override fun toString(): String {
+            return "ItemsResult(items.size=${items?.size}, totalCount=$totalCount, fromCache=$fromCache)"
+        }
+
+    }
+
+    interface Listener<I : Identifiable> {
+        fun onNextItems(result: ItemsResult<I>)
+        fun onFail(error: Exception)
+        fun getFilter(): Int?
     }
 
 }

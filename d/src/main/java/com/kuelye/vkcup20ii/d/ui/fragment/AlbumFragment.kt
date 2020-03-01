@@ -15,7 +15,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kuelye.vkcup20ii.core.data.BaseRepository.GetItemsResult
+import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
@@ -96,10 +96,10 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     }
 
     override fun requestData(onlyCache: Boolean) {
-        PhotoRepository.getPhotos(albumId,
+        PhotoRepository.requestPhotos(albumId,
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
-            object : VKApiCallback<GetItemsResult<VKPhoto>> {
-                override fun success(result: GetItemsResult<VKPhoto>) {
+            object : VKApiCallback<ItemsResult<VKPhoto>> {
+                override fun success(result: ItemsResult<VKPhoto>) {
                     Log.v(TAG, "requestData>success: result.items.size=${result.items?.size}, " +
                             "result.totalCount=${result.totalCount}")
                     showData(result.items, result.items?.size != result.totalCount)

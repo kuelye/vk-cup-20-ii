@@ -28,7 +28,7 @@ class VKDocsGetRequest(
         )
     }
 
-    data class Response(
+    class Response(
         val count: Int,
         val items: List<VKDocument>
     ) {

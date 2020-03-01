@@ -1,10 +1,11 @@
 package com.kuelye.vkcup20ii.core.model.groups
 
 import com.kuelye.vkcup20ii.core.api.*
+import com.kuelye.vkcup20ii.core.model.Identifiable
 import org.json.JSONObject
 
 data class VKGroup(
-    val id: Int,
+    override val id: Int,
     val name: String,
     val screenName: String,
     val type: String,
@@ -18,7 +19,7 @@ data class VKGroup(
     var friendsCount: Int? = null,
     var lastPostDate: Long? = null,
     var addresses: List<VKAddress>? = null
-) {
+) : Identifiable {
 
     companion object {
         private val TAG = VKGroup::class.java.simpleName

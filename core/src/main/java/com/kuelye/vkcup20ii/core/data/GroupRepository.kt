@@ -1,67 +1,49 @@
 package com.kuelye.vkcup20ii.core.data
 
-import android.util.SparseArray
+import android.util.Log
 import com.kuelye.vkcup20ii.core.api.groups.VKGroupCommand
-import com.kuelye.vkcup20ii.core.api.groups.VKGroupsCommand
+import com.kuelye.vkcup20ii.core.api.groups.VKGroupsGetCommand
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
-import com.kuelye.vkcup20ii.core.utils.filter
-import com.kuelye.vkcup20ii.core.utils.toList
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
-object GroupRepository {
+object GroupRepository : BaseRepository() {
 
     private val TAG = GroupRepository::class.java.simpleName
 
-    private var groupsCache: SparseArray<VKGroup>? = null
+    val groupCache: Cache<VKGroup> by lazy { Cache<VKGroup>() }
+    private val groupsRequestManager: RequestManager by lazy { RequestManager() }
 
-    fun getGroups(
-        extendedFields: Array<VKGroup.Field>,
-        type: VKGroup.Type?,
-        callback: VKApiCallback<List<VKGroup>>
-    ) {
-        if (groupsCache != null) {
-            if (type == null) {
-                callback.success(groupsCache!!.toList())
-            } else {
-                callback.success(groupsCache!!.filter { it.type == type.value })
-            }
-        }
+    fun requestGroups(arguments: RequestGroupsArguments, onlyCache: Boolean = false) {
+        Log.v(TAG, "requestGroups: arguments=$arguments, onlyCache=$onlyCache")
+        if (!onlyCache && !groupsRequestManager.request(arguments)) return
+        if (groupCache.emit(arguments.filter, true)) if (onlyCache) return
         if (!VK.isLoggedIn()) return
-        VK.execute(
-            VKGroupsCommand(
-                extendedFields,
-                type?.filter
-            ), object : VKApiCallback<List<VKGroup>> {
-            override fun success(result: List<VKGroup>) {
-                ensureCache()
-                groupsCache!!.clear()
-                for (group in result) {
-                    groupsCache!!.put(group.id, group)
-                }
-                callback.success(result)
+        val request = VKGroupsGetCommand(arguments.offset, arguments.count,
+            arguments.extendedFields, arguments.type?.filter)
+        VK.execute(request, object : VKApiCallback<VKGroupsGetCommand.Response> {
+            override fun success(result: VKGroupsGetCommand.Response) {
+                Log.v(TAG, "requestGroups>success: result=$result")
+                groupsRequestManager.finish(arguments)
+                groupCache.set(result.items, result.count, arguments.filter, arguments.offset == 0)
             }
 
             override fun fail(error: Exception) {
-                callback.fail(error)
+                groupsRequestManager.finish(arguments)
+                groupCache.fail(error)
             }
         })
     }
 
-    fun getGroup(groupId: Int, callback: VKApiCallback<VKGroup?>) {
-        val group = groupsCache?.get(groupId)
+    fun requestGroup(groupId: Int, callback: VKApiCallback<VKGroup?>) {
+        val group = groupCache.items?.get(groupId)
         if (group != null) {
             callback.success(group)
         }
         if (!VK.isLoggedIn()) return
         VK.execute(VKGroupCommand(groupId), object : VKApiCallback<VKGroup?> {
             override fun success(result: VKGroup?) {
-                ensureCache()
-                if (result == null) {
-                    groupsCache!!.remove(groupId)
-                } else {
-                    groupsCache!!.put(result.id, result)
-                }
+                if (result != null) groupCache.update(result, null)
                 callback.success(result)
             }
 
@@ -71,10 +53,13 @@ object GroupRepository {
         })
     }
 
-    private fun ensureCache() {
-        if (groupsCache == null) {
-            groupsCache = SparseArray()
-        }
+    data class RequestGroupsArguments(
+        val offset: Int,
+        val count: Int,
+        val extendedFields: List<VKGroup.Field>,
+        val type: VKGroup.Type?
+    ) : RequestManager.Arguments {
+        val filter = type?.value?.hashCode()
     }
 
 }

@@ -7,19 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.misc.GroupMarkerHolder
+import com.kuelye.vkcup20ii.core.data.BaseRepository
+import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
 import com.kuelye.vkcup20ii.core.data.GroupRepository
+import com.kuelye.vkcup20ii.core.data.GroupRepository.RequestGroupsArguments
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.ADDRESSES
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
-import com.vk.api.sdk.VKApiCallback
 import kotlinx.android.synthetic.main.fragment_group_map.*
 
 class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
 
     companion object {
         private val TAG = GroupMapFragment::class.java.simpleName
-        private val GROUP_EXTENDED_FIELDS = arrayOf(DESCRIPTION, ADDRESSES)
+        private val GROUP_EXTENDED_FIELDS = listOf(DESCRIPTION, ADDRESSES)
         private const val EXTRA_GROUP_TYPE = "FILTER"
 
         fun newInstance(groupType: VKGroup.Type): GroupMapFragment {
@@ -30,6 +32,10 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     }
 
     private var selectedMarker: GroupMarkerHolder? = null
+    private var groupsListener: BaseRepository.Listener<VKGroup>? = null
+
+    private val filter
+        get() = arguments?.getSerializable(EXTRA_GROUP_TYPE) as VKGroup.Type
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,18 +50,22 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
         (view as BottomSheetLayout).outsideScrollEnabled = true
     }
 
-    override fun requestData() {
-        GroupRepository.getGroups(GROUP_EXTENDED_FIELDS,
-            arguments?.getSerializable(EXTRA_GROUP_TYPE) as VKGroup.Type,
-            object : VKApiCallback<List<VKGroup>> {
-                override fun success(result: List<VKGroup>) {
-                    updateMarkers(result)
-                }
+    override fun onResume() {
+        super.onResume()
+//        subscribeGroups()
+    }
 
-                override fun fail(error: Exception) {
-                    Log.e(TAG, "requestData>fail", error) // TODO
-                }
-            })
+    override fun onPause() {
+        super.onPause()
+//        unsubscribeGroups()
+    }
+
+    override fun requestData(onlyCache: Boolean) {
+//        Log.v(TAG, "requestData: onlyCache=$onlyCache")
+//        GroupRepository.requestGroups(RequestGroupsArguments(
+//            (pagesCount - 1) * countPerPage, countPerPage,
+//            GROUP_EXTENDED_FIELDS, filter),
+//            onlyCache)
     }
 
     override fun onClusterItemClick(marker: GroupMarkerHolder): Boolean {
@@ -63,8 +73,39 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
         return true
     }
 
-    private fun updateMarkers(groups: List<VKGroup>) {
+    private fun subscribeGroups() {
+        if (groupsListener == null) {
+            groupsListener = object : BaseRepository.Listener<VKGroup> {
+                override fun onNextItems(result: ItemsResult<VKGroup>) {
+                    Log.v(TAG, "subscribeGroups>success: filter=${filter.value.hashCode()}, result=$result")
+                    updateMarkers(result.items)
+                    if (result.totalCount != null && result.items?.size ?: 0 < result.totalCount!!
+                        && !result.fromCache) {
+                        pagesCount++
+                        requestData()
+                    }
+                }
+
+                override fun onFail(error: java.lang.Exception) {
+                    Log.e(TAG, "subscribeGroups>fail", error) // TODO
+                }
+
+                override fun getFilter(): Int? = filter.value.hashCode()
+            }
+        }
+        GroupRepository.groupCache.listeners.add(groupsListener!!)
+    }
+
+    private fun unsubscribeGroups() {
+        if (groupsListener != null) {
+            GroupRepository.groupCache.listeners.remove(groupsListener!!)
+            groupsListener = null
+        }
+    }
+
+    private fun updateMarkers(groups: List<VKGroup>?) {
         if (map == null || clusterManager == null || clusterRenderer == null) return
+        if (groups == null) return
         for (group in groups) {
             if (group.addresses.isNullOrEmpty()) continue
             for (address in group.addresses!!) {
@@ -96,6 +137,5 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
             }
         }
     }
-
 
 }

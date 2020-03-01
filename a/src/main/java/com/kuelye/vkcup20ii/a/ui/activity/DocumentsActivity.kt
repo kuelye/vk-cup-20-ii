@@ -23,7 +23,7 @@ import com.kuelye.vkcup20ii.a.model.getFormattedInfo
 import com.kuelye.vkcup20ii.core.data.DocumentRepository
 import com.kuelye.vkcup20ii.core.model.docs.VKDocument
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.data.BaseRepository.GetItemsResult
+import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
 import com.kuelye.vkcup20ii.core.ui.activity.BaseRecyclerActivity
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
@@ -57,8 +57,8 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
     override fun requestData(onlyCache: Boolean) {
         DocumentRepository.getDocuments(
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
-            object : VKApiCallback<GetItemsResult<VKDocument>> {
-                override fun success(result: GetItemsResult<VKDocument>) {
+            object : VKApiCallback<ItemsResult<VKDocument>> {
+                override fun success(result: ItemsResult<VKDocument>) {
                     showData(result.items, result.items.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }

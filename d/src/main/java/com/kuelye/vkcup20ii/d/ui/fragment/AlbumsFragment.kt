@@ -61,10 +61,10 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     }
 
     override fun requestData(onlyCache: Boolean) {
-        PhotoRepository.getPhotoAlbums(
+        PhotoRepository.requestPhotoAlbums(
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
-            object : VKApiCallback<BaseRepository.GetItemsResult<VKPhotoAlbum>> {
-                override fun success(result: BaseRepository.GetItemsResult<VKPhotoAlbum>) {
+            object : VKApiCallback<BaseRepository.ItemsResult<VKPhotoAlbum>> {
+                override fun success(result: BaseRepository.ItemsResult<VKPhotoAlbum>) {
                     showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }

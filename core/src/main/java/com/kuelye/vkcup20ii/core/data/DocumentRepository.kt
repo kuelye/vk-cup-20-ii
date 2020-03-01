@@ -21,11 +21,11 @@ object DocumentRepository : BaseRepository() {
 
     fun getDocuments(
         offset: Int, count: Int, onlyCache: Boolean,
-        callback: VKApiCallback<GetItemsResult<VKDocument>>
+        callback: VKApiCallback<ItemsResult<VKDocument>>
     ) {
         Log.v(TAG, "getDocuments: $offset, $count")
         if (sortedDocuments != null) {
-            callback.success(GetItemsResult(sortedDocuments!!, totalCount))
+            callback.success(ItemsResult(sortedDocuments!!, totalCount))
             if (onlyCache) return
         }
         if (!VK.isLoggedIn()) return
@@ -38,7 +38,7 @@ object DocumentRepository : BaseRepository() {
                 totalCount = result.count
                 sortedDocuments = documents!!.toMutableList()
                 Collections.sort(sortedDocuments!!, VKDocument.DefaultComparator())
-                callback.success(GetItemsResult(sortedDocuments!!, result.count))
+                callback.success(ItemsResult(sortedDocuments!!, result.count))
             }
 
             override fun fail(error: Exception) {

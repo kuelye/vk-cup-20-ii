@@ -22,7 +22,7 @@ open class BaseVKPhotosGetRequest(
         return Response.parse(r.getJSONObject(RESPONSE_FIELD_KEY))
     }
 
-    data class Response(
+    class Response(
         val count: Int,
         val items: List<VKPhoto>
     ) {

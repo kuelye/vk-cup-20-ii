@@ -21,8 +21,6 @@ import kotlin.math.floor
 open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFragment() {
 
     companion object {
-        private const val COUNT_PER_PAGE_DEFAULT = 10
-
         fun calculateLayout(
             context: Context,
             padding: Int,
@@ -38,8 +36,6 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
 
     protected lateinit var adapter: A
     protected lateinit var layoutManager: LinearLayoutManager
-    protected var pagesCount = 1
-    protected var countPerPage = COUNT_PER_PAGE_DEFAULT
 
     protected lateinit var recyclerView: RecyclerView
     protected lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -47,7 +43,7 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
     private lateinit var emptyTextView: TextView
 
     override fun onLogin() {
-        pagesCount = 1
+        super.onLogin()
         requestData()
     }
 
@@ -76,7 +72,7 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (adapter.hasMore
                     && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
-                    && adapter.itemCount >= pagesCount * COUNT_PER_PAGE_DEFAULT
+                    && adapter.itemCount >= pagesCount * countPerPage
                 ) {
                     pagesCount++
                     requestData()
@@ -90,8 +86,6 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
 
         showData(null)
     }
-
-    protected open fun requestData(onlyCache: Boolean = false) {}
 
     protected fun showData(documents: List<I>?,  hasMore: Boolean = false) {
         progressBar.visibility = if (documents == null) View.VISIBLE else View.GONE

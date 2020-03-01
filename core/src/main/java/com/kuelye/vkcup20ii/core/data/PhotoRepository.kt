@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.kuelye.vkcup20ii.core.api.photos.*
-import com.kuelye.vkcup20ii.core.api.wall.VKWallPostCommand
+import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotosDeleteAlbumRequest
@@ -15,29 +15,31 @@ object PhotoRepository : BaseRepository() {
 
     private val TAG = PhotoRepository::class.java.simpleName
 
-    private var photoAlbumCache: Cache<VKPhotoAlbum> =
-        Cache(defaultComparator = VKPhotoAlbum.DefaultComparator())
-    private var photoCache: Cache<VKPhoto> =
-        Cache({ photo, albumId -> photo.albumId == albumId }, VKPhoto.DefaultComparator())
+    val photoAlbumCache: Cache<VKPhotoAlbum> by lazy {
+        Cache(defaultComparator = VKPhotoAlbum.DefaultComparator()) }
+    private val photoAlbumsRequestManager: RequestManager by lazy { RequestManager() }
+    val photoCache: Cache<VKPhoto> by lazy {
+        Cache({ photo, albumId -> photo.albumId == albumId }, VKPhoto.DefaultComparator()) }
+    private val photosRequestManager: RequestManager by lazy { RequestManager() }
 
-    fun getPhotoAlbums(
-        offset: Int, count: Int, onlyCache: Boolean,
-        callback: VKApiCallback<GetItemsResult<VKPhotoAlbum>>
+    fun requestPhotoAlbums(
+        arguments: RequestPhotoAlbumsArguments, onlyCache: Boolean = false
     ) {
-        if (photoAlbumCache.sortedItems != null) {
-            callback.success(GetItemsResult.from(photoAlbumCache))
-            if (onlyCache) return
-        }
+        Log.v(TAG, "requestPhotoAlbums: arguments=$arguments, onlyCache=$onlyCache")
+        if (!onlyCache && !photoAlbumsRequestManager.request(arguments)) return
+        if (photoAlbumCache.emit(null, true)) if (onlyCache) return
         if (!VK.isLoggedIn()) return
-        val request = VKPhotoAlbumsGetRequest(offset, count)
+        val request = VKPhotoAlbumsGetRequest(arguments.offset, arguments.count)
         VK.execute(request, object : VKApiCallback<VKPhotoAlbumsGetRequest.Response> {
             override fun success(result: VKPhotoAlbumsGetRequest.Response) {
-                photoAlbumCache.set(result.items, result.count, clear = offset == 0)
-                callback.success(GetItemsResult.from(photoAlbumCache))
+                Log.v(TAG, "requestPhotoAlbums>success: result=$result")
+                photoAlbumsRequestManager.finish(arguments)
+                photoAlbumCache.set(result.items, result.count, null, arguments.offset == 0)
             }
 
             override fun fail(error: Exception) {
-                callback.fail(error)
+                photoAlbumsRequestManager.finish(arguments)
+                photoAlbumCache.fail(error)
             }
         })
     }
@@ -60,25 +62,25 @@ object PhotoRepository : BaseRepository() {
         })
     }
 
-    fun getPhotos(
-        photoAlbumId: Int?, offset: Int, count: Int, onlyCache: Boolean,
-        callback: VKApiCallback<GetItemsResult<VKPhoto>>
+    fun requestPhotos(
+        arguments: RequestPhotosArguments, onlyCache: Boolean
     ) {
-        if (photoCache.sortedItems != null) {
-            callback.success(GetItemsResult.from(photoCache, photoAlbumId))
-            if (onlyCache && photoCache.totalCounts.containsKey(photoAlbumId)) return
-        }
+        Log.v(TAG, "getPhotos: arguments=$arguments, onlyCache=$onlyCache")
+        if (!onlyCache && !photosRequestManager.request(arguments)) return
+        if (photoCache.emit(arguments.filter, true)) if (onlyCache) return
         if (!VK.isLoggedIn()) return
-        val request = if (photoAlbumId == null) VKPhotosGetAllRequest(offset, count) else
-            VKPhotosGetRequest(photoAlbumId, offset, count)
+        val request = if (arguments.albumId == null) VKPhotosGetAllRequest(arguments.offset, arguments.count) else
+            VKPhotosGetRequest(arguments.albumId, arguments.offset, arguments.count)
         VK.execute(request, object : VKApiCallback<BaseVKPhotosGetRequest.Response> {
             override fun success(result: BaseVKPhotosGetRequest.Response) {
-                photoCache.set(result.items, result.count, photoAlbumId, offset == 0)
-                callback.success(GetItemsResult.from(photoCache, photoAlbumId))
+                Log.v(TAG, "requestGroups>success: result=$result")
+                photosRequestManager.finish(arguments)
+                photoCache.set(result.items, result.count, arguments.filter, arguments.offset == 0)
             }
 
             override fun fail(error: Exception) {
-                callback.fail(error)
+                photosRequestManager.finish(arguments)
+                photoCache.fail(error)
             }
         })
     }
@@ -90,7 +92,7 @@ object PhotoRepository : BaseRepository() {
         if (!VK.isLoggedIn()) return
         VK.execute(VKSavePhotoCommand(context, photo, albumId), object : VKApiCallback<VKPhoto> {
             override fun success(result: VKPhoto) {
-                photoCache.add(result, result.albumId)
+                photoCache.update(result, result.albumId)
                 callback.success(result)
             }
 
@@ -98,6 +100,19 @@ object PhotoRepository : BaseRepository() {
                 callback.fail(error)
             }
         })
+    }
+
+    data class RequestPhotoAlbumsArguments(
+        val offset: Int,
+        val count: Int
+    ) : RequestManager.Arguments
+
+    data class RequestPhotosArguments(
+        val offset: Int,
+        val count: Int,
+        val albumId: Int? = null
+    ) : RequestManager.Arguments {
+        val filter = albumId
     }
 
 }

@@ -53,8 +53,8 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
         super.onViewCreated(view, savedInstanceState)
         (view as BottomSheetLayout).apply {
             outsideScrollEnabled = true
-            onTargetStateChangeListener = { state ->
-                map!!.setPadding(0, 0, 0, (infoView.measuredWidth * state).toInt())
+            onStateChangedListener = { state ->
+                map!!.setPadding(0, 0, 0, (infoView.measuredHeight * state).toInt())
             }
             onCollapsedListener = {
                 select(null)
@@ -143,12 +143,13 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     private fun select(marker: GroupMarkerHolder? = null) {
         if (marker != selectedMarker) {
             selectedMarker?.selected = false
-            selectedMarker = marker
-            selectedMarker?.apply {
+            selectedMarker = null
+            marker?.apply {
                 selected = true
                 (view as BottomSheetLayout).apply {
                     animateExpanded(false) {
-                        infoView.setGroupAddress(selectedMarker!!.group, selectedMarker!!.address)
+                        selectedMarker = marker
+                        infoView.setGroupAddress(marker.group, marker.address)
                         animateExpanded(true)
                     }
                 }

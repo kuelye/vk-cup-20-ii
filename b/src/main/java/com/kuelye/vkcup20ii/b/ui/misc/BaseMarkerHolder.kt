@@ -1,6 +1,7 @@
 package com.kuelye.vkcup20ii.b.ui.misc
 
 import android.graphics.*
+import android.graphics.Bitmap.Config.ARGB_8888
 import android.graphics.BlurMaskFilter.Blur.OUTER
 import android.graphics.Color.WHITE
 import android.graphics.Paint.ANTI_ALIAS_FLAG
@@ -14,17 +15,21 @@ import androidx.core.graphics.scaleMatrix
 import androidx.core.graphics.translationMatrix
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder.IconTransformation.BorderType.CIRCLE
+import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.kuelye.vkcup20ii.core.utils.sp
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Target
 import com.squareup.picasso.Transformation
 import com.vk.api.sdk.utils.VKUtils.dp
 
 abstract class BaseMarkerHolder(
-    private val clusterRenderer: MarkerRenderer<in BaseMarkerHolder>
-): ClusterItem {
+    protected val clusterRenderer: MarkerRenderer<in BaseMarkerHolder>
+): ClusterItem, Identifiable {
 
     companion object {
         private val TAG = Marker::class.java.simpleName
@@ -34,7 +39,8 @@ abstract class BaseMarkerHolder(
         val CLUSTER_ICON_TEXT_PADDING = dp(6)
         val CLUSTER_ICON_TEXT_SIZE = sp(15)
         private val SQUARE_ICON_CORNER_RADIUS = dp(6)
-        const val PLACEHOLDER_COLOR = 0xFF99A2AD.toInt()
+        const val CLUSTER_PLACEHOLDER_COLOR = 0xFF99A2AD.toInt()
+        const val CLUSTER_ITEM_PLACEHOLDER_COLOR = 0xFFECEDF1.toInt()
         const val ICON_BORDER_COLOR = WHITE
         const val ICON_SHADOW_COLOR = 0x40000000
         const val BADGE_COLOR = 0xFF3F8AE0.toInt()
@@ -47,8 +53,7 @@ abstract class BaseMarkerHolder(
         override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {}
 
         override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-            val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
-            clusterRenderer.getMarker(this@BaseMarkerHolder)?.setIcon(icon)
+            clusterRenderer.onIconLoaded(this@BaseMarkerHolder, bitmap, false)
         }
     }
 
@@ -58,11 +63,7 @@ abstract class BaseMarkerHolder(
         override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {}
 
         override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-            if (this@BaseMarkerHolder is PhotoMarkerHolder) {
-                Log.v(TAG, "GUB onBitmapLoaded: ${this@BaseMarkerHolder.photo.iconPhoto} ${clusterRenderer.getClusterMarker(this@BaseMarkerHolder)}")
-            }
-            val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
-            clusterRenderer.getClusterMarker(this@BaseMarkerHolder)?.setIcon(icon)
+            clusterRenderer.onIconLoaded(this@BaseMarkerHolder, bitmap, true)
         }
     }
 
@@ -70,20 +71,30 @@ abstract class BaseMarkerHolder(
 
     override fun getSnippet(): String? = null
 
+    open fun onBeforeClusterItemRendered(markerOptions: MarkerOptions) {
+        markerOptions.anchor(0.5f, 0.5f)
+    }
+
+    open fun onBeforeClusterRendered(clusterSize: Int, markerOptions: MarkerOptions) {
+        markerOptions.anchor(0.5f, 0.5f)
+    }
+
     open fun onClusterItemRendered() {}
 
     open fun onClusterRendered(clusterSize: Int) {}
 
-    open fun getClusterBitmap(clusterSize: Int): Bitmap? = null
+//    open fun getClusterBitmap(clusterSize: Int): Bitmap? = null
 
     protected fun updateIcon(
-        photo: String, size: Int, transformation: Transformation, intoCluster: Boolean = false
+        requestCreator: RequestCreator,
+        size: Int, transformation: Transformation, intoCluster: Boolean = false
     ) {
-        Picasso.get().load(photo)
+        val placeholder = ColorDrawable(if (intoCluster) CLUSTER_PLACEHOLDER_COLOR else CLUSTER_ITEM_PLACEHOLDER_COLOR)
+        requestCreator
             .resize(size, size)
             .centerCrop()
-            .placeholder(ColorDrawable(PLACEHOLDER_COLOR))
-            .error(ColorDrawable(PLACEHOLDER_COLOR))
+            .placeholder(placeholder)
+            .error(placeholder)
             .transform(transformation)
             .into(if (intoCluster) clusterTarget else clusterItemTarget)
     }
@@ -91,13 +102,15 @@ abstract class BaseMarkerHolder(
     protected class IconTransformation(
         private val selected: Boolean,
         private val borderType: BorderType,
-        private val clusterSize: Int? = null
+        private val clusterSize: Int? = null,
+        private val sourceSize: Int? = null
     ) : Transformation {
-        override fun transform(source: Bitmap): Bitmap {
+        override fun transform(source: Bitmap?): Bitmap {
             // calculate and create canvas
             val shadowSize = if (selected) ICON_SHADOW_SIZE_SELECTED else ICON_SHADOW_SIZE_DEFAULT
-            val size = source.width + ICON_BORDER_WIDTH * 2 + shadowSize * 2
-            val result = Bitmap.createBitmap(size, size, source.config)
+            val sourceSize = source?.width ?: sourceSize!!
+            val size = sourceSize + ICON_BORDER_WIDTH * 2 + shadowSize * 2
+            val result = Bitmap.createBitmap(size, size, ARGB_8888)
             val canvas = Canvas(result)
 
             // shadow
@@ -108,7 +121,7 @@ abstract class BaseMarkerHolder(
                 maskFilter = BlurMaskFilter(shadowSize.toFloat(), OUTER)
             }
             val c = size.toFloat() / 2
-            val bitmapR = source.width.toFloat() / 2
+            val bitmapR = sourceSize.toFloat() / 2
             val borderR = bitmapR + ICON_BORDER_WIDTH / 2
 
             // border
@@ -122,17 +135,22 @@ abstract class BaseMarkerHolder(
             // source
             val bitmapPaint = Paint().apply {
                 isAntiAlias = true
-                shader = BitmapShader(source, CLAMP, CLAMP)
-                val matrix = scaleMatrix()
-                val d = (shadowSize + ICON_BORDER_WIDTH).toFloat()
-                shader.setLocalMatrix(translationMatrix(d, d))
+                if (source == null) {
+                    style = FILL
+                    color = CLUSTER_ITEM_PLACEHOLDER_COLOR
+                } else {
+                    shader = BitmapShader(source, CLAMP, CLAMP)
+                    val matrix = scaleMatrix()
+                    val d = (shadowSize + ICON_BORDER_WIDTH).toFloat()
+                    shader.setLocalMatrix(translationMatrix(d, d))
+                }
             }
 
             // draw
             if (borderType == CIRCLE) {
                 canvas.drawCircle(c, c, borderR, shadowPaint)
                 canvas.drawCircle(c, c, borderR, borderPaint)
-                canvas.drawCircle(c, c, bitmapR, bitmapPaint)
+                if (bitmapPaint != null) canvas.drawCircle(c, c, bitmapR, bitmapPaint)
             } else {
                 val cornerR = SQUARE_ICON_CORNER_RADIUS.toFloat()
                 var lT = c - borderR
@@ -141,13 +159,13 @@ abstract class BaseMarkerHolder(
                 canvas.drawRoundRect(lT, lT, rB, rB, cornerR, cornerR, borderPaint)
                 lT = c - bitmapR
                 rB = c + bitmapR
-                canvas.drawRoundRect(lT, lT, rB, rB, cornerR, cornerR, bitmapPaint)
+                if (bitmapPaint != null) canvas.drawRoundRect(lT, lT, rB, rB, cornerR, cornerR, bitmapPaint)
 
                 // badge
                 if (clusterSize != null) {
                     val fillPaint = Paint().apply {
                         style = FILL
-                        color = PLACEHOLDER_COLOR
+                        color = CLUSTER_PLACEHOLDER_COLOR
                         flags = ANTI_ALIAS_FLAG
                         textSize = CLUSTER_ICON_TEXT_SIZE
                         isAntiAlias = true
@@ -168,7 +186,7 @@ abstract class BaseMarkerHolder(
                 }
             }
 
-            source.recycle()
+            source?.recycle()
 
             return result
         }

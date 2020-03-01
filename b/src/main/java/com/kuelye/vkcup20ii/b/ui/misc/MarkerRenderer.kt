@@ -1,7 +1,9 @@
 package com.kuelye.vkcup20ii.b.ui.misc
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
+import android.util.SparseArray
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
@@ -23,8 +25,11 @@ class MarkerRenderer<T : BaseMarkerHolder>(
         minClusterSize = 1
     }
 
-    override fun onBeforeClusterItemRendered(marker: T, markerOptions: MarkerOptions) {
-        markerOptions.anchor(0.5f, 0.5f)
+    private val clusterMarkers: SparseArray<Marker> by lazy { SparseArray<Marker>() }
+
+    override fun onBeforeClusterItemRendered(clusterItem: T, markerOptions: MarkerOptions) {
+        clusterItem.onBeforeClusterItemRendered(markerOptions)
+        clusterMarkers.remove(clusterItem.id)
     }
 
     override fun onClusterItemRendered(clusterItem: T, marker: Marker) {
@@ -32,14 +37,23 @@ class MarkerRenderer<T : BaseMarkerHolder>(
     }
 
     override fun onBeforeClusterRendered(cluster: Cluster<T>, markerOptions: MarkerOptions) {
-        markerOptions.anchor(0.5f, 0.5f)
-        val clusterBitmap = cluster.items.first().getClusterBitmap(cluster.size)
-        clusterBitmap?.let { markerOptions.icon(BitmapDescriptorFactory.fromBitmap(clusterBitmap)) }
+        cluster.items.first().onBeforeClusterRendered(cluster.size, markerOptions)
     }
 
     override fun onClusterRendered(cluster: Cluster<T>, marker: Marker) {
-        Log.v(TAG, "GUB onClusterRendered: $marker")
-        cluster.items.first().onClusterRendered(cluster.size)
+        super.onClusterRendered(cluster, marker)
+        val clusterItem = cluster.items.first()
+        clusterMarkers.put(clusterItem.id, marker)
+        clusterItem.onClusterRendered(cluster.size)
+    }
+
+    fun onIconLoaded(clusterItem: T, bitmap: Bitmap?, cluster: Boolean) {
+        val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
+        if (cluster) {
+            clusterMarkers.get(clusterItem.id)?.setIcon(icon)
+        } else {
+            getMarker(clusterItem)?.setIcon(icon)
+        }
     }
 
 }

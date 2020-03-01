@@ -6,10 +6,13 @@ import android.graphics.BlurMaskFilter.Blur.OUTER
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Paint.Style.FILL
 import android.graphics.Paint.Style.STROKE
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.kuelye.vkcup20ii.b.ui.misc.BaseMarkerHolder.IconTransformation.BorderType.CIRCLE
 import com.kuelye.vkcup20ii.core.model.groups.VKAddress
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
+import com.squareup.picasso.Picasso
 import com.vk.api.sdk.utils.VKUtils.dp
 import kotlin.math.max
 
@@ -23,7 +26,12 @@ class GroupMarkerHolder(
     companion object {
         private val CENTER_ICON_SIZE_DEFAULT = dp(22)
         private val CENTER_ICON_SIZE_SELECTED = dp(32)
+
+        private var clusterItemStubBitmap: Bitmap? = null
     }
+
+    override val id: Int
+        get() = address.id
 
     var selected: Boolean = false
         set(value) {
@@ -35,18 +43,37 @@ class GroupMarkerHolder(
 
     override fun getPosition(): LatLng = address.position
 
+    override fun onBeforeClusterItemRendered(markerOptions: MarkerOptions) {
+        super.onBeforeClusterItemRendered(markerOptions)
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getClusterItemStubBitmap()))
+    }
+
     override fun onClusterItemRendered() {
+        super.onClusterItemRendered()
         updateIcon(
-            group.photo200,
+            Picasso.get().load(group.photo200),
             if (selected) CENTER_ICON_SIZE_SELECTED else CENTER_ICON_SIZE_DEFAULT,
             IconTransformation(selected, CIRCLE))
     }
 
-    override fun getClusterBitmap(clusterSize: Int): Bitmap? {
+    override fun onBeforeClusterRendered(clusterSize: Int, markerOptions: MarkerOptions) {
+        super.onBeforeClusterRendered(clusterSize, markerOptions)
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getClusterBitmap(clusterSize)))
+    }
+
+    private fun getClusterItemStubBitmap() : Bitmap? {
+        if (clusterItemStubBitmap == null) {
+            clusterItemStubBitmap = IconTransformation(false, CIRCLE, null,
+                CENTER_ICON_SIZE_DEFAULT).transform(null)
+        }
+        return clusterItemStubBitmap
+    }
+
+    private fun getClusterBitmap(clusterSize: Int): Bitmap? {
         // calculate sizes
         val fillPaint = Paint().apply {
             style = FILL
-            color = PLACEHOLDER_COLOR
+            color = CLUSTER_PLACEHOLDER_COLOR
             flags = ANTI_ALIAS_FLAG
             textSize = CLUSTER_ICON_TEXT_SIZE
             isAntiAlias = true
@@ -87,7 +114,7 @@ class GroupMarkerHolder(
         canvas.drawCircle(center, center, borderRadius, borderPaint)
 
         // draw center bg
-        fillPaint.color = PLACEHOLDER_COLOR
+        fillPaint.color = CLUSTER_PLACEHOLDER_COLOR
         canvas.drawCircle(center, center, centerRadius, fillPaint)
 
         // draw cluster size

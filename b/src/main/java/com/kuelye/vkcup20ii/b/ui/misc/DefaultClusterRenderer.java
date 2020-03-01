@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -819,7 +820,16 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     public Marker getClusterMarker(T clusterItem) {
         for (Cluster<T> cluster : mClusters) {
             if (cluster.getItems().contains(clusterItem)) {
-                return getMarker(cluster);
+                final Marker marker = getMarker(cluster);
+                if (marker != null) return marker;
+            }
+        }
+        Log.v("GUB", "getClusterMarker: !!! " + mViewModifier.mNextClusters);
+        if (mViewModifier.mNextClusters != null) {
+            for (Cluster<T> cluster : mViewModifier.mNextClusters.clusters) {
+                if (cluster.getItems().contains(clusterItem)) {
+                    Log.v("GUB", "getClusterMarker: !!!");
+                }
             }
         }
         return null;

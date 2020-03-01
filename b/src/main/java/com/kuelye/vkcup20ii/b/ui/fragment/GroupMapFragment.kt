@@ -122,6 +122,7 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     private fun updateMarkers(groups: List<VKGroup>?) {
         if (map == null || clusterManager == null || clusterRenderer == null) return
         if (groups == null) return
+        Log.v(TAG, "updateMarkers: filter=$filter, groups.size=${groups.size}")
         for (group in groups) {
             if (group.addresses.isNullOrEmpty()) continue
             for (address in group.addresses!!) {

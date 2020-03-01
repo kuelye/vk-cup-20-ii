@@ -12,7 +12,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity.CENTER
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -39,7 +38,7 @@ class TabLayout @JvmOverloads constructor(
 
     private val paddingStandard = dimen(R.dimen.padding_standard)
     private var animator: ValueAnimator? = null
-    private var animatorStateTo: Int? = null
+    private var animatorTargetState: Float? = null
 
     private val underlinePaint = Paint().apply {
         style = FILL
@@ -47,8 +46,13 @@ class TabLayout @JvmOverloads constructor(
         color = color(R.color.map_tab_underline_color)
     }
 
-    private val underlineState
-        get() = (animator?.animatedValue ?: 0f) as Float
+    private var underlineState = 0f
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
 
     init {
         setWillNotDraw(false)
@@ -67,7 +71,7 @@ class TabLayout @JvmOverloads constructor(
                 typeface = Typeface.create("sans-serif-medium", NORMAL)
                 gravity = CENTER
                 background = themeDrawable(android.R.attr.selectableItemBackgroundBorderless)
-                setOnClickListener { select(i) }
+                setOnClickListener { select(i.toFloat()) }
                 addView(this)
             }
         }
@@ -85,23 +89,31 @@ class TabLayout @JvmOverloads constructor(
             left + underlineSize, bottom, underlinePaint)
     }
 
-    private fun select(pageIndex: Int) {
+    fun select(page: Float, animate: Boolean = true) {
+        Log.v(TAG, "select: $page, $animate")
         if (adapter == null) return
-        if (animatorStateTo != pageIndex) {
-            onTabSelectedListener?.invoke(pageIndex)
-            animatorStateTo = pageIndex
-            if (animator == null) {
-                animator = ValueAnimator().apply {
-                    interpolator = FastOutSlowInInterpolator()
-                    addUpdateListener { invalidate() }
+        if (animate) {
+            if (animatorTargetState != page) {
+                onTabSelectedListener?.invoke(page.toInt())
+                animatorTargetState = page
+                if (animator == null) {
+                    animator = ValueAnimator().apply {
+                        interpolator = FastOutSlowInInterpolator()
+                        addUpdateListener {
+                            underlineState = animator!!.animatedValue as Float
+                        }
+                    }
+                } else {
+                    animator!!.cancel()
                 }
-            } else {
-                animator!!.cancel()
+                animator!!.apply {
+                    setFloatValues(underlineState, page)
+                    start()
+                }
             }
-            animator!!.apply {
-                setFloatValues(underlineState, pageIndex.toFloat())
-                start()
-            }
+        } else {
+            animator?.cancel()
+            underlineState = page
         }
     }
 

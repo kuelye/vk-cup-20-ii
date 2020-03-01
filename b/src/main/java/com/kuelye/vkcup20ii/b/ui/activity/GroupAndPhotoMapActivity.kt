@@ -2,10 +2,12 @@ package com.kuelye.vkcup20ii.b.ui.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager.widget.ViewPager
 import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.fragment.GroupMapFragment
 import com.kuelye.vkcup20ii.b.ui.fragment.PhotoMapFragment
@@ -21,6 +23,7 @@ class GroupAndPhotoMapActivity : BaseActivity() {
 
     companion object {
         private val TAG = GroupAndPhotoMapActivity::class.java.simpleName
+        private val EXTRA_PAGE = "PAGE"
     }
 
     init {
@@ -31,6 +34,16 @@ class GroupAndPhotoMapActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         initializeLayout()
+        if (savedInstanceState != null) {
+            val page = savedInstanceState.getInt(EXTRA_PAGE)
+            tabLayout.select(page.toFloat(), false)
+            viewPager.currentItem = page
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_PAGE, viewPager.currentItem)
     }
 
     override fun onBackPressed() {
@@ -47,8 +60,14 @@ class GroupAndPhotoMapActivity : BaseActivity() {
         tabLayout.setupWithViewPager(viewPager)
         tabLayout.onTabSelectedListener = {
             viewPager.currentItem = it
-            Log.v(TAG, "initializeLayout: $it")
         }
+        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageScrolled(
+                position: Int, positionOffset: Float, positionOffsetPixels: Int
+            ) {
+                tabLayout.select(position + positionOffset, false)
+            }
+        })
     }
 
     private class Adapter(

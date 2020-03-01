@@ -13,7 +13,8 @@ object GroupRepository : BaseRepository() {
 
     private val TAG = GroupRepository::class.java.simpleName
 
-    val groupCache: Cache<VKGroup> by lazy { Cache<VKGroup>() }
+    val groupCache: Cache<VKGroup> by lazy {
+        Cache<VKGroup>({ group, type -> group.type.hashCode() == type }) }
     private val groupsRequestManager: RequestManager by lazy { RequestManager() }
 
     fun requestGroups(arguments: RequestGroupsArguments, source: Source) {

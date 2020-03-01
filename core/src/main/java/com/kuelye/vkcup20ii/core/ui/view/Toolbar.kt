@@ -121,6 +121,7 @@ class Toolbar @JvmOverloads constructor(
     fun setAlwaysCollapsed(alwaysCollapsed: Boolean, animate: Boolean = false) {
         this.alwaysCollapsed = alwaysCollapsed
         if (animate) {
+            if (actualHeight == null) actualHeight = if (alwaysCollapsed) expandedHeight else collapsedHeight
             animate(if (alwaysCollapsed) collapsedHeight else expandedHeight)
         } else {
             actualHeight = if (alwaysCollapsed) collapsedHeight else expandedHeight

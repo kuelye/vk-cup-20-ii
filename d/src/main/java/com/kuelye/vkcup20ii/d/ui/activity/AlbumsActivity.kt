@@ -24,6 +24,7 @@ class AlbumsActivity : BaseVKActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_albums)
+        fixStatusBar()
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
             show(AlbumsFragment())
         }

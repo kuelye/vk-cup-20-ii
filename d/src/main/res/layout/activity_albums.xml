@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.activity.AlbumsActivity">
 
-    <com.kuelye.vkcup20ii.core.ui.view.Toolbar
-        android:id="@id/toolbar"
+    <View
+        android:id="@id/statusBarStubView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:title="@string/albums_title" />
+        android:layout_height="0dp" />
 
-    <FrameLayout
-        android:id="@id/fragmentContainer"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:context=".ui.activity.AlbumsActivity">
+
+        <com.kuelye.vkcup20ii.core.ui.view.Toolbar
+            android:id="@id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:title="@string/albums_title" />
+
+        <FrameLayout
+            android:id="@id/fragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

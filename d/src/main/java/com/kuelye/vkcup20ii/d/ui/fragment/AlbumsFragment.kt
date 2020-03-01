@@ -46,6 +46,10 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
             }
         }
 
+    init {
+        countPerPage = 20
+    }
+
     private var photoAlbumsListener: BaseRepository.Listener<VKPhotoAlbum>? = null
 
     override fun onCreateView(
@@ -146,7 +150,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
                     }
                 }
             }
-            setAlwaysCollapsed(false)
+            setAlwaysCollapsed(true, animate = true)
         }
     }
 

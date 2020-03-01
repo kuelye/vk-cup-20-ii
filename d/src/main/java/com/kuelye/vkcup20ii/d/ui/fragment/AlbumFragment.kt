@@ -23,6 +23,7 @@ import com.kuelye.vkcup20ii.core.data.PhotoRepository
 import com.kuelye.vkcup20ii.core.data.PhotoRepository.RequestPhotosArguments
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
+import com.kuelye.vkcup20ii.core.ui.activity.PhotoActivity
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.MenuView
@@ -41,6 +42,7 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         private val TAG = AlbumFragment::class.java.simpleName
         private const val EXTRA_ALBUM_ID = "ALBUM_ID"
         private const val EXTRA_ALBUM_TITLE = "ALBUM_TITLE"
+        private const val EXTRA_ALBUM_SYSTEM = "ALBUM_SYSTEM"
         private const val PICK_PHOTO_REQUEST_CODE = 99
 
         fun newInstance(album: VKPhotoAlbum): AlbumFragment {
@@ -48,6 +50,7 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
             fragment.arguments = Bundle().apply {
                 putInt(EXTRA_ALBUM_ID, album.id)
                 putString(EXTRA_ALBUM_TITLE, album.title)
+                putBoolean(EXTRA_ALBUM_SYSTEM, album.isSystem)
             }
             return fragment
         }
@@ -62,6 +65,9 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
 
     private val albumTitle: String?
         get() = arguments?.getString(EXTRA_ALBUM_TITLE)
+
+    private val isSystem: Boolean?
+        get() = arguments?.getBoolean(EXTRA_ALBUM_SYSTEM)
 
     private var photosListener: BaseRepository.Listener<VKPhoto>? = null
 
@@ -132,11 +138,13 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     private fun updateToolbar() {
         toolbar?.apply {
             title = albumTitle
-            setAlwaysCollapsed(false)
-            setMenu(
-                MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
-                MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID)
-            )
+            setAlwaysCollapsed(alwaysCollapsed = false, animate = true)
+            if (isSystem == true) {
+                setMenu(MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true))
+            } else {
+                setMenu(MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
+                    MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID))
+            }
             setOnMenuItemClickListener { id ->
                 when (id) {
                     BACK_MENU_ITEM_ID -> fragmentManager?.popBackStack()
@@ -174,8 +182,8 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
 
         layoutManager = GridLayoutManager(context!!, spanCount)
         adapter = Adapter(context!!, itemWidth)
-        adapter.onItemClickListener = {
-            // TODO open photo
+        adapter.onItemClickListener = { photo ->
+            PhotoActivity.start(context!!, photo.photo)
         }
 
         super.initializeLayout()

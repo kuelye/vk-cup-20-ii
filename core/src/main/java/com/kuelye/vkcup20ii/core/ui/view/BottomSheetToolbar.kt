@@ -2,6 +2,9 @@ package com.kuelye.vkcup20ii.core.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
+import android.view.Gravity.CENTER
+import android.view.Gravity.START
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -21,6 +24,11 @@ class BottomSheetToolbar @JvmOverloads constructor(
         set(value) {
             field = value
             titleTextView.text = value
+        }
+    var titleGravity: Int = CENTER
+        set(value) {
+            field = value
+            titleTextView.gravity = titleGravity
         }
     val dismissImageView: ImageView
 

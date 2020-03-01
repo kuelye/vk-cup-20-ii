@@ -53,7 +53,7 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     var outsideScrollEnabled: Boolean = false
 
-    private var bottomSheet: View? = null
+    var bottomSheet: View? = null
     private var lastNestedChild: View? = null
 
     private var gestureDetector: GestureDetectorCompat? = null
@@ -233,11 +233,14 @@ class BottomSheetLayout @JvmOverloads constructor(
                 setExpanded(expanded)
             }
         }
+        if (bottomSheet is BottomSheet) {
+            (bottomSheet as BottomSheet).toolbar?.dismissImageView?.setOnClickListener { dismiss() }
+        }
     }
 
     private fun initializeGestures() {
-        gestureDetector =
-            GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = GestureDetectorCompat(context,
+            object : GestureDetector.SimpleOnGestureListener() {
                 override fun onDown(e: MotionEvent?): Boolean {
                     if (bottomSheet == null) return false
                     ignoreNestedScroll = false
@@ -248,6 +251,7 @@ class BottomSheetLayout @JvmOverloads constructor(
                     e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float
                 ): Boolean {
                     //Log.v(TAG, "onScroll: $distanceY, $nestedScrollStarted")
+                    if (bottomSheet == null) return false
                     if (!nestedScrollStarted) setScrollY(clampScrollY(bottomSheet!!.translationY - distanceY))
                     return true
                 }

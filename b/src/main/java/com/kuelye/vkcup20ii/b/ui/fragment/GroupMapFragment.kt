@@ -2,6 +2,7 @@ package com.kuelye.vkcup20ii.b.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity.START
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,10 @@ import com.kuelye.vkcup20ii.core.data.GroupRepository.RequestGroupsArguments
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.ADDRESSES
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
+import com.kuelye.vkcup20ii.core.ui.view.BottomSheet
 import com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
 import kotlinx.android.synthetic.main.fragment_group_map.*
+import kotlinx.android.synthetic.main.layout_map_group_address_info.view.*
 
 class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
 
@@ -52,6 +55,12 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
             outsideScrollEnabled = true
             onTargetStateChangeListener = { state ->
                 map!!.setPadding(0, 0, 0, (infoView.measuredWidth * state).toInt())
+            }
+            onCollapsedListener = {
+                select(null)
+            }
+            if (bottomSheet is BottomSheet) {
+                (bottomSheet as BottomSheet).toolbar?.titleGravity = START
             }
         }
     }

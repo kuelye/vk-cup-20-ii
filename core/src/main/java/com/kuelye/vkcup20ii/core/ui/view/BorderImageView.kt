@@ -73,8 +73,6 @@ open class BorderImageView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
-    private var enabledAnimator: ValueAnimator? = null
-
     init {
         initializeAttrs(attrs)
     }

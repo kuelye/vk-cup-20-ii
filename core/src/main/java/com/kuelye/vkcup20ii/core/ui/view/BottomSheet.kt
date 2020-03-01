@@ -18,12 +18,13 @@ open class BottomSheet @JvmOverloads constructor(
         private val TAG = BottomSheet::class.java.simpleName
     }
 
+    var toolbar: BottomSheetToolbar? = null
+
     private val scrollingParentHelper = NestedScrollingParentHelper(this)
     private val scrollingChildHelper = NestedScrollingChildHelper(this)
 
     private var lastNestedChild: View? = null
 
-    private var toolbar: BottomSheetToolbar? = null
     private var animator: ValueAnimator? = null
     private var animatorToElevation: Float? = null
 

@@ -82,7 +82,7 @@ open class BaseRepository {
             fromCache: Boolean = false
         ): Boolean {
             Log.v(TAG, "emit: filter=$filter, fromCache=$fromCache")
-            if (sortedItems == null) return false
+            if (sortedItems == null || !totalCounts.containsKey(filter)) return false
             listeners.forEach { listener ->
                 if (listener.getFilter() == null || listener.getFilter() == filter)
                     listener.onNextItems(ItemsResult.from(this, listener.getFilter(), fromCache))
@@ -175,6 +175,10 @@ open class BaseRepository {
         fun onNextItems(result: ItemsResult<I>)
         fun onFail(error: Exception)
         fun getFilter(): Int?
+    }
+
+    enum class Source {
+        ANY, CACHE, FRESH
     }
 
 }

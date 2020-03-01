@@ -9,7 +9,8 @@ import com.vk.api.sdk.requests.VKRequest
 import org.json.JSONObject
 
 class VKPhotoAlbumsGetRequest(
-    offset: Int, count: Int
+    offset: Int? = null,
+    count: Int? = null
 ) : VKRequest<VKPhotoAlbumsGetRequest.Response>("photos.getAlbums") {
 
     companion object {
@@ -17,8 +18,8 @@ class VKPhotoAlbumsGetRequest(
     }
 
     init {
-        addParam("offset", offset)
-        addParam("count", count)
+        if (offset != null) addParam("offset", offset)
+        if (count != null) addParam("count", count)
         addParam("need_system", 1)
         addParam("need_covers", 1)
         addParam("photo_sizes", 1)
@@ -40,6 +41,12 @@ class VKPhotoAlbumsGetRequest(
                 )
             }
         }
+
+        override fun toString(): String {
+            return "Response(count=$count, items.size=${items.size})"
+        }
+
+
     }
 
 }

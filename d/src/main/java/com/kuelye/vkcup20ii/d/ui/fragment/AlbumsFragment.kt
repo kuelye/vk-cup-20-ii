@@ -11,7 +11,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.core.data.BaseRepository
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.CACHE
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
+import com.kuelye.vkcup20ii.core.data.PhotoRepository.RequestPhotoAlbumsArguments
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
@@ -43,6 +46,8 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
             }
         }
 
+    private var photoAlbumsListener: BaseRepository.Listener<VKPhotoAlbum>? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -55,24 +60,18 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     }
 
     override fun onResume() {
+        subscribePhotoAlbums()
         super.onResume()
-        requestData(true)
         updateToolbar()
     }
 
-    override fun requestData(onlyCache: Boolean) {
-        PhotoRepository.requestPhotoAlbums(
-            (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
-            object : VKApiCallback<BaseRepository.ItemsResult<VKPhotoAlbum>> {
-                override fun success(result: BaseRepository.ItemsResult<VKPhotoAlbum>) {
-                    showData(result.items, result.items?.size != result.totalCount)
-                    swipeRefreshLayout.isRefreshing = false
-                }
+    override fun onPause() {
+        super.onPause()
+        unsubscribePhotoAlbums()
+    }
 
-                override fun fail(error: Exception) {
-                    Log.e(TAG, "requestData>fail", error) // TODO
-                }
-            })
+    override fun requestData(source: Source) {
+        PhotoRepository.requestPhotoAlbums(RequestPhotoAlbumsArguments(), source)
     }
 
     override fun initializeLayout() {
@@ -93,6 +92,32 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
 
         recyclerView.addItemDecoration(
             SpaceItemDecoration(horizontalSpace, verticalSpace, spanCount))
+    }
+
+    private fun subscribePhotoAlbums() {
+        if (photoAlbumsListener == null) {
+            photoAlbumsListener = object : BaseRepository.Listener<VKPhotoAlbum> {
+                override fun onNextItems(result: BaseRepository.ItemsResult<VKPhotoAlbum>) {
+                    Log.v(TAG, "subscribePhotoAlbums>success: result=$result")
+                    showData(result.items, result.items?.size != result.totalCount)
+                    swipeRefreshLayout.isRefreshing = false
+                }
+
+                override fun onFail(error: java.lang.Exception) {
+                    Log.e(TAG, "subscribePhotoAlbums>fail", error) // TODO
+                }
+
+                override fun getFilter(): Int? = null
+            }
+        }
+        PhotoRepository.photoAlbumCache.listeners.add(photoAlbumsListener!!)
+    }
+
+    private fun unsubscribePhotoAlbums() {
+        if (photoAlbumsListener != null) {
+            PhotoRepository.photoAlbumCache.listeners.remove(photoAlbumsListener!!)
+            photoAlbumsListener = null
+        }
     }
 
     private fun updateByEditMode() {
@@ -128,7 +153,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
     private fun removePhotoAlbum(album: VKPhotoAlbum) {
         PhotoRepository.removePhotoAlbum(album, object : VKApiCallback<Int> {
             override fun success(result: Int) {
-                requestData(true)
+                requestData(CACHE)
             }
 
             override fun fail(error: Exception) {

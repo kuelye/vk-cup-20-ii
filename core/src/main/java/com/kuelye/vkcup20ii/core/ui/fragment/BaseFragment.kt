@@ -3,6 +3,10 @@ package com.kuelye.vkcup20ii.core.ui.fragment
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
+import com.kuelye.vkcup20ii.core.data.BaseRepository
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.ANY
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.CACHE
 import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
 import com.kuelye.vkcup20ii.core.ui.activity.OnLoginListener
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar
@@ -14,7 +18,7 @@ open class BaseFragment : Fragment(), OnLoginListener {
     }
 
     protected var pagesCount = 1
-    protected var countPerPage = COUNT_PER_PAGE_DEFAULT
+    protected var countPerPage: Int = COUNT_PER_PAGE_DEFAULT
 
     val toolbar: Toolbar?
         get() = if (activity is BaseActivity) (activity as BaseActivity).toolbar else null
@@ -26,7 +30,7 @@ open class BaseFragment : Fragment(), OnLoginListener {
 
     override fun onResume() {
         super.onResume()
-        requestData(true)
+        requestData(CACHE)
     }
 
     override fun onDetach() {
@@ -43,6 +47,6 @@ open class BaseFragment : Fragment(), OnLoginListener {
         if (activity is BaseActivity) (activity as BaseActivity).show(fragment)
     }
 
-    protected open fun requestData(onlyCache: Boolean = false) {}
+    protected open fun requestData(source: Source = ANY) {}
 
 }

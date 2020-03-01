@@ -55,7 +55,7 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
         if (photosListener == null) {
             photosListener = object : BaseRepository.Listener<VKPhoto> {
                 override fun onNextItems(result: ItemsResult<VKPhoto>) {
-                    Log.v(TAG, "subscribeGroups>success: result=$result")
+                    Log.v(TAG, "subscribePhotos>success: result=$result")
                     updateMarkers(result.items)
                     if (result.totalCount != null && !result.fromCache) {
                         if (result.items?.size != result.totalCount) {
@@ -66,7 +66,7 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
                 }
 
                 override fun onFail(error: java.lang.Exception) {
-                    Log.e(TAG, "subscribeGroups>fail", error) // TODO
+                    Log.e(TAG, "subscribePhotos>fail", error) // TODO
                 }
 
                 override fun getFilter(): Int? = null

@@ -15,8 +15,12 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kuelye.vkcup20ii.core.data.BaseRepository
 import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.CACHE
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
+import com.kuelye.vkcup20ii.core.data.PhotoRepository.RequestPhotosArguments
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
 import com.kuelye.vkcup20ii.core.model.photos.VKPhotoAlbum
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment
@@ -49,11 +53,17 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         }
     }
 
+    init {
+        countPerPage = 50
+    }
+
     private val albumId: Int?
         get() = arguments?.getInt(EXTRA_ALBUM_ID)
 
     private val albumTitle: String?
         get() = arguments?.getString(EXTRA_ALBUM_TITLE)
+
+    private var photosListener: BaseRepository.Listener<VKPhoto>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -67,8 +77,59 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     }
 
     override fun onResume() {
+        subscribePhotos()
         super.onResume()
-        requestData(true)
+        updateToolbar()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unsubscribePhotos()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (requestCode == PICK_PHOTO_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && intent != null && intent.data != null) {
+                savePhoto(intent.data!!)
+            } else {
+                // TODO
+            }
+        } else super.onActivityResult(requestCode, resultCode, intent)
+    }
+
+    override fun requestData(source: Source) {
+        PhotoRepository.requestPhotos(
+            RequestPhotosArguments((pagesCount - 1) * countPerPage, countPerPage, albumId),
+            source)
+    }
+
+    private fun subscribePhotos() {
+        if (photosListener == null) {
+            photosListener = object : BaseRepository.Listener<VKPhoto> {
+                override fun onNextItems(result: ItemsResult<VKPhoto>) {
+                    Log.v(TAG, "subscribePhotos>success: result=$result")
+                    showData(result.items, result.items?.size != result.totalCount)
+                    swipeRefreshLayout.isRefreshing = false
+                }
+
+                override fun onFail(error: java.lang.Exception) {
+                    Log.e(TAG, "subscribeGroups>fail", error) // TODO
+                }
+
+                override fun getFilter(): Int? = albumId
+            }
+        }
+        PhotoRepository.photoCache.listeners.add(photosListener!!)
+    }
+
+    private fun unsubscribePhotos() {
+        if (photosListener != null) {
+            PhotoRepository.photoCache.listeners.remove(photosListener!!)
+            photosListener = null
+        }
+    }
+
+    private fun updateToolbar() {
         toolbar?.apply {
             title = albumTitle
             alwaysCollapsed = false
@@ -85,33 +146,6 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        if (requestCode == PICK_PHOTO_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && intent != null && intent.data != null) {
-                savePhoto(intent.data!!)
-            } else {
-                // TODO
-            }
-        } else super.onActivityResult(requestCode, resultCode, intent)
-    }
-
-    override fun requestData(onlyCache: Boolean) {
-        PhotoRepository.requestPhotos(albumId,
-            (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
-            object : VKApiCallback<ItemsResult<VKPhoto>> {
-                override fun success(result: ItemsResult<VKPhoto>) {
-                    Log.v(TAG, "requestData>success: result.items.size=${result.items?.size}, " +
-                            "result.totalCount=${result.totalCount}")
-                    showData(result.items, result.items?.size != result.totalCount)
-                    swipeRefreshLayout.isRefreshing = false
-                }
-
-                override fun fail(error: Exception) {
-                    Log.e(TAG, "requestData>fail", error) // TODO
-                }
-            })
-    }
-
     private fun pickPhoto() {
         val intent = Intent(ACTION_PICK, EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_PHOTO_REQUEST_CODE)
@@ -120,11 +154,11 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     private fun savePhoto(photo: Uri) {
         PhotoRepository.savePhoto(context!!, photo, albumId!!, object : VKApiCallback<VKPhoto> {
             override fun success(result: VKPhoto) {
-                requestData(true)
+                requestData(CACHE)
             }
 
             override fun fail(error: Exception) {
-                Log.e(TAG, "requestData>fail", error) // TODO
+                Log.e(TAG, "savePhoto>fail", error) // TODO
             }
         })
     }

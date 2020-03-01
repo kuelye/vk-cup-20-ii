@@ -69,7 +69,7 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun requestGroups() {
-        GroupRepository.getGroups(
+        GroupRepository.requestGroups(
             GROUP_EXTENDED_FIELDS,
             null,
             object : VKApiCallback<List<VKGroup>> {
@@ -84,7 +84,7 @@ class LeaveGroupsActivity : BaseActivity() {
     }
 
     private fun requestGroup(groupId: Int) {
-        GroupRepository.getGroup(groupId, object : VKApiCallback<VKGroup?> {
+        GroupRepository.requestGroup(groupId, object : VKApiCallback<VKGroup?> {
             override fun success(result: VKGroup?) {
                 updateGroupInfoLayout(result)
             }

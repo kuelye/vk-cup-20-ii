@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.data.BaseRepository
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.FRESH
 import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.kuelye.vkcup20ii.core.ui.fragment.BaseRecyclerFragment.BaseAdapter
 import com.vk.api.sdk.utils.VKUtils
@@ -70,19 +72,13 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
         }
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (adapter.hasMore
-                    && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
-                    && adapter.itemCount >= pagesCount * countPerPage
-                ) {
-                    pagesCount++
-                    requestData()
-                }
+                checkMore()
             }
         })
 
         swipeRefreshLayout.setProgressViewOffset(true, 0, VKUtils.dp(32))
         swipeRefreshLayout.setSlingshotDistance(VKUtils.dp(64))
-        swipeRefreshLayout.setOnRefreshListener { pagesCount = 1; requestData() }
+        swipeRefreshLayout.setOnRefreshListener { pagesCount = 1; requestData(FRESH) }
 
         showData(null)
     }
@@ -92,6 +88,17 @@ open class BaseRecyclerFragment<I : Identifiable, A : BaseAdapter<I>> : BaseFrag
         recyclerView.visibility = if (documents.isNullOrEmpty()) View.GONE else View.VISIBLE
         emptyTextView.visibility = if (documents != null && documents.isEmpty()) View.VISIBLE else View.GONE
         adapter.swap(documents, hasMore)
+        checkMore()
+    }
+
+    protected fun checkMore() {
+        if (adapter.hasMore
+            && layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
+            && adapter.itemCount >= pagesCount * countPerPage
+        ) {
+            pagesCount++
+            requestData()
+        }
     }
 
     abstract class BaseAdapter<I : Identifiable>(

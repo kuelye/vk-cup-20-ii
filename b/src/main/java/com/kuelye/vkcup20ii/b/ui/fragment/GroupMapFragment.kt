@@ -141,6 +141,7 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     }
 
     private fun select(marker: GroupMarkerHolder? = null) {
+        Log.v(TAG, "GUB select: $marker")
         if (marker != selectedMarker) {
             selectedMarker?.selected = false
             selectedMarker = null

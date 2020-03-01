@@ -10,9 +10,11 @@ import android.view.Gravity.CENTER
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.view.forEach
 import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeColor
 import com.kuelye.vkcup20ii.core.utils.themeDimen
@@ -25,10 +27,17 @@ class MenuView @JvmOverloads constructor(
         private val TAG = MenuView::class.java.simpleName
     }
 
-    var onItemClickListener: ((Int) -> Unit)? = null
+    @ColorInt
+    var itemColor: Int = themeColor(R.attr.colorAccent)
+        set(value) {
+            if (field != value) {
+                field = value
+                forEach { (it as ImageView).imageTintList = ColorStateList.valueOf(value) }
+            }
+        }
 
-    private val itemSize = themeDimen(R.attr.actionBarSize)
-    private val highlightColor = themeColor(R.attr.colorControlHighlight)
+    var onItemClickListener: ((Int) -> Unit)? = null
+    var onRealWidthChangedListener: ((Int) -> Unit)? = null
 
     val realWidth: Int
         get() {
@@ -37,7 +46,8 @@ class MenuView @JvmOverloads constructor(
             return width.toInt()
         }
 
-    var onRealWidthChangedListener: ((Int) -> Unit)? = null
+    private val itemSize = themeDimen(R.attr.actionBarSize)
+    private val highlightColor = themeColor(R.attr.colorControlHighlight)
 
     init {
         gravity = CENTER
@@ -60,13 +70,14 @@ class MenuView @JvmOverloads constructor(
             val selectableBackground = RippleDrawable(ColorStateList.valueOf(highlightColor), null, null)
             if (SDK_INT >= 23) selectableBackground.radius = itemSize / 2
             background = selectableBackground
-            imageTintList = ColorStateList.valueOf(themeColor(R.attr.colorAccent))
+            imageTintList = ColorStateList.valueOf(itemColor)
             alpha = 0f
             scaleX = 0f
             scaleY = 0f
             addView(this, 0)
 
             animate()
+                .setDuration(ANIMATION_DURATION)
                 .alpha(1f).scaleX(1f).scaleY(1f)
                 .setUpdateListener { emitRealWidth() }
                 .start()
@@ -76,6 +87,7 @@ class MenuView @JvmOverloads constructor(
     private fun removeItem(i: Int) {
         val view = getChildAt(i)
         view.animate()
+            .setDuration(ANIMATION_DURATION)
             .alpha(0f).scaleX(0f).scaleY(0f)
             .setUpdateListener { emitRealWidth() }
             .withEndAction { removeView(view) }

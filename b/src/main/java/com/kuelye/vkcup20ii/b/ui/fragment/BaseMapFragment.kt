@@ -135,7 +135,9 @@ abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapRead
         if (map == null || userTouched) return
         if (markers.size() != 0) {
             val boundsBuilder = LatLngBounds.builder()
-            markers.forEach { _, marker -> boundsBuilder.include(marker.position) }
+            for (i in 0 until markers.size()) {
+                boundsBuilder.include(markers.get(markers.keyAt(i)).position)
+            }
             map!!.animateCamera(newLatLngBounds(boundsBuilder.build(), MARKERS_CAMERA_PADDING))
             return
         }

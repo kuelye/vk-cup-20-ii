@@ -50,7 +50,11 @@ class MarkerRenderer<T : BaseMarkerHolder>(
     fun onIconLoaded(clusterItem: T, bitmap: Bitmap?, cluster: Boolean) {
         val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
         if (cluster) {
-            clusterMarkers.get(clusterItem.id)?.setIcon(icon)
+            try {
+                clusterMarkers.get(clusterItem.id)?.setIcon(icon)
+            } catch (e: Exception) {
+                // ignore
+            }
         } else {
             getMarker(clusterItem)?.setIcon(icon)
         }

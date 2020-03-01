@@ -3,6 +3,7 @@ package com.kuelye.vkcup20ii.core.ui.view
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Outline
 import android.util.AttributeSet
 import android.util.Log
@@ -10,6 +11,7 @@ import android.view.*
 import android.view.View.MeasureSpec.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
+import androidx.annotation.ColorInt
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils.clamp
 import androidx.core.view.ViewCompat
@@ -33,6 +35,13 @@ class Toolbar @JvmOverloads constructor(
         set(value) {
             field = value
             titleTextView.text = value
+        }
+
+    @ColorInt
+    var titleTextColor: Int = color(R.color.title_color)
+        set(value) {
+            field = value
+            titleTextView.setTextColor(value)
         }
 
     var subtitle: String? = null
@@ -105,6 +114,11 @@ class Toolbar @JvmOverloads constructor(
     fun setMenu(vararg menuItems: MenuView.Item) {
         endMenuView.setMenu(*(menuItems.filter { !it.navigation }.toTypedArray()))
         startMenuView.setMenu(*(menuItems.filter { it.navigation }.toTypedArray()))
+    }
+
+    fun setMenuIconColor(@ColorInt color: Int) {
+        endMenuView.itemColor = color
+        startMenuView.itemColor = color
     }
 
     fun setOnMenuItemClickListener(listener: ((Int) -> Unit)? = null) {

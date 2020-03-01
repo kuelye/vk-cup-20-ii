@@ -2,8 +2,6 @@ package com.kuelye.vkcup20ii.b.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -13,17 +11,17 @@ import com.kuelye.vkcup20ii.b.ui.fragment.GroupMapFragment
 import com.kuelye.vkcup20ii.b.ui.fragment.PhotoMapFragment
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.auth.VKScope.PHOTOS
 import kotlinx.android.synthetic.main.activity_map.*
 import java.lang.IllegalArgumentException
 
-class GroupAndPhotoMapActivity : BaseActivity() {
+class GroupAndPhotoMapActivity : BaseVKActivity() {
 
     companion object {
         private val TAG = GroupAndPhotoMapActivity::class.java.simpleName
-        private val EXTRA_PAGE = "PAGE"
+        private const val EXTRA_PAGE = "PAGE"
     }
 
     init {
@@ -33,6 +31,7 @@ class GroupAndPhotoMapActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+        fixStatusBar()
         initializeLayout()
         if (savedInstanceState != null) {
             val page = savedInstanceState.getInt(EXTRA_PAGE)

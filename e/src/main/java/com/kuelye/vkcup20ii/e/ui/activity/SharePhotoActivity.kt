@@ -8,7 +8,7 @@ import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.util.Log
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.api.wall.VKWallPostCommand
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.kuelye.vkcup20ii.core.utils.hideKeyboard
 import com.kuelye.vkcup20ii.e.R
 import com.vk.api.sdk.VK
@@ -18,7 +18,7 @@ import com.vk.api.sdk.auth.VKScope.WALL
 import kotlinx.android.synthetic.main.activity_share_photo.*
 
 
-class SharePhotoActivity : BaseActivity() {
+class SharePhotoActivity : BaseVKActivity() {
 
     init {
         Config.scopes = listOf(WALL, PHOTOS)

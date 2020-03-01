@@ -18,7 +18,7 @@ import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.model.Identifiable
 import com.vk.api.sdk.utils.VKUtils
 
-open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseAdapter<I>> : BaseActivity() {
+open class BaseRecyclerActivity<I : Identifiable, A : BaseRecyclerActivity.BaseAdapter<I>> : BaseVKActivity() {
 
     companion object {
         private const val COUNT_PER_PAGE_DEFAULT = 10

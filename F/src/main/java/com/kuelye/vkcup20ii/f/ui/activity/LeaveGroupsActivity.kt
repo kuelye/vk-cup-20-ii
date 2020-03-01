@@ -15,7 +15,7 @@ import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.DESCRIPTION
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup.Field.MEMBERS_COUNT
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.kuelye.vkcup20ii.core.ui.misc.SpaceItemDecoration
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.COLLAPSED_STATE
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar.Companion.EXPANDED_STATE
@@ -30,7 +30,7 @@ import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.activity_leave_group.*
 import kotlin.math.floor
 
-class LeaveGroupsActivity : BaseActivity() {
+class LeaveGroupsActivity : BaseVKActivity() {
 
     companion object {
         private val TAG = LeaveGroupsActivity::class.java.simpleName

@@ -70,25 +70,4 @@ class PhotoMarkerHolder(
             CENTER_ICON_SIZE_DEFAULT).transform(null)
     }
 
-
-//    override fun onBeforeClusterItemRendered(markerOptions: MarkerOptions) {
-//        cluster
-//        return IconTransformation(false, SQUARE, null, CENTER_ICON_SIZE_DEFAULT).transform(null)
-//    }
-//
-//    override fun onClusterItemRendered() {
-//        updateIcon(photo.iconPhoto, CENTER_ICON_SIZE_DEFAULT,
-//            IconTransformation(false, SQUARE))
-//    }
-//
-//    override fun getClusterBitmap(clusterSize: Int): Bitmap? {
-//        return IconTransformation(false, SQUARE, null, CENTER_ICON_SIZE_DEFAULT).transform(null)
-//    }
-//
-//    override fun onClusterRendered(clusterSize: Int) {
-//        Log.v(TAG, "GUB onClusterRendered: $clusterSize, ${photo.iconPhoto}")
-//        updateIcon(photo.iconPhoto, CENTER_ICON_SIZE_DEFAULT,
-//            IconTransformation(false, SQUARE, clusterSize), true)
-//    }
-
 }

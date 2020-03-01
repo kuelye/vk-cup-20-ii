@@ -59,7 +59,7 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
             (pagesCount - 1) * countPerPage, countPerPage, onlyCache,
             object : VKApiCallback<ItemsResult<VKDocument>> {
                 override fun success(result: ItemsResult<VKDocument>) {
-                    showData(result.items, result.items.size != result.totalCount)
+                    showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
 

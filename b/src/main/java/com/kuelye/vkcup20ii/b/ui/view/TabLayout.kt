@@ -18,6 +18,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.kuelye.vkcup20ii.b.R
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.color
 import com.kuelye.vkcup20ii.core.utils.dimen
 import com.kuelye.vkcup20ii.core.utils.themeDrawable
@@ -99,6 +100,7 @@ class TabLayout @JvmOverloads constructor(
                 if (animator == null) {
                     animator = ValueAnimator().apply {
                         interpolator = FastOutSlowInInterpolator()
+                        duration = ANIMATION_DURATION
                         addUpdateListener {
                             underlineState = animator!!.animatedValue as Float
                         }

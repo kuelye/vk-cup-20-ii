@@ -8,6 +8,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.core.view.*
 import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.dimen
 
 open class BottomSheet @JvmOverloads constructor(
@@ -113,6 +114,7 @@ open class BottomSheet @JvmOverloads constructor(
             animatorToElevation = elevation
             if (animator == null) {
                 animator = ValueAnimator().apply {
+                    duration = ANIMATION_DURATION
                     interpolator = DecelerateInterpolator()
                     addUpdateListener { toolbar!!.elevation = animator!!.animatedValue as Float }
                 }

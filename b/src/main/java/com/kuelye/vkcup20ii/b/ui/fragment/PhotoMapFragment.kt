@@ -1,5 +1,6 @@
 package com.kuelye.vkcup20ii.b.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
 import com.kuelye.vkcup20ii.core.data.PhotoRepository
 import com.kuelye.vkcup20ii.core.data.PhotoRepository.RequestPhotosArguments
 import com.kuelye.vkcup20ii.core.model.photos.VKPhoto
+import com.kuelye.vkcup20ii.core.ui.activity.PhotoActivity
 
 class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
 
@@ -48,6 +50,7 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
 
     override fun onClusterItemClick(marker: PhotoMarkerHolder): Boolean {
         super.onClusterItemClick(marker)
+        PhotoActivity.start(context!!, marker.photo.photo)
         return true
     }
 

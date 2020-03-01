@@ -1,15 +1,13 @@
 package com.kuelye.vkcup20ii.d.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import com.kuelye.vkcup20ii.core.Config
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.kuelye.vkcup20ii.d.R
-import com.kuelye.vkcup20ii.d.ui.fragment.AlbumFragment
 import com.kuelye.vkcup20ii.d.ui.fragment.AlbumsFragment
 import com.vk.api.sdk.auth.VKScope
 
-class AlbumsActivity : BaseActivity() {
+class AlbumsActivity : BaseVKActivity() {
 
     companion object {
         const val EDIT_MENU_ITEM_ID = 0

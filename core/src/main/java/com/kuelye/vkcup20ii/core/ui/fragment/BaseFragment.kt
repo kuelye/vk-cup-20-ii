@@ -3,11 +3,10 @@ package com.kuelye.vkcup20ii.core.ui.fragment
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
-import com.kuelye.vkcup20ii.core.data.BaseRepository
 import com.kuelye.vkcup20ii.core.data.BaseRepository.Source
 import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.ANY
 import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.CACHE
-import com.kuelye.vkcup20ii.core.ui.activity.BaseActivity
+import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.kuelye.vkcup20ii.core.ui.activity.OnLoginListener
 import com.kuelye.vkcup20ii.core.ui.view.Toolbar
 
@@ -21,11 +20,11 @@ open class BaseFragment : Fragment(), OnLoginListener {
     protected var countPerPage: Int = COUNT_PER_PAGE_DEFAULT
 
     val toolbar: Toolbar?
-        get() = if (activity is BaseActivity) (activity as BaseActivity).toolbar else null
+        get() = if (activity is BaseVKActivity) (activity as BaseVKActivity).toolbar else null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (activity is BaseActivity) (activity as BaseActivity).onLoginListeners.add(this)
+        if (activity is BaseVKActivity) (activity as BaseVKActivity).onLoginListeners.add(this)
     }
 
     override fun onResume() {
@@ -34,7 +33,7 @@ open class BaseFragment : Fragment(), OnLoginListener {
     }
 
     override fun onDetach() {
-        if (activity is BaseActivity) (activity as BaseActivity).onLoginListeners.remove(this)
+        if (activity is BaseVKActivity) (activity as BaseVKActivity).onLoginListeners.remove(this)
         super.onDetach()
     }
 
@@ -44,7 +43,7 @@ open class BaseFragment : Fragment(), OnLoginListener {
     }
 
     fun show(fragment: BaseFragment) {
-        if (activity is BaseActivity) (activity as BaseActivity).show(fragment)
+        if (activity is BaseVKActivity) (activity as BaseVKActivity).show(fragment)
     }
 
     protected open fun requestData(source: Source = ANY) {}

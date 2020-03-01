@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import com.kuelye.vkcup20ii.core.R
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.toBitmap
 import com.vk.api.sdk.utils.VKUtils.dp
 
@@ -126,6 +127,7 @@ open class BorderImageView @JvmOverloads constructor(
         if (isEnabled != enabled) {
             super.setEnabled(enabled)
             animate()
+                .setDuration(ANIMATION_DURATION)
                 .setInterpolator(DecelerateInterpolator())
                 .alpha(getAlpha(enabled))
                 .start()

@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator
 import androidx.annotation.DrawableRes
 import com.kuelye.vkcup20ii.core.ui.view.BadgeBorderImageView.Position.BOTTOM_RIGHT
 import com.kuelye.vkcup20ii.core.ui.view.BorderImageView.BorderType.CIRCLE
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.interpolateColor
 import com.kuelye.vkcup20ii.core.utils.toBitmap
@@ -121,6 +122,7 @@ class BadgeBorderImageView @JvmOverloads constructor(
         if (selectedAnimator == null && badgeIcon != null) {
             selectedAnimator = ValueAnimator().apply {
                 interpolator = DecelerateInterpolator()
+                duration = ANIMATION_DURATION
                 addUpdateListener { updateBadge(selectedAnimator!!.animatedValue as Float) }
             }
         }

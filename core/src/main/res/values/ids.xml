@@ -3,4 +3,5 @@
     <item name="swipeRefreshLayout" type="id" />
     <item name="fragmentContainer" type="id" />
     <item name="toolbar" type="id" />
+    <item name="statusBarStubView" type="id" />
 </resources>

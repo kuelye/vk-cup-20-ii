@@ -3,6 +3,8 @@ package com.kuelye.vkcup20ii.core.data
 import android.util.Log
 import com.kuelye.vkcup20ii.core.api.groups.VKGroupCommand
 import com.kuelye.vkcup20ii.core.api.groups.VKGroupsGetCommand
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.CACHE
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source.FRESH
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
@@ -14,10 +16,10 @@ object GroupRepository : BaseRepository() {
     val groupCache: Cache<VKGroup> by lazy { Cache<VKGroup>() }
     private val groupsRequestManager: RequestManager by lazy { RequestManager() }
 
-    fun requestGroups(arguments: RequestGroupsArguments, onlyCache: Boolean = false) {
-        Log.v(TAG, "requestGroups: arguments=$arguments, onlyCache=$onlyCache")
-        if (!onlyCache && !groupsRequestManager.request(arguments)) return
-        if (groupCache.emit(arguments.filter, true)) if (onlyCache) return
+    fun requestGroups(arguments: RequestGroupsArguments, source: Source) {
+        Log.v(TAG, "requestGroups: arguments=$arguments, source=$source")
+        if (source != CACHE && !groupsRequestManager.request(arguments)) return
+        if (source != FRESH) if (groupCache.emit(arguments.filter, true)) if (source == CACHE) return
         if (!VK.isLoggedIn()) return
         val request = VKGroupsGetCommand(arguments.offset, arguments.count,
             arguments.extendedFields, arguments.type?.filter)

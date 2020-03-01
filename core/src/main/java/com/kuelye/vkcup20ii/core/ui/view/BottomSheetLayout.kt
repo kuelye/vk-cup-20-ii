@@ -10,9 +10,9 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity.BOTTOM
 import android.view.MotionEvent
-import android.view.MotionEvent.ACTION_DOWN
-import android.view.MotionEvent.ACTION_UP
+import android.view.MotionEvent.*
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
@@ -42,6 +42,11 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     var onCollapsedListener: (() -> Unit)? = null
+    var onStateChangedListener: ((Float) -> Unit)? = null
+    var onTargetStateChangeListener: ((Float) -> Unit)? = null
+
+    var onTouchListener: ((event : MotionEvent) -> Unit)? = null
+    var onScrollListener: ((event : MotionEvent) -> Unit)? = null
 
     val expanded: Boolean
         get() = state == EXPANDED_STATE
@@ -58,22 +63,29 @@ class BottomSheetLayout @JvmOverloads constructor(
     private var ignoreNestedScroll: Boolean = false
     private var nestedScrollStarted: Boolean = false
     private var animator: ValueAnimator? = null
-    private var animatorToState: Float? = null
+    private var animatorTargetState: Float? = null
     private var animatorEndListener: AnimatorListener? = null
     private var scrimAlpha: Float = 0f
     private var state: Float = getStateByExpanded(EXPANDED_DEFAULT)
         set(value) {
             if (field != value) {
                 field = value
+                onStateChangedListener?.invoke(value)
                 if (value == COLLAPSED_STATE) onCollapsedListener?.invoke()
             }
         }
+
+    private var touchSlopSquare = 0
+    private var touchDownX = 0f
+    private var touchDownY = 0f
 
     private val scrimBottom: Float
         get() = bottomSheet?.run { top + translationY } ?: 0f
 
     init {
         setWillNotDraw(false)
+        val configuration = ViewConfiguration.get(context)
+        touchSlopSquare = configuration.scaledTouchSlop * configuration.scaledTouchSlop
     }
 
     override fun generateLayoutParams(attrs: AttributeSet): FrameLayout.LayoutParams {
@@ -95,6 +107,24 @@ class BottomSheetLayout @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(SCRIM_COLOR.modifyAlpha(scrimAlpha))
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.action) {
+            ACTION_DOWN -> {
+                touchDownX = ev.x
+                touchDownY = ev.y
+                onTouchListener?.invoke(ev)
+            }
+            ACTION_MOVE -> {
+                val dx = ev.x - touchDownX
+                val dy = ev.y - touchDownY
+                if (dx * dx + dy * dy > touchSlopSquare) {
+                    onScrollListener?.invoke(ev)
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(ev)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -151,14 +181,14 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     fun animateExpanded(expanded: Boolean, endAction: (() -> Unit)? = null) {
-        val toState = getStateByExpanded(expanded)
+        val targetState = getStateByExpanded(expanded)
         //Log.v(TAG, "animateExpanded: $expanded, $state, $toState, $animatorToState")
-        if (state == toState) {
+        if (state == targetState) {
             endAction?.invoke()
             return
         }
 
-        if (animatorToState == toState) animator?.apply {
+        if (animatorTargetState == targetState) animator?.apply {
             animatorEndListener?.let { removeListener(animatorEndListener) }
             animatorEndListener = endAction?.let { doOnEnd { endAction.invoke() } }
             return
@@ -178,12 +208,13 @@ class BottomSheetLayout @JvmOverloads constructor(
             animator!!.cancel()
         }
 
-        animatorToState = toState
+        animatorTargetState = targetState
+        onTargetStateChangeListener?.invoke(targetState)
         animator!!.apply {
             interpolator = if (expanded) DecelerateInterpolator() else AccelerateInterpolator()
             animatorEndListener?.let { removeListener(animatorEndListener) }
             animatorEndListener = endAction?.let { animator?.doOnEnd { endAction.invoke() } }
-            setFloatValues(fromState, toState)
+            setFloatValues(fromState, targetState)
             start()
         }
     }
@@ -233,7 +264,7 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     private fun setExpanded(expanded: Boolean) {
         animator?.cancel()
-        animatorToState = null
+        animatorTargetState = null
         state = getStateByExpanded(expanded)
         if (state == COLLAPSED_STATE) onCollapsedListener?.invoke()
         updateBottomSheet()
@@ -244,7 +275,7 @@ class BottomSheetLayout @JvmOverloads constructor(
         //Log.v(TAG, "setScrollY: $scrollY")
         if (bottomSheet == null) return
         animator?.cancel()
-        animatorToState = null
+        animatorTargetState = null
         state =
             (bottomSheet!!.measuredHeight - scrollY.absoluteValue) / bottomSheet!!.measuredHeight
         updateBottomSheet()

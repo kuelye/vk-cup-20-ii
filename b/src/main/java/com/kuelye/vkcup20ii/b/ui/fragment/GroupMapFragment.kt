@@ -9,6 +9,7 @@ import com.kuelye.vkcup20ii.b.R
 import com.kuelye.vkcup20ii.b.ui.misc.GroupMarkerHolder
 import com.kuelye.vkcup20ii.core.data.BaseRepository
 import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
+import com.kuelye.vkcup20ii.core.data.BaseRepository.Source
 import com.kuelye.vkcup20ii.core.data.GroupRepository
 import com.kuelye.vkcup20ii.core.data.GroupRepository.RequestGroupsArguments
 import com.kuelye.vkcup20ii.core.model.groups.VKGroup
@@ -47,28 +48,34 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (view as BottomSheetLayout).outsideScrollEnabled = true
+        (view as BottomSheetLayout).apply {
+            outsideScrollEnabled = true
+            onTargetStateChangeListener = { state ->
+                map!!.setPadding(0, 0, 0, (infoView.measuredWidth * state).toInt())
+            }
+        }
     }
 
     override fun onResume() {
+        subscribeGroups()
         super.onResume()
-//        subscribeGroups()
     }
 
     override fun onPause() {
         super.onPause()
-//        unsubscribeGroups()
+        unsubscribeGroups()
     }
 
-    override fun requestData(onlyCache: Boolean) {
-//        Log.v(TAG, "requestData: onlyCache=$onlyCache")
-//        GroupRepository.requestGroups(RequestGroupsArguments(
-//            (pagesCount - 1) * countPerPage, countPerPage,
-//            GROUP_EXTENDED_FIELDS, filter),
-//            onlyCache)
+    override fun requestData(source: Source) {
+        Log.v(TAG, "requestData: source=$source")
+        GroupRepository.requestGroups(RequestGroupsArguments(
+            (pagesCount - 1) * countPerPage, countPerPage,
+            GROUP_EXTENDED_FIELDS, filter),
+            source)
     }
 
     override fun onClusterItemClick(marker: GroupMarkerHolder): Boolean {
+        super.onClusterItemClick(marker)
         select(marker)
         return true
     }
@@ -118,8 +125,9 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
                     marker.setGroupAddress(group, address)
                 }
             }
-            clusterManager!!.cluster()
         }
+        clusterManager!!.cluster()
+        initializeCamera()
     }
 
     private fun select(marker: GroupMarkerHolder? = null) {

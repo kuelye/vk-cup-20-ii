@@ -39,15 +39,15 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
         unsubscribePhotos()
     }
 
-    override fun requestData(onlyCache: Boolean) {
-        Log.v(TAG, "requestData: onlyCache=$onlyCache")
+    override fun requestData(source: BaseRepository.Source) {
+        Log.v(TAG, "requestData: v=$source")
         PhotoRepository.requestPhotos(RequestPhotosArguments(
             (pagesCount - 1) * countPerPage, countPerPage),
-            onlyCache)
+            source)
     }
 
     override fun onClusterItemClick(marker: PhotoMarkerHolder): Boolean {
-        // TODO
+        super.onClusterItemClick(marker)
         return true
     }
 
@@ -57,11 +57,10 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
                 override fun onNextItems(result: ItemsResult<VKPhoto>) {
                     Log.v(TAG, "subscribePhotos>success: result=$result")
                     updateMarkers(result.items)
-                    if (result.totalCount != null && !result.fromCache) {
-                        if (result.items?.size != result.totalCount) {
-                            if (result.items?.size == pagesCount * countPerPage) pagesCount++
-                            requestData()
-                        }
+                    if (result.totalCount != null && result.items?.size ?: 0 < result.totalCount!!
+                            && !result.fromCache) {
+                        pagesCount++
+                        requestData()
                     }
                 }
 
@@ -95,9 +94,9 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
             } else {
                 marker.photo = photo
             }
-            Log.v(TAG, "updateMarkers: ${markers.size()}")
-            clusterManager!!.cluster()
         }
+        clusterManager!!.cluster()
+        initializeCamera()
     }
 
 }

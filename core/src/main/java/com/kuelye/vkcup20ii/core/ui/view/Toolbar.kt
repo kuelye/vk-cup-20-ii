@@ -192,7 +192,6 @@ class Toolbar @JvmOverloads constructor(
 
     private fun update() {
         val s = state
-        Log.v(TAG, "update: $alwaysCollapsed, $s, $actualHeight")
         val tH = titleTextView.paint.getHeight(title)
         val x = interpolate(s,
             pS + startMenuView.realWidth,

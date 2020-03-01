@@ -17,7 +17,6 @@ import com.vk.api.sdk.auth.VKScope.PHOTOS
 import com.vk.api.sdk.auth.VKScope.WALL
 import kotlinx.android.synthetic.main.activity_share_photo.*
 
-
 class SharePhotoActivity : BaseVKActivity() {
 
     init {
@@ -54,7 +53,7 @@ class SharePhotoActivity : BaseVKActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK && intent != null && intent.data != null) {
                 photoUri = intent.data!!

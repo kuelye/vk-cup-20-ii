@@ -48,7 +48,7 @@ class PhotoActivity : BaseActivity() {
     private fun initializeToolbar() {
         toolbar?.apply {
             setBackgroundColor(BLACK.modifyAlpha(.5f))
-            alwaysCollapsed = true
+            setAlwaysCollapsed(true)
             title = getString(R.string.photo_title)
             titleTextColor = WHITE
             setMenuIconColor(WHITE)

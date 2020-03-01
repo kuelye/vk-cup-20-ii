@@ -27,14 +27,14 @@ object PhotoRepository : BaseRepository() {
     fun requestPhotoAlbums(
         arguments: RequestPhotoAlbumsArguments, source: Source
     ) {
-        Log.v(TAG, "requestPhotoAlbums: arguments=$arguments, source=$source")
+        //Log.v(TAG, "requestPhotoAlbums: arguments=$arguments, source=$source")
         if (source != CACHE && !photoAlbumsRequestManager.request(arguments)) return
         if (source != FRESH) if (photoAlbumCache.emit(null, true)) if (source == CACHE) return
         if (!VK.isLoggedIn()) return
         val request = VKPhotoAlbumsGetRequest()
         VK.execute(request, object : VKApiCallback<VKPhotoAlbumsGetRequest.Response> {
             override fun success(result: VKPhotoAlbumsGetRequest.Response) {
-                Log.v(TAG, "requestPhotoAlbums>success: result=$result")
+                //Log.v(TAG, "requestPhotoAlbums>success: result=$result")
                 photoAlbumsRequestManager.finish(arguments)
                 photoAlbumCache.set(result.items, result.count, null, true)
             }
@@ -67,7 +67,7 @@ object PhotoRepository : BaseRepository() {
     fun requestPhotos(
         arguments: RequestPhotosArguments, source: Source
     ) {
-        Log.v(TAG, "getPhotos: arguments=$arguments, source=$source")
+        //Log.v(TAG, "getPhotos: arguments=$arguments, source=$source")
         if (source != CACHE && !photosRequestManager.request(arguments)) return
         if (source != FRESH && photoCache.emit(arguments.filter, true)) if (source == CACHE) return
         if (!VK.isLoggedIn()) return
@@ -75,7 +75,7 @@ object PhotoRepository : BaseRepository() {
             VKPhotosGetRequest(arguments.albumId, arguments.offset, arguments.count)
         VK.execute(request, object : VKApiCallback<BaseVKPhotosGetRequest.Response> {
             override fun success(result: BaseVKPhotosGetRequest.Response) {
-                Log.v(TAG, "requestGroups>success: result=$result")
+                //Log.v(TAG, "requestGroups>success: result=$result")
                 photosRequestManager.finish(arguments)
                 photoCache.set(result.items, result.count, arguments.filter, arguments.offset == 0)
             }

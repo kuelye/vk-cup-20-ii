@@ -98,7 +98,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
         if (photoAlbumsListener == null) {
             photoAlbumsListener = object : BaseRepository.Listener<VKPhotoAlbum> {
                 override fun onNextItems(result: BaseRepository.ItemsResult<VKPhotoAlbum>) {
-                    Log.v(TAG, "subscribePhotoAlbums>success: result=$result")
+                    //Log.v(TAG, "subscribePhotoAlbums>success: result=$result")
                     showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
@@ -146,7 +146,7 @@ class AlbumsFragment : BaseRecyclerFragment<VKPhotoAlbum, AlbumsFragment.Adapter
                     }
                 }
             }
-            alwaysCollapsed = true
+            setAlwaysCollapsed(false)
         }
     }
 

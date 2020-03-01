@@ -18,7 +18,7 @@ object GroupRepository : BaseRepository() {
     private val groupsRequestManager: RequestManager by lazy { RequestManager() }
 
     fun requestGroups(arguments: RequestGroupsArguments, source: Source) {
-        Log.v(TAG, "requestGroups: arguments=$arguments, source=$source")
+        //Log.v(TAG, "requestGroups: arguments=$arguments, source=$source")
         if (source != CACHE && !groupsRequestManager.request(arguments)) return
         if (source != FRESH) if (groupCache.emit(arguments.filter, true)) if (source == CACHE) return
         if (!VK.isLoggedIn()) return
@@ -26,7 +26,7 @@ object GroupRepository : BaseRepository() {
             arguments.extendedFields, arguments.type?.filter)
         VK.execute(request, object : VKApiCallback<VKGroupsGetCommand.Response> {
             override fun success(result: VKGroupsGetCommand.Response) {
-                Log.v(TAG, "requestGroups>success: result=$result")
+                //Log.v(TAG, "requestGroups>success: result=$result")
                 groupsRequestManager.finish(arguments)
                 groupCache.set(result.items, result.count, arguments.filter, arguments.offset == 0)
             }
@@ -60,7 +60,7 @@ object GroupRepository : BaseRepository() {
         val offset: Int,
         val count: Int,
         val extendedFields: List<VKGroup.Field>,
-        val type: VKGroup.Type?
+        val type: VKGroup.Type? = null
     ) : RequestManager.Arguments {
         val filter = type?.value?.hashCode()
     }

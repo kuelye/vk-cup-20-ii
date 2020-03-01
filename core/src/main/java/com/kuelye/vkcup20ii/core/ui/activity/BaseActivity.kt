@@ -41,7 +41,7 @@ open class BaseActivity : AppCompatActivity() {
             var systemUiFlags = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             if (lightStatusBar && SDK_INT >= 23) systemUiFlags = systemUiFlags or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             decorView.systemUiVisibility = systemUiFlags
-            statusBarColor = TRANSPARENT
+            if (SDK_INT >= 23) statusBarColor = TRANSPARENT
         }
     }
 

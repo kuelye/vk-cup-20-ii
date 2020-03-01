@@ -8,6 +8,7 @@ import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Paint.Style.FILL
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
@@ -39,6 +40,14 @@ class RenameEditText @JvmOverloads constructor(
 
     override fun onPreDraw(): Boolean {
         return super.onPreDraw()
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        return if (isEnabled) {
+            super.dispatchTouchEvent(event)
+        } else {
+            false
+        }
     }
 
     override fun onDraw(canvas: Canvas) {

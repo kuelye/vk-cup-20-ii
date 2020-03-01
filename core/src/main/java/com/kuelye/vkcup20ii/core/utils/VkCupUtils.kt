@@ -30,6 +30,7 @@ import java.util.*
 import java.util.GregorianCalendar.YEAR
 import kotlin.math.*
 
+const val PLACEHOLDER_COLOR = 0xFFECEDF1.toInt()
 const val ANIMATION_DURATION = 300L
 
 // # RESOURCES

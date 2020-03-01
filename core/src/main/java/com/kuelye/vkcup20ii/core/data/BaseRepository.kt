@@ -33,7 +33,7 @@ open class BaseRepository {
             items: List<I>?, totalCount: Int?,
             filter: Int? = null, clear: Boolean
         ) {
-            Log.v(TAG, "set: items.size=${items?.size}, totalCount=$totalCount, filter=$filter, clear=$clear")
+            //Log.v(TAG, "set: items.size=${items?.size}, totalCount=$totalCount, filter=$filter, clear=$clear")
             ensure()
             if (clear) clear(filter)
             totalCounts[filter] = totalCount
@@ -47,7 +47,7 @@ open class BaseRepository {
         }
 
         fun remove(item: I, filter: Int? = null) {
-            Log.v(TAG, "remove: item=$item, filter=$filter")
+            //Log.v(TAG, "remove: item=$item, filter=$filter")
             if (items != null) {
                 items!!.remove(item.id)
                 sortedItems?.remove(item)
@@ -61,7 +61,7 @@ open class BaseRepository {
         }
 
         fun update(item: I, filter: Int? = null) {
-            Log.v(TAG, "update: item=$item, filter=$filter")
+            //Log.v(TAG, "update: item=$item, filter=$filter")
             if (items != null) {
                 val update = items!!.contains(item.id)
                 items!!.put(item.id, item)
@@ -81,7 +81,7 @@ open class BaseRepository {
             filter: Int? = null,
             fromCache: Boolean = false
         ): Boolean {
-            Log.v(TAG, "emit: filter=$filter, fromCache=$fromCache")
+            //Log.v(TAG, "emit: filter=$filter, fromCache=$fromCache")
             if (sortedItems == null || !totalCounts.containsKey(filter)) return false
             listeners.forEach { listener ->
                 if (listener.getFilter() == null || listener.getFilter() == filter)
@@ -93,12 +93,12 @@ open class BaseRepository {
         fun fail(
             error: Exception
         ) {
-            Log.v(TAG, "fail: error=$error")
+            //Log.v(TAG, "fail: error=$error")
             listeners.forEach { it.onFail(error) }
         }
 
         private fun clear(filter: Int? = null) {
-            Log.v(TAG, "clear: filter=$filter")
+            //Log.v(TAG, "clear: filter=$filter")
             if (filterBlock == null || filter == null) {
                 items?.clear()
             } else {

@@ -56,14 +56,14 @@ class MenuView @JvmOverloads constructor(
 
     fun setMenu(vararg items: Item) {
         val itemsSize = items.size
-        Log.v(TAG, "setMenu: $childCount, $itemsSize")
+        //Log.v(TAG, "setMenu: $childCount, $itemsSize")
         for (i in childCount downTo (itemsSize + 1)) removeItem(childCount - i)
         for (i in childCount until itemsSize) addItem()
         for (i in 0 until itemsSize) updateItem(getNotRemovedItem(i) as ImageView, items[i])
     }
 
     private fun addItem() {
-        Log.v(TAG, "addItem")
+        //Log.v(TAG, "addItem")
         ImageView(context).apply {
             layoutParams = LayoutParams(itemSize, itemSize)
             scaleType = ImageView.ScaleType.CENTER
@@ -93,7 +93,7 @@ class MenuView @JvmOverloads constructor(
             .withEndAction { removeView(view) }
             .start()
         view.tag = true
-        Log.v(TAG, "removeItem: $i")
+        //Log.v(TAG, "removeItem: $i")
     }
 
     private fun getNotRemovedItem(i: Int): View? {

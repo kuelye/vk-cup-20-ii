@@ -76,7 +76,7 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     }
 
     override fun requestData(source: Source) {
-        Log.v(TAG, "requestData: source=$source")
+        //Log.v(TAG, "requestData: source=$source")
         GroupRepository.requestGroups(RequestGroupsArguments(
             (pagesCount - 1) * countPerPage, countPerPage,
             GROUP_EXTENDED_FIELDS, filter),
@@ -93,7 +93,7 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
         if (groupsListener == null) {
             groupsListener = object : BaseRepository.Listener<VKGroup> {
                 override fun onNextItems(result: ItemsResult<VKGroup>) {
-                    Log.v(TAG, "subscribeGroups>success: filter=${filter.value.hashCode()}, result=$result")
+                    //Log.v(TAG, "subscribeGroups>success: filter=${filter.value.hashCode()}, result=$result")
                     updateMarkers(result.items)
                     if (result.totalCount != null && result.items?.size ?: 0 < result.totalCount!!
                         && !result.fromCache) {
@@ -122,7 +122,7 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     private fun updateMarkers(groups: List<VKGroup>?) {
         if (map == null || clusterManager == null || clusterRenderer == null) return
         if (groups == null) return
-        Log.v(TAG, "updateMarkers: filter=$filter, groups.size=${groups.size}")
+        //Log.v(TAG, "updateMarkers: filter=$filter, groups.size=${groups.size}")
         for (group in groups) {
             if (group.addresses.isNullOrEmpty()) continue
             for (address in group.addresses!!) {
@@ -141,7 +141,6 @@ class GroupMapFragment : BaseMapFragment<GroupMarkerHolder>() {
     }
 
     private fun select(marker: GroupMarkerHolder? = null) {
-        Log.v(TAG, "GUB select: $marker")
         if (marker != selectedMarker) {
             selectedMarker?.selected = false
             selectedMarker = null

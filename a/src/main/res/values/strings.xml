@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">A</string>
+    <string name="app_name">kuelye-A</string>
     <string name="documents_title">Документы</string>
     <string name="documents_empty">Здесь будут отображаться Ваши документы</string>
     <string name="document_size_b">Б</string>

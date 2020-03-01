@@ -23,7 +23,6 @@ object DocumentRepository : BaseRepository() {
         offset: Int, count: Int, onlyCache: Boolean,
         callback: VKApiCallback<ItemsResult<VKDocument>>
     ) {
-        Log.v(TAG, "getDocuments: $offset, $count")
         if (sortedDocuments != null) {
             callback.success(ItemsResult(sortedDocuments!!, totalCount))
             if (onlyCache) return

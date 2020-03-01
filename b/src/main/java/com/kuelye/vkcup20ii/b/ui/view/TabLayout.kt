@@ -91,7 +91,7 @@ class TabLayout @JvmOverloads constructor(
     }
 
     fun select(page: Float, animate: Boolean = true) {
-        Log.v(TAG, "select: $page, $animate")
+        //Log.v(TAG, "select: $page, $animate")
         if (adapter == null) return
         if (animate) {
             if (animatorTargetState != page) {

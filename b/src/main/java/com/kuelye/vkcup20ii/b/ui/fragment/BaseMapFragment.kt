@@ -107,9 +107,7 @@ abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapRead
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_CODE -> {
@@ -131,7 +129,7 @@ abstract class BaseMapFragment<T : BaseMarkerHolder> : BaseFragment(), OnMapRead
     }
 
     protected fun initializeCamera() {
-        Log.v(TAG, "initializeCamera: userTouched=$userTouched")
+        //Log.v(TAG, "initializeCamera: userTouched=$userTouched")
         if (map == null || userTouched) return
         if (markers.size() != 0) {
             val boundsBuilder = LatLngBounds.builder()

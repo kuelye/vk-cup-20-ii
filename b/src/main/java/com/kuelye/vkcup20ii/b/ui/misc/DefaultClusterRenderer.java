@@ -824,14 +824,6 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
                 if (marker != null) return marker;
             }
         }
-        Log.v("GUB", "getClusterMarker: !!! " + mViewModifier.mNextClusters);
-        if (mViewModifier.mNextClusters != null) {
-            for (Cluster<T> cluster : mViewModifier.mNextClusters.clusters) {
-                if (cluster.getItems().contains(clusterItem)) {
-                    Log.v("GUB", "getClusterMarker: !!!");
-                }
-            }
-        }
         return null;
     }
 

@@ -107,7 +107,7 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
         if (photosListener == null) {
             photosListener = object : BaseRepository.Listener<VKPhoto> {
                 override fun onNextItems(result: ItemsResult<VKPhoto>) {
-                    Log.v(TAG, "subscribePhotos>success: result=$result")
+                    //Log.v(TAG, "subscribePhotos>success: result=$result")
                     showData(result.items, result.items?.size != result.totalCount)
                     swipeRefreshLayout.isRefreshing = false
                 }
@@ -132,7 +132,7 @@ class AlbumFragment : BaseRecyclerFragment<VKPhoto, Adapter>() {
     private fun updateToolbar() {
         toolbar?.apply {
             title = albumTitle
-            alwaysCollapsed = false
+            setAlwaysCollapsed(false)
             setMenu(
                 MenuView.Item(R.drawable.ic_back_outline_28, BACK_MENU_ITEM_ID, true),
                 MenuView.Item(R.drawable.ic_add_outline_28, ADD_MENU_ITEM_ID)

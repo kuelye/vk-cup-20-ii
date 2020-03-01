@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat.TYPE_NON_TOUCH
 import androidx.core.view.ViewCompat.TYPE_TOUCH
 import com.kuelye.vkcup20ii.core.R
 import com.kuelye.vkcup20ii.core.utils.*
+import com.vk.api.sdk.utils.VKUtils.dp
 import kotlinx.android.synthetic.main.view_toolbar.view.*
 
 class Toolbar @JvmOverloads constructor(
@@ -51,21 +52,12 @@ class Toolbar @JvmOverloads constructor(
             update()
         }
 
-    var alwaysCollapsed: Boolean = false
-        set(value) {
-            if (field != value) {
-                field = value
-                if (actualHeight == null) actualHeight = if (value) expandedHeight else collapsedHeight
-                animate(if (value) collapsedHeight else expandedHeight)
-                update()
-            }
-        }
-
     val scrollingOffset: Int
         get() = if (actualHeight == null || alwaysCollapsed) height else actualHeight!!
 
     var onExpandedStateChangedListener: ((Float) -> Unit)? = null
 
+    private var alwaysCollapsed: Boolean = false
     private val collapsedHeight: Int = themeDimen(android.R.attr.actionBarSize)
     private var expandedHeight: Int = dimen(R.dimen.toolbar_expanded_height)
 
@@ -126,6 +118,16 @@ class Toolbar @JvmOverloads constructor(
         endMenuView.onItemClickListener = listener
     }
 
+    fun setAlwaysCollapsed(alwaysCollapsed: Boolean, animate: Boolean = false) {
+        this.alwaysCollapsed = alwaysCollapsed
+        if (animate) {
+            animate(if (alwaysCollapsed) collapsedHeight else expandedHeight)
+        } else {
+            actualHeight = if (alwaysCollapsed) collapsedHeight else expandedHeight
+        }
+        update()
+    }
+
     @SuppressLint("PrivateResource")
     private fun initializeAttrs(attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.Toolbar)
@@ -146,13 +148,11 @@ class Toolbar @JvmOverloads constructor(
             val actualHeight = clamp(actualHeight!! - dy, collapsedHeight, expandedHeight)
             val consumed = this.actualHeight!! - actualHeight
             this.actualHeight = actualHeight
-            Log.v(TAG, "scroll: $dy, ${this.actualHeight}, $expandedHeight, $collapsedHeight")
             consumed
         }
     }
 
     private fun animate(targetHeight: Int) {
-        Log.v(TAG, "animate: targetHeight=$targetHeight")
         if (alwaysCollapsed && targetHeight != collapsedHeight) return
         if (actualHeight != null) {
             if (stateAnimator == null) {
@@ -192,7 +192,7 @@ class Toolbar @JvmOverloads constructor(
 
     private fun update() {
         val s = state
-        Log.v(TAG, "update: $s")
+        Log.v(TAG, "update: $alwaysCollapsed, $s, $actualHeight")
         val tH = titleTextView.paint.getHeight(title)
         val x = interpolate(s,
             pS + startMenuView.realWidth,
@@ -335,8 +335,8 @@ class Toolbar @JvmOverloads constructor(
             target: View,
             type: Int
         ) {
-            Log.v(TAG, "onStopNestedScroll: ignoreScroll=$ignoreScroll, " +
-                    "flingVelocityY=$flingVelocityY, type=$type")
+            /*Log.v(TAG, "onStopNestedScroll: ignoreScroll=$ignoreScroll, " +
+                    "flingVelocityY=$flingVelocityY, type=$type")*/
             if (!ignoreScroll) {
                 if (flingVelocityY == null && type == TYPE_TOUCH) {
                     child.animate(child.getNearestTargetHeight())

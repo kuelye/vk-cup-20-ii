@@ -71,7 +71,6 @@ class BottomSheetLayout @JvmOverloads constructor(
     private var state: Float = getStateByExpanded(EXPANDED_DEFAULT)
         set(value) {
             if (field != value) {
-                Log.v(TAG, "GUB setState: $state")
                 field = value
                 onStateChangedListener?.invoke(value)
                 if (value == COLLAPSED_STATE) onCollapsedListener?.invoke()
@@ -186,7 +185,6 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     fun animateExpanded(expanded: Boolean, endAction: (() -> Unit)? = null) {
         val targetState = getStateByExpanded(expanded)
-        Log.v(TAG, "GUB animateExpanded: $expanded, $state, $targetState, $animatorTargetState")
         if (state == targetState) {
             endAction?.invoke()
             return
@@ -204,7 +202,6 @@ class BottomSheetLayout @JvmOverloads constructor(
                 duration = ANIMATION_DURATION
                 addUpdateListener {
                     state = animator!!.animatedValue as Float
-                    Log.v(TAG, "GUB update: $state")
                     updateBottomSheet()
                     updateScrim()
                     requestLayout()
@@ -220,7 +217,6 @@ class BottomSheetLayout @JvmOverloads constructor(
             interpolator = if (expanded) DecelerateInterpolator() else AccelerateInterpolator()
             animatorEndListener?.let { removeListener(animatorEndListener) }
             animatorEndListener = endAction?.let { animator?.doOnEnd { endAction.invoke() } }
-            Log.v(TAG, "GUB animateExpanded: $fromState, $targetState")
             setFloatValues(fromState, targetState)
             start()
         }
@@ -257,7 +253,6 @@ class BottomSheetLayout @JvmOverloads constructor(
                 override fun onScroll(
                     e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float
                 ): Boolean {
-                    //Log.v(TAG, "onScroll: $distanceY, $nestedScrollStarted")
                     if (bottomSheet == null) return false
                     if (!nestedScrollStarted) setScrollY(clampScrollY(bottomSheet!!.translationY - distanceY))
                     return true
@@ -275,7 +270,6 @@ class BottomSheetLayout @JvmOverloads constructor(
 
     private fun setExpanded(expanded: Boolean) {
         animator?.cancel()
-        Log.v(TAG, "GUB 1")
         animatorTargetState = null
         state = getStateByExpanded(expanded)
         if (state == COLLAPSED_STATE) onCollapsedListener?.invoke()
@@ -284,10 +278,8 @@ class BottomSheetLayout @JvmOverloads constructor(
     }
 
     private fun setScrollY(scrollY: Float) {
-        //Log.v(TAG, "setScrollY: $scrollY")
         if (bottomSheet == null) return
         animator?.cancel()
-        Log.v(TAG, "GUB 2")
         animatorTargetState = null
         state = (bottomSheet!!.measuredHeight - scrollY.absoluteValue) / bottomSheet!!.measuredHeight
         updateBottomSheet()

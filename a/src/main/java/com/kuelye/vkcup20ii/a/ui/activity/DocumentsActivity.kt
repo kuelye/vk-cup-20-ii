@@ -1,7 +1,13 @@
 package com.kuelye.vkcup20ii.a.ui.activity
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.DownloadManager
+import android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
 import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.InputType.TYPE_NULL
 import android.util.Log
@@ -13,6 +19,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kuelye.vkcup20ii.a.R
@@ -20,36 +28,65 @@ import com.kuelye.vkcup20ii.a.model.Type
 import com.kuelye.vkcup20ii.a.model.Type.GIF
 import com.kuelye.vkcup20ii.a.model.Type.IMAGE
 import com.kuelye.vkcup20ii.a.model.getFormattedInfo
-import com.kuelye.vkcup20ii.core.data.DocumentRepository
-import com.kuelye.vkcup20ii.core.model.docs.VKDocument
 import com.kuelye.vkcup20ii.core.Config
 import com.kuelye.vkcup20ii.core.data.BaseRepository.ItemsResult
+import com.kuelye.vkcup20ii.core.data.DocumentRepository
+import com.kuelye.vkcup20ii.core.model.docs.VKDocument
 import com.kuelye.vkcup20ii.core.ui.activity.BaseRecyclerActivity
+import com.kuelye.vkcup20ii.core.ui.activity.PhotoActivity
 import com.squareup.picasso.Picasso
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKScope
 import kotlinx.android.synthetic.main.activity_documents.*
 
+
 class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Adapter>() {
 
     companion object {
         private val TAG = DocumentsActivity::class.java.simpleName
+        private const val PERMISSIONS_REQUEST_CODE = 99
+        private val EXTRA_DOCUMENT_URL = "DOCUMENT_URL"
     }
+
+    private var downloadDocument: VKDocument? = null
 
     init {
         Config.scopes = listOf(VKScope.DOCS)
+        countPerPage = 50
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_documents)
+        fixStatusBar()
         initializeLayout()
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                    if (downloadDocument != null) downloadDocument(downloadDocument!!)
+                }
+            }
+        }
+    }
+
     override fun initializeLayout() {
+        toolbar?.setAlwaysCollapsed(true)
         adapter = Adapter(this)
         adapter.onMenuClickListener = { v, document -> showDocumentMenu(v, document) }
-        adapter.onRenameClickListener = { document -> renameDocument(document)}
+        adapter.onRenameClickListener = { document -> renameDocument(document) }
+        adapter.onItemClickListener = { document ->
+            when (document.type) {
+                IMAGE.value -> PhotoActivity.start(this, document.url)
+                else -> checkStoragePermission(document)
+            }
+        }
         layoutManager = LinearLayoutManager(this)
         super.initializeLayout()
     }
@@ -112,10 +149,28 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
         })
     }
 
+    private fun downloadDocument(document: VKDocument) {
+        val request = DownloadManager.Request(Uri.parse(document.url))
+        request.setDestinationInExternalPublicDir(DIRECTORY_DOWNLOADS, document.title)
+        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        dm.enqueue(request)
+    }
+
+    private fun checkStoragePermission(document: VKDocument) {
+        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(WRITE_EXTERNAL_STORAGE), PERMISSIONS_REQUEST_CODE)
+            this.downloadDocument = document
+        } else {
+            downloadDocument(document)
+        }
+    }
+
     class Adapter(
         context: Context
     ) : BaseAdapter<VKDocument>(context) {
 
+        var onItemClickListener: ((VKDocument) -> Unit)? = null
         var onMenuClickListener: ((View, VKDocument) -> Unit)? = null
         var onRenameClickListener: ((VKDocument) -> Unit)? = null
         var renameDocumentId: Int? = null
@@ -130,7 +185,7 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
             return when (viewType) {
                 ITEM_VIEW_VALUE -> ItemViewHolder(
                     layoutInflater.inflate(
-                        R.layout.layout_document, parent, false
+                        R.layout.layout_document_item, parent, false
                     )
                 )
                 else -> super.onCreateViewHolder(parent, viewType)
@@ -187,6 +242,13 @@ class DocumentsActivity : BaseRecyclerActivity<VKDocument, DocumentsActivity.Ada
                     .into(holder.iconImageView)
             } else {
                 holder.iconImageView.setImageResource(type.drawable)
+            }
+
+            if (renameEnabled) {
+                holder.itemView.isClickable = false
+            } else {
+                holder.itemView.isClickable = true
+                holder.itemView.setOnClickListener { onItemClickListener?.invoke(document) }
             }
         }
 

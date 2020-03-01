@@ -42,7 +42,7 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
     }
 
     override fun requestData(source: BaseRepository.Source) {
-        Log.v(TAG, "requestData: v=$source")
+        //Log.v(TAG, "requestData: v=$source")
         PhotoRepository.requestPhotos(RequestPhotosArguments(
             (pagesCount - 1) * countPerPage, countPerPage),
             source)
@@ -58,7 +58,7 @@ class PhotoMapFragment : BaseMapFragment<PhotoMarkerHolder>() {
         if (photosListener == null) {
             photosListener = object : BaseRepository.Listener<VKPhoto> {
                 override fun onNextItems(result: ItemsResult<VKPhoto>) {
-                    Log.v(TAG, "subscribePhotos>success: result=$result")
+                    //Log.v(TAG, "subscribePhotos>success: result=$result")
                     updateMarkers(result.items)
                     if (result.totalCount != null && result.items?.size ?: 0 < result.totalCount!!
                             && !result.fromCache) {

@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
 import com.kuelye.vkcup20ii.core.ui.view.BorderImageView
+import com.kuelye.vkcup20ii.core.utils.ANIMATION_DURATION
 import com.kuelye.vkcup20ii.core.utils.interpolate
 import com.kuelye.vkcup20ii.core.utils.interpolateColor
 import com.kuelye.vkcup20ii.core.utils.toBitmap
@@ -70,6 +71,7 @@ class SelectableBorderImageView @JvmOverloads constructor(
     private fun animateSelected(valueTo: Float) {
         if (animator == null) {
             animator = ValueAnimator().apply {
+                duration = ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
                 addUpdateListener { updateBySelected(animator!!.animatedValue as Float) }
             }

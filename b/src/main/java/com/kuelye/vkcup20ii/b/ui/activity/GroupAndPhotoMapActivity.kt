@@ -2,6 +2,7 @@ package com.kuelye.vkcup20ii.b.ui.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -14,8 +15,9 @@ import com.kuelye.vkcup20ii.core.model.groups.VKGroup
 import com.kuelye.vkcup20ii.core.ui.activity.BaseVKActivity
 import com.vk.api.sdk.auth.VKScope.GROUPS
 import com.vk.api.sdk.auth.VKScope.PHOTOS
+import com.vk.api.sdk.utils.VKUtils
 import kotlinx.android.synthetic.main.activity_map.*
-import java.lang.IllegalArgumentException
+
 
 class GroupAndPhotoMapActivity : BaseVKActivity() {
 

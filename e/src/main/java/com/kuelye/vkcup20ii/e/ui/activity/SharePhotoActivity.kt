@@ -55,13 +55,13 @@ class SharePhotoActivity : BaseVKActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_PHOTO_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && intent != null && intent.data != null) {
-                photoUri = intent.data!!
+            if (resultCode == RESULT_OK && data?.data != null) {
+                photoUri = data.data!!
                 showShareSheet(photoUri!!)
             } else {
                 // TODO
             }
-        } else super.onActivityResult(requestCode, resultCode, intent)
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun initializeLayout() {

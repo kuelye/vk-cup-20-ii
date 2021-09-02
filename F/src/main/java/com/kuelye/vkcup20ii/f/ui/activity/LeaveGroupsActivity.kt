@@ -46,6 +46,7 @@ class LeaveGroupsActivity : BaseRecyclerActivity<VKGroup, LeaveGroupsActivity.Ad
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leave_group)
+        fixStatusBar()
 
         if (savedInstanceState != null) {
             val ids = savedInstanceState.getIntArray(EXTRA_SELECTED_GROUPS_IDS)

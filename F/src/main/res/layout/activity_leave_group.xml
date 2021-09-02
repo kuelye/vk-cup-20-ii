@@ -1,65 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
-    android:clipToPadding="false"
-    android:orientation="vertical"
-    tools:context=".ui.activity.LeaveGroupsActivity">
+    android:orientation="vertical">
 
-    <com.kuelye.vkcup20ii.core.ui.view.Toolbar
-        android:id="@+id/toolbar"
+    <View
+        android:id="@id/statusBarStubView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/leave_title_expanded"
-        app:subtitle="@string/leave_subtitle"
-        />
+        android:layout_height="0dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:paddingStart="@dimen/padding_standard"
-        android:paddingTop="@dimen/padding_standard_half"
-        android:paddingEnd="@dimen/padding_standard"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical"
-        app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior" />
-
-    <FrameLayout
-        android:id="@+id/leaveLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:windowBackground"
-        android:visibility="gone">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/padding_standard"
-            android:layout_marginTop="@dimen/padding_standard_three_quarters"
-            android:layout_marginRight="@dimen/padding_standard"
-            android:layout_marginBottom="@dimen/padding_standard_three_quarters"
-            android:backgroundTint="@color/button_color_default"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/info_open"
-            android:textColor="@color/title_light_color"
-            android:textSize="16sp" />
-    </FrameLayout>
-
-    <com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
-        android:id="@+id/bottomSheetLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="4dp"
-        android:visibility="gone">
+        android:orientation="vertical"
+        tools:context=".ui.activity.DocumentsActivity">
 
-        <com.kuelye.vkcup20ii.f.ui.view.LeaveGroupInfoView
-            android:id="@+id/groupInfoLayout"
+        <com.kuelye.vkcup20ii.core.ui.view.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_height="wrap_content"
+            app:title="@string/leave_title_expanded"
+            app:subtitle="@string/leave_subtitle"
+            />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@android:id/empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/subtitle_color"
+                    android:textSize="14sp"
+                    android:text="Тут будут Ваши сообщества" />
+
+
+                <ProgressBar
+                    android:id="@android:id/progress"
+                    android:layout_width="@dimen/progress_bar_size"
+                    android:layout_height="@dimen/progress_bar_size"
+                    android:layout_gravity="center" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@android:id/list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="@dimen/padding_standard"
+                    android:paddingTop="@dimen/padding_standard_half"
+                    android:paddingEnd="@dimen/padding_standard"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:scrollbars="vertical"
+                    app:layout_behavior="com.kuelye.vkcup20ii.core.ui.view.Toolbar$ScrollingViewBehavior" />
+            </FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <FrameLayout
+            android:id="@+id/leaveLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:windowBackground"
+            android:visibility="gone">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/padding_standard"
+                android:layout_marginTop="@dimen/padding_standard_three_quarters"
+                android:layout_marginRight="@dimen/padding_standard"
+                android:layout_marginBottom="@dimen/padding_standard_three_quarters"
+                android:backgroundTint="@color/button_color_default"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/info_open"
+                android:textColor="@color/title_light_color"
+                android:textSize="16sp" />
+        </FrameLayout>
+
+        <com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout
+            android:id="@+id/bottomSheetLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="4dp"
+            android:visibility="gone">
+
+            <com.kuelye.vkcup20ii.f.ui.view.LeaveGroupInfoView
+                android:id="@+id/groupInfoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.kuelye.vkcup20ii.core.ui.view.BottomSheetLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
